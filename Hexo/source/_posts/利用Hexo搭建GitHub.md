@@ -9,17 +9,23 @@ tags:
 categories: GitHub
 ---
 
-[TOC]
+
+
+
+
+
+
+
+
+本文基于Windows环境配置。
+
+<!--more-->
 
 ## 搭建前提
 
 - 安装好Node.js、npm
-
 - 保证主机上有Git并同自己的GitHub账号通过SSH建立联系
-
 - 简单了解GitHub和Git
-
-  
 
 ## 关于GitHub的部署
 
