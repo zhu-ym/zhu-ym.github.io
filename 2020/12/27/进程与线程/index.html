@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="本文主要描述操作系统层面的进程和线程区别，再介绍进程的通信、同步，最后讲解一些常见的调度算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程与线程">
+<meta property="og:url" content="http://example.com/2020/12/27/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="本文主要描述操作系统层面的进程和线程区别，再介绍进程的通信、同步，最后讲解一些常见的调度算法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20201227181835618.png">
+<meta property="og:image" content="http://example.com/images/image-20201227182116299.png">
+<meta property="article:published_time" content="2020-12-27T01:50:18.000Z">
+<meta property="article:modified_time" content="2020-12-27T12:00:58.010Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="进程">
+<meta property="article:tag" content="线程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20201227181835618.png">
+
+
+<link rel="canonical" href="http://example.com/2020/12/27/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>进程与线程 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">1.概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">线程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">2.状态转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1%EF%BC%88IPC%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">3.进程间通信（IPC）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%92%E6%96%A5"><span class="nav-number">3.1.</span> <span class="nav-text">互斥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5"><span class="nav-number">3.2.</span> <span class="nav-text">进程间同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1"><span class="nav-number">3.3.</span> <span class="nav-text">进程间通信</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6"><span class="nav-number">4.</span> <span class="nav-text">4.进程调度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%B9%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F%E8%B0%83%E5%BA%A6"><span class="nav-number">4.1.</span> <span class="nav-text">批处理系统调度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E4%BA%92%E5%BC%8F%E7%B3%BB%E7%BB%9F%E8%B0%83%E5%BA%A6"><span class="nav-number">4.2.</span> <span class="nav-text">交互式系统调度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E8%B0%83%E5%BA%A6"><span class="nav-number">4.3.</span> <span class="nav-text">线程的调度</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/27/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          进程与线程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-12-27 09:50:18 / 修改时间：20:00:58" itemprop="dateCreated datePublished" datetime="2020-12-27T09:50:18+08:00">2020-12-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">现代操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java%E5%B9%B6%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">Java并发</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文主要描述操作系统层面的进程和线程区别，再介绍进程的通信、同步，最后讲解一些常见的调度算法</p>
+<a id="more"></a>
+
+<p>[TOC]</p>
+<h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h1><h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><p>进程是执行的程序，程序是静态的，进程是动态的。进程是资源调度的基本单位，便于资源的管理和维护，多个进程共享物理内存、磁盘、打印机等资源。</p>
+<p>操作系统的进程模型：一个进程是一个正在执行程序的实例，概念上每个进程都有自己的虚拟CPU，实际是真正的CPU在不同进程间快速切换（多道程序设计），体现出一段时间多个进程在运行，而每个时间点仅有一个程序是活跃的。</p>
+<p>进程的实现靠操作系统维护的一张进程表，每个进程占用一个进程表项（也称进程控制块），表项包含了进程状态的重要信息，如程序计数器、堆栈指针、内存分配状况、文件状态，以及进程切换时必须保存的信息。当一个运行的进程收到中断时，硬件将程序计数器、程序状态字等信息压入堆栈，并跳转到内存底部固定区域的中断服务程序入口地址；之后大概用汇编语言保存寄存器值（通常保存在进程表项中），设置新的堆栈，这部分是通用的；然后一般用C语言处理特定中断剩类型下工作，使某些进程就绪；最后用调度程序选择新的进程运行。</p>
+<h2 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h2><p>进程模型是基于资源分组处理与执行的，传统操作系统中进程有一个地址空间和一个控制线程，将资源和执行结合，后来将这个两个概念分离，有了线程概念，线程是进程的执行，是独立调度的基本单位，一个进程可以执行多个线程，多个线程之间共享同一个地址空间和其他资源。</p>
+<p>线程的实现有两种方式：</p>
+<ul>
+<li><p>在用户空间实现：类似于操作系统维护进程表，在用户空间中维护一张线程表，而内核对其一无所知</p>
+<ul>
+<li>优点：<ul>
+<li>不用陷入内核，切换快，调用效率高</li>
+<li>适用性高，可以在不支持线程的操作系统是实现</li>
+<li>可以自己设计线程调度算法</li>
+<li>扩展性高</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>由于内核对其不可见，很难实现一个线程进行系统调用阻塞时，不影响其他线程执行，可以采用包装器查看调用是否安全，再决定是否调用，但会损失性能，或者需要一些新的非阻塞的系统调用</li>
+<li>在一个单独的进程内部，没有时钟中断，所以不能用轮转调度的方式调度线程。如果一个线程开始运行，那么在该进程中的其他线程就不能运行，除非第一个线程自动放弃<em>CPU</em>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>在内核实现：在内核中维护线程表，创建和撤销线程都是系统调用，所有能阻塞线程的调用都以系统调用的形式实现，开销大，但当阻塞时，可由内核选择运行一个进程中另一个线程或另一个线程中的线程</p>
+<p>缺点:系统调用导致开销大</p>
+</li>
+</ul>
+<p>Java主流的线程是采用于操作系统原生线程模型来实现，大多是内核线程模型。</p>
+<p>引入线程，线程必定有比进程优越的地方，这是优点，也是区别，主要在于以下几点：</p>
+<ul>
+<li>并行实体共享同一片地址可用空间和所有可用数据的能力，Java线程共享进程的堆和方法区，也有自己独立的栈、程序计数器。</li>
+<li>线程切换时只需保存和设置少量寄存器内容，开销很小，创建或撤销进程时，系统都要为之分配或回收资源，如内存空间、I/O 设备等，所付出的开销远大于创建或撤销线程时的开销。所以进程也叫轻量级进程。</li>
+<li>多线程时，特别是存在大量计算和I/O处理，可以加快应用程序执行速度，类似于进程多道程序设计模型</li>
+<li>多CPU系统中，多线程有益，真正的并行的实现存在可能</li>
+<li>线程间可以通过直接读写同一进程中的数据进行通信，但是进程通信需要借助 IPC。</li>
+</ul>
+<h1 id="2-状态转换"><a href="#2-状态转换" class="headerlink" title="2.状态转换"></a>2.状态转换</h1><p><strong>进程间状态转换</strong></p>
+<p><img src="/images/image-20201227181835618.png" alt="image-20201227181835618"></p>
+<p>阻塞态和就绪态的区别主要在于阻塞态缺少资源，就绪态缺少时间片</p>
+<p><strong>线程间状态转换</strong></p>
+<p><img src="/images/image-20201227182116299.png" alt="image-20201227182116299"></p>
+<h1 id="3-进程间通信（IPC）"><a href="#3-进程间通信（IPC）" class="headerlink" title="3.进程间通信（IPC）"></a>3.进程间通信（IPC）</h1><p>进程间通信其实有三个问题，一是一个进程把信息传递给另一个，即真正的通信问题；而是保证进程的关键活动不会交叉，即互斥问题；三是保证进程正确的执行顺序问题，即同步。</p>
+<p>首先介绍两个概念</p>
+<p><strong>竞争条件：</strong>多个进程访问共享资源，最终结果对进程运行顺序敏感</p>
+<p><strong>临界区：</strong>对共享资源访问的代码片段</p>
+<h2 id="互斥"><a href="#互斥" class="headerlink" title="互斥"></a>互斥</h2><p>保证一个进程在使用共享资源而其他进程不能进行相同的操作，即互斥。</p>
+<p>互斥的实现主要有：</p>
+<ul>
+<li>单处理器屏蔽中断。对用户进程不可取，并且多核时也受影响</li>
+<li>锁变量：用一共享变量作为锁变量锁住临界区，进入时需测试。无法解决同时进入问题</li>
+<li>严格轮换法：在锁变量的基础上加入，连续测试，即自旋的思想。浪费CPU时间，仅在等待时间短时使用，并且会受到非临界区阻塞的问题，无法保证同步</li>
+<li>当一个进程进入临界区时，先检查是否允许进入，若不允许，该进程原地等待：比如Peterson解法，或者是基于硬件支持的TSL指令（测试并加锁，通过锁住总线实现）实现</li>
+</ul>
+<h2 id="进程间同步"><a href="#进程间同步" class="headerlink" title="进程间同步"></a>进程间同步</h2><p><strong>同步是更为复杂的互斥</strong>，上诉互斥的最后一个解法可以实现同步，但是具有忙等待的特点，浪费CPU时间，甚至可能出现优先级反转问题</p>
+<p>进程间同步的实现，主要是在于进入临界区被阻塞时，不是忙等待，而是挂起，等待唤醒，主要有：</p>
+<ul>
+<li><p><strong>信号量</strong>：信号量（Semaphore）是一个整型变量，可以对其执行 down 和 up 操作，也就是常见的 P 和 V 操作。</p>
+<ul>
+<li><strong>down</strong> : 如果信号量大于 0 ，执行 -1 操作；如果信号量等于 0，进程睡眠，等待信号量大于 0；</li>
+<li><strong>up</strong> ：对信号量执行 +1 操作，唤醒睡眠的进程让其完成 down 操作。</li>
+</ul>
+<p>down 和 up 操作需要被设计成原语，不可分割，通常的做法是在执行这些操作的时候屏蔽中断，如果使用多个CPU，则每个信号量应该由一个锁变量保护，通过使用TSL或XCHG指令保证同一时刻只有一个CPU对信号量进行操作</p>
+<p>当信号量初值设置为1，如果每个进程进入临界区前都执行一个down操作，退出时执行一个up操作，就可以实现互斥，这称为<strong>二元信号量</strong>。</p>
+</li>
+</ul>
+<ul>
+<li><strong>互斥量:**如果信号量的取值只表示两个状态，0（解锁） 或者其他值（加锁），那么就成为了 **互斥量（Mutex）</strong> ，其在获取锁失败时，会放弃CPU，等待下次测试。</li>
+</ul>
+<ul>
+<li><p><strong>管程：</strong>一个管程是一个由过程、变量以及数据结构等组成的一个集合。</p>
+<p>一个时刻只能有一个进程使用管程，通过二元信号量或者互斥量实现。进程在无法继续执行的时候不能一直占用管程，否则其它进程永远不能使用管程。所以管程引入了 <strong>条件变量</strong> 以及相关的操作：<strong>wait()</strong> 和 <strong>signal()</strong> 来实现同步操作。对条件变量执行 wait() 操作会导致调用进程阻塞，把管程让出来给另一个进程持有。signal() 操作用于唤醒被阻塞的进程。Java的synchronized、ReentrantLock就支持管程。</p>
+<p>管理可以使互斥量、信号量设计控制的代码独立出来，不仅不容易出错，也使得客户端代码调用更容易。</p>
+</li>
+</ul>
+<h2 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h2><p>进程同步与进程通信很容易混淆，它们的区别在于：</p>
+<ul>
+<li>进程同步：控制多个进程按一定顺序执行；</li>
+<li>进程通信：进程间传输信息。</li>
+</ul>
+<p>进程通信是一种手段，而进程同步是一种目的。也可以说，为了能够达到进程同步的目的，需要让进程进行通信，传输一些进程同步所需要的信息。</p>
+<p>进程间通信主要有以下几种方式：</p>
+<ul>
+<li><strong>管道（pipe）</strong>：管道是一种半双工的通信方式，数据只能单向流动，而且只能在具有亲缘关系的进程间使用。进程的亲缘关系通常是指父子进程关系。</li>
+<li><strong>命名管道（FIFO）</strong>：有名管道也是半双工的通信方式，但是它允许无亲缘关系进程间的通信，其命名对应于一个磁盘索引节点，有了这个文件名，任何进程有相应的权限都可以对它进行访问。。</li>
+<li><strong>消息队列（MessageQueue）</strong>：消息队列是由消息的链表，存放在内核中并由消息队列标识符标识。消息队列克服了信号传递信息少、管道只能承载无格式字节流以及缓冲区大小受限等缺点。</li>
+<li><strong>共享存储（SharedMemory）</strong>：共享内存就是映射一段能被其他进程所访问的内存，这段共享内存由一个进程创建，但多个进程都可以访问。共享内存是最快的 IPC 方式，它是针对其他进程间通信方式运行效率低而专门设计的。它往往与其他通信机制，如信号量，配合使用，来实现进程间的同步和通信。</li>
+<li><strong>信号量（Semaphore）</strong>：信号量是一个计数器，可以用来控制多个进程对共享资源的访问。它常作为一种锁机制，防止某进程正在访问共享资源时，其他进程也访问该资源。因此，主要作为进程间以及同一进程内不同线程之间的同步手段。</li>
+<li><strong>套接字（Socket）</strong>：套解口也是一种进程间通信机制，与其他通信机制不同的是，它可用于不同及其间的进程通信。</li>
+<li><strong>信号 ( sinal )</strong> ： 信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</li>
+</ul>
+<h1 id="4-进程调度"><a href="#4-进程调度" class="headerlink" title="4.进程调度"></a>4.进程调度</h1><p>当多个进程或线程竞争CPU时，就要用到调度程序，执行调度算法，选择下一个运行的程序。</p>
+<p>首先，关于调度时机，一般出现在新建进程、一个进程退出、一个进程阻塞或者是I/O中断发生时，要进行调度选择。</p>
+<p>其次关于调度目标，一般需要讲究公平，给相似的进程相似的CPU份额；也要保住平衡，保持系统的所有部分都忙碌；同时还要保证规则策略强制执行。具体到一些应用场景，还要具体的要求，比如批处理环境要求CPU利用率、周转时间、吞吐量，交互式系统要求最小响应时间快速响应请求，以及均衡性满足用户的期望。</p>
+<p>最后，就得讨论具体的调度算法，我们针对不同应用场景有不同的调度方式。</p>
+<h2 id="批处理系统调度"><a href="#批处理系统调度" class="headerlink" title="批处理系统调度"></a>批处理系统调度</h2><p><strong>先来先服务：</strong>first-come first-served,维护一就绪进程的单一队列，先到先服务</p>
+<p><strong>最短作业优先：</strong>shortest job first，如果进程运行时间可以预知，就选择估计运行时间最短的顺序进行调度。但长作业可能出现饥饿问题</p>
+<p>上诉两种算法都是<strong>非抢占式调度</strong>，选择一个算法进行到阻塞或者释放CPU</p>
+<p><strong>最短剩余时间优先：</strong>最短作业优先的抢占式版本，<strong>抢占式调度</strong>需要有时间中断，会有运行时段最大值，时段结束也会被挂起。该版本每次都选择剩余运行时间最短的进程运行。</p>
+<h2 id="交互式系统调度"><a href="#交互式系统调度" class="headerlink" title="交互式系统调度"></a>交互式系统调度</h2><p><strong>轮转调度：</strong>维护一个可运行进程列表，每个进程被分配一个时间片，时间片用完后移到队尾。进程切换需要花费一定时间，所以时间片太小，CPU效率低，算法效率低；时间片太长响应时间就会变长</p>
+<p><strong>优先级调度：</strong>对于I/0密集型，优先级高，可以先分配CPU，以便启动下一个I/O请求，如此可以区分不同进程优先级分为不同类，不同类之间进程采用优先级调度，同类内部轮转调度。一般运行完时间片后可以降低当前线程优先级</p>
+<p><strong>多级反馈队列：</strong>按照优先级调度，一般优先级低的是CPU密集型进程，给他们设置较长的时间片比频繁短时间片更高效。多级队列对不同优先级给不同时间片，则高优先级少，低优先级时间片多。一个进程用完时间片后，分配到下一类。</p>
+<p><strong>彩票调度：</strong>向进程提供各种系统资源（如CPU时间）的彩票，一旦需要做出一项调度决策时，随机抽出一张彩票，拥有这张彩票的进程获得调度。可以实现大致按正确比例划分CPU的使用</p>
+<h2 id="线程的调度"><a href="#线程的调度" class="headerlink" title="线程的调度"></a>线程的调度</h2><p>线程的调度和线程的实现有很大关系</p>
+<p>对于用户级线程，内核不知，进程可以在内核分配时间片内用自己的调度算法选择线程调度，一般是轮转调度或者优先级调度，就是缺乏时钟中断运行过长的线程，可以通过线程间通信解决。</p>
+<p>对于内核级线程，内核选择一特定的线程运行一定时间片，此时注意考虑同进程线程切换比不同进程切换代价小即可</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%BF%9B%E7%A8%8B/" rel="tag"># 进程</a>
+              <a href="/tags/%E7%BA%BF%E7%A8%8B/" rel="tag"># 线程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/24/%E5%88%A9%E7%94%A8Hexo%E6%90%AD%E5%BB%BAGitHub/" rel="prev" title="利用Hexo搭建GitHub">
+                  <i class="fa fa-chevron-left"></i> 利用Hexo搭建GitHub
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
