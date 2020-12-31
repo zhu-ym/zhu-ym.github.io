@@ -23,29 +23,23 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
-<meta name="description" content="本文基于Windows环境配置。">
+<meta name="description" content="本文简单介绍一下文件系统的作用，用户眼中的文件系统，最后再介绍一些关键部分的实现">
 <meta property="og:type" content="article">
-<meta property="og:title" content="利用Hexo搭建GitHub">
-<meta property="og:url" content="http://example.com/2020/12/24/%E5%88%A9%E7%94%A8Hexo%E6%90%AD%E5%BB%BAGitHub/index.html">
+<meta property="og:title" content="文件系统">
+<meta property="og:url" content="http://example.com/2020/12/31/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/index.html">
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
-<meta property="og:description" content="本文基于Windows环境配置。">
+<meta property="og:description" content="本文简单介绍一下文件系统的作用，用户眼中的文件系统，最后再介绍一些关键部分的实现">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/images/image-20201224100650328.png">
-<meta property="og:image" content="http://example.com/images/image-20201224101348108.png">
-<meta property="og:image" content="http://example.com/images/image-20201224105030661.png">
-<meta property="og:image" content="http://example.com/images/image-20201224105351858.png">
-<meta property="og:image" content="http://example.com/images/image-20201224111652154.png">
-<meta property="article:published_time" content="2020-12-24T01:51:53.000Z">
-<meta property="article:modified_time" content="2020-12-25T03:14:22.080Z">
+<meta property="og:image" content="http://example.com/images/image-20201231111415581.png">
+<meta property="article:published_time" content="2020-12-31T01:32:08.000Z">
+<meta property="article:modified_time" content="2020-12-31T03:26:45.607Z">
 <meta property="article:author" content="Zhu-ym">
-<meta property="article:tag" content="Blog">
-<meta property="article:tag" content="Hexo">
-<meta property="article:tag" content="GitHub">
+<meta property="article:tag" content="文件管理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/images/image-20201224100650328.png">
+<meta name="twitter:image" content="http://example.com/images/image-20201231111415581.png">
 
 
-<link rel="canonical" href="http://example.com/2020/12/24/%E5%88%A9%E7%94%A8Hexo%E6%90%AD%E5%BB%BAGitHub/">
+<link rel="canonical" href="http://example.com/2020/12/31/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
 
 
 <script class="page-configurations">
@@ -57,7 +51,7 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>利用Hexo搭建GitHub | Zhu-ym's blog</title>
+<title>文件系统 | Zhu-ym's blog</title>
   
 
 
@@ -166,7 +160,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E5%89%8D%E6%8F%90"><span class="nav-number">1.</span> <span class="nav-text">搭建前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EGitHub%E7%9A%84%E9%83%A8%E7%BD%B2"><span class="nav-number">2.</span> <span class="nav-text">关于GitHub的部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EHexo%E7%9A%84%E9%83%A8%E7%BD%B2"><span class="nav-number">3.</span> <span class="nav-text">关于Hexo的部署</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%A1%A8%E7%8E%B0%E5%BD%A2%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">文件系统表现形式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.</span> <span class="nav-text">文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95"><span class="nav-number">1.2.</span> <span class="nav-text">目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">文件系统实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">文件实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">目录实现</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -242,7 +236,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/24/%E5%88%A9%E7%94%A8Hexo%E6%90%AD%E5%BB%BAGitHub/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/31/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -255,7 +249,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          利用Hexo搭建GitHub
+          文件系统
         </h1>
 
         <div class="post-meta-container">
@@ -265,23 +259,21 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2020-12-24 09:51:53" itemprop="dateCreated datePublished" datetime="2020-12-24T09:51:53+08:00">2020-12-24</time>
+      <time title="创建时间：2020-12-31 09:32:08 / 修改时间：11:26:45" itemprop="dateCreated datePublished" datetime="2020-12-31T09:32:08+08:00">2020-12-31</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-25 11:14:22" itemprop="dateModified" datetime="2020-12-25T11:14:22+08:00">2020-12-25</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/GitHub/" itemprop="url" rel="index"><span itemprop="name">GitHub</span></a>
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E7%8E%B0%E4%BB%A3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">现代操作系统</span></a>
         </span>
     </span>
 
@@ -295,76 +287,37 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>本文基于Windows环境配置。</p>
+        <p>本文简单介绍一下文件系统的作用，用户眼中的文件系统，最后再介绍一些关键部分的实现</p>
 <a id="more"></a>
 
-<h2 id="搭建前提"><a href="#搭建前提" class="headerlink" title="搭建前提"></a>搭建前提</h2><ul>
-<li>安装好Node.js、npm</li>
-<li>保证主机上有Git并同自己的GitHub账号通过SSH建立联系</li>
-<li>简单了解GitHub和Git</li>
-</ul>
-<h2 id="关于GitHub的部署"><a href="#关于GitHub的部署" class="headerlink" title="关于GitHub的部署"></a>关于GitHub的部署</h2><ul>
-<li><p>在GitHub上新建一个仓库，其命名保证为以下要求</p>
-<p><img src="/images/image-20201224100650328.png" alt="image-20201224100650328"></p>
-<p><code>username</code>要求为自己GitHub上面的账户名</p>
-</li>
-</ul>
+<p><strong>文件</strong>是进程创建的信息逻辑单元，是对磁盘的抽象，可以理解为每一个文件就是一个地址空间，而操作系统处理文件的部分就称为<strong>文件系统。</strong></p>
+<h1 id="文件系统表现形式"><a href="#文件系统表现形式" class="headerlink" title="文件系统表现形式"></a>文件系统表现形式</h1><p>文件系统表现形式是用户所关心的，在用户眼中主要是文件和目录。</p>
+<h2 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h2><p>用户需要对文件进行命名、修改等操作。</p>
+<p>一般<strong>文件命名</strong>采用<code>文件名+.扩展名</code>的格式。扩展名可以是一种约定，表明文件的一些信息；windows的进程可以在操作系统中注册扩展名，于是双击文件的时候，拥有该扩展名的进程就会启动并运行该文件。</p>
+<p>文件可以有多种<strong>构造（组成）方式</strong>，最常见的是无结构的<strong>字节序列</strong>，其灵活性高，可以添加任何内容，用在多种操作系统；还有一种是一颗<strong>记录树</strong>，每个记录长度不一，但固定位置上有一<strong>键</strong>字段，这颗树按键排序，构成文件，这样的文件易于查找键，用于处理数据的大型计算机。</p>
+<p>文件有不同类型，常见的是<strong>普通文件</strong>和<strong>目录</strong>。前者是包含用户信息的文件，可在分为<strong>ASCII文件</strong>和<strong>二进制文件</strong>。后者是管理文件系统结构的系统文件。</p>
+<p>当访问文件内容时，可以<strong>顺序访问</strong>，从头按顺序读取文件全部字节或记录；也可以<strong>随机访问文件</strong>，以任意次序读取。一般后者为很多应用程序需要，可以通过给出开始读文件的位置或者设置当前位置实现从某处开始读取文件</p>
+<p>最后介绍一下<strong>文件属性</strong>，其是指文件相关的信息，比如保护、口令、创建者、所有者、创建日期、标志位、文件大小、修改时间等，这也称为<strong>元数据</strong></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>目录用来记录文件的位置，前面文件类型中也提到目录，很多系统中目录本身也是文件。</p>
+<p>从宏观层次上来说，目录系统有一个目录包含所有文件的<strong>根目录、一级目录系统</strong>，但只用于简单的特殊应，。也有<strong>层次结构</strong>即一颗目录树的形式，现在，几乎所有操作系统都是这样组织的。</p>
+<p>当使用目录树组织文件系统时，需要有路径名的概念。路径名分为<strong>绝对路径名</strong>和<strong>相对路径名</strong>，前者常用于本地文件管理，后者更方便，而且是以工作目录为基准的。在我们上次GitHub项目要显示图片、或者是Hexo搭建博客解决图片显示问题时，就很可能用到相对路径。</p>
+<p>对于路径需要使用到<strong>分隔符</strong>分割不同子目录，在windows中是“\”,在Linux中是”/“,如果路径名的第一个字符是分隔符，其为绝对路径。最后有两个特殊目录项<code>.</code>和<code>..</code>,前者表示当前目录，后者表示父目录。我在设置Hexo和Typora图片保存路径时，就用到了<code>typora-root-url: ../</code>这样一条途径，表明图片应该在上一级目录里面查找。</p>
+<h1 id="文件系统实现"><a href="#文件系统实现" class="headerlink" title="文件系统实现"></a>文件系统实现</h1><p>文件系统存放在磁盘上，如果磁盘分区，那每个分区都有一个独立的文件系统。分区后0号扇区称为<strong>主引导记录（MBR）</strong>，用来引导计算机，之后就是分区表，记录每个分区的起止位置。一般计算机被引导时，从BIOs读入执行MBR，确定一个活动分区，读入其第一个块<strong>引导块</strong>装载该分区中的操作系统。</p>
+<p>文件系统实现的关键在于文件和目录的实现，即文件和目录是怎么存储的。</p>
+<h2 id="文件实现"><a href="#文件实现" class="headerlink" title="文件实现"></a>文件实现</h2><p>文件存储实现的关键是记录各个文件用到哪些磁盘块，下面是一些常用方法：</p>
 <ul>
-<li><p>进入自己新建的仓库，在setting中向下拖，找到GitHub Pages，选择主分支保存</p>
-<p><img src="/images/image-20201224101348108.png" alt="image-20201224101348108"></p>
-<p>成功时，一般上方会显示<code>Your site is published at https://username.github.io/</code></p>
+<li><p><strong>连续分配：</strong>每个文件作为一连串的数据块存储在磁盘上。其具有实现简单和读性能良好的特点，每个文件，目录项记录第一块磁盘地址和长度即可。对于缺点，不用说联想到先前的内存最早的分块管理，当删除一些文件后其肯定有<strong>空洞</strong>(零碎的空闲块)，如果维护一个空洞链表，那么分配文件位置时，必须知道文件最终大小。综上，其主要应用于提前知道文件大小的文件系统中，比如CD-ROM、DVD、蓝光光盘。</p>
+</li>
+<li><p><strong>链表分配：</strong>构造磁盘块链表，每一个块第一个字节作为指向下一块的指针，块的其他部分存放数据。这时可以充分利用碎片，目录项中只要存放第一块的磁盘地址即可。但是链表分配自然有链表的缺点，便于顺序访问但不便于随机访问，获取文件的块k复杂，此外一般，每个块的头部指针占据一定字节，数据部分就不是2的整数次幂，但许多程序每次读2的整数次幂大小的数据，所以会从两个磁盘块拼接信息，增加了复制的额外开销</p>
+</li>
+<li><p><strong>利用内存中表进行内存分配：</strong>将前面链表分配的指针字，放在内存中一个<strong>文件分配表</strong>中（FAT），示意图如下</p>
+<p><img src="/images/image-20201231111415581.png" alt="image-20201231111415581"></p>
+<p>当有连续块是，就可存放在连续块中，当连续块不够，就指向其余空闲的块中，这时目录项就只需要记录一个起始块号的整数。这样操作用于内存中操作快，一定提高了随机访问的速度，整个块都可以存放数据。缺点就是当块很小或者磁盘很大的时候，这个文件分配表很大，不再实用。</p>
+</li>
+<li><p><strong>i节点：</strong>就维护一个i节点的数据结构，其保存文件属性和文件所有块的磁盘地址，但是仅在打开文件时，才将其保存在内存中。这时只要估计每个文件有多少块，最多会打开多少文件，预留一固定大小空间即可。如果超过了i节点所能容纳的块数，可以考虑i节点最后一个地址执行一个包含额外磁盘块地址的地址。</p>
 </li>
 </ul>
-<p>  到此GitHub的配置完成，已经可以通过<a target="_blank" rel="noopener" href="https://username.github.io访问你的github/">https://username.github.io访问你的GitHub</a> Pages界面，需要利用一些工具优化你的博客部署，这里我们采用Hexo进行优化。</p>
-<h2 id="关于Hexo的部署"><a href="#关于Hexo的部署" class="headerlink" title="关于Hexo的部署"></a>关于Hexo的部署</h2><ul>
-<li><p>利用<code>npm install -g hexo-cli</code>指令<strong>安装Hexo</strong>，可在Git、cmd上进行，推荐使用Git</p>
-</li>
-<li><p>安装后在电脑选择一个文件夹作为今后放置自己文章的地方，打开Git命令行<code>hexo init </code>命令用于<strong>初始化本地文件夹为网站的根目录</strong></p>
-<p>这里简单了解下这些目录作用：</p>
-<p>Source文件夹用来存放文章、图片草稿</p>
-<p>scaffolds文件夹可以针对文章进行一些全局部署</p>
-<p>themes文件夹存放主题</p>
-<p>_config.yml文件对博客进行全局配置</p>
-</li>
-<li><p><strong>博客主题</strong></p>
-<p>此步可以略过，博客即是默认主题</p>
-<ul>
-<li><p>首先可以在<a target="_blank" rel="noopener" href="https://hexo.io/themes/">这个地址</a>选择自己喜欢的主题，并进入GitHub发现该主题项目</p>
-</li>
-<li><p>前面说到themes文件夹存放主题，所以在该文件夹中打开Git将该项目复制下来</p>
-<p><img src="/images/image-20201224105030661.png" alt="image-20201224105030661"></p>
-</li>
-<li><p>最后在前面说到的_config.yml文件对博客主题进行修改，找到theme选项，修改主题名为下载主题的文件夹名，注意空格</p>
-<p><img src="/images/image-20201224105351858.png" alt="image-20201224105351858"></p>
-</li>
-</ul>
-</li>
-<li><p><strong>本地测试</strong></p>
-<ul>
-<li>在根目录下，利用<code>hexo g</code>生成静态文件</li>
-<li>再利用<code>hexo s</code>可以启动本地服务器，即可在<a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000</a> 上查看自己的博客情况</li>
-</ul>
-<p>这里的两部操作对应就是保存修改生成静态文件、在本地查看修改看是否满意，一般用来测试用。</p>
-</li>
-<li><p><strong>上传博客</strong></p>
-<ul>
-<li><p>上传博客需要利用<code>hexo-deployer-git</code>,所以第一次操作时需要利用<code>npm install hexo-deployer-git --save</code>指令进行安装</p>
-<p>生成.deploy_git文件夹</p>
-</li>
-<li><p>安装后修改前面说到的_config.yml文件，建立与GitHub Pages的联系，这一步也是第一次操作需要修改</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:zhu-ym&#x2F;zhu-ym.github.io.git</span><br><span class="line">branch: main</span><br></pre></td></tr></table></figure>
-<p>这里注意空格，以及 repository后面地址就是对应上面GItHub部署的SSH key（克隆时用的SSH地址），分支那里之前见人写master,但是考虑到GitHub2020年的修改，我改为了main，没有影响，可以成功。</p>
-</li>
-<li><p>最后即是将文件部署到GitHub上，执行<code>hexo g -d</code>即可</p>
-<p>一般Git末尾出现如下图类似情况即成功</p>
-<p><img src="/images/image-20201224111652154.png" alt="image-20201224111652154"></p>
-<p>这步实质是生成静态文件，并将.deploy_git文件夹的内容上传到main（master）分支上去</p>
-</li>
-</ul>
-<p>最后，以后写文章，主要就是执行<code>hexo g -d</code>上传</p>
-</li>
-</ul>
-
+<h2 id="目录实现"><a href="#目录实现" class="headerlink" title="目录实现"></a>目录实现</h2>
     </div>
 
     
@@ -373,20 +326,18 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Blog/" rel="tag"># Blog</a>
-              <a href="/tags/Hexo/" rel="tag"># Hexo</a>
-              <a href="/tags/GitHub/" rel="tag"># GitHub</a>
+              <a href="/tags/%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86/" rel="tag"># 文件管理</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2020/12/29/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="prev" title="内存管理">
+                  <i class="fa fa-chevron-left"></i> 内存管理
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/12/27/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" rel="next" title="进程与线程">
-                  进程与线程 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
