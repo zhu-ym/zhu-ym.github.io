@@ -23,29 +23,21 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
-<meta name="description" content="本文基于Windows环境配置。">
+<meta name="description" content="剑指 Offer 05. 替换空格 力扣链接">
 <meta property="og:type" content="article">
-<meta property="og:title" content="利用Hexo搭建GitHub">
-<meta property="og:url" content="http://example.com/2020/12/24/%E5%88%A9%E7%94%A8Hexo%E6%90%AD%E5%BB%BAGitHub/index.html">
+<meta property="og:title" content="剑指5.替换空格">
+<meta property="og:url" content="http://example.com/2021/01/01/%E5%89%91%E6%8C%875-%E6%9B%BF%E6%8D%A2%E7%A9%BA%E6%A0%BC/index.html">
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
-<meta property="og:description" content="本文基于Windows环境配置。">
+<meta property="og:description" content="剑指 Offer 05. 替换空格 力扣链接">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/images/image-20201224100650328.png">
-<meta property="og:image" content="http://example.com/images/image-20201224101348108.png">
-<meta property="og:image" content="http://example.com/images/image-20201224105030661.png">
-<meta property="og:image" content="http://example.com/images/image-20201224105351858.png">
-<meta property="og:image" content="http://example.com/images/image-20201224111652154.png">
-<meta property="article:published_time" content="2020-12-24T01:51:53.000Z">
-<meta property="article:modified_time" content="2020-12-25T03:14:22.080Z">
+<meta property="article:published_time" content="2021-01-01T07:06:07.000Z">
+<meta property="article:modified_time" content="2021-01-01T08:11:09.158Z">
 <meta property="article:author" content="Zhu-ym">
-<meta property="article:tag" content="Blog">
-<meta property="article:tag" content="Hexo">
-<meta property="article:tag" content="GitHub">
+<meta property="article:tag" content="字符串处理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/images/image-20201224100650328.png">
 
 
-<link rel="canonical" href="http://example.com/2020/12/24/%E5%88%A9%E7%94%A8Hexo%E6%90%AD%E5%BB%BAGitHub/">
+<link rel="canonical" href="http://example.com/2021/01/01/%E5%89%91%E6%8C%875-%E6%9B%BF%E6%8D%A2%E7%A9%BA%E6%A0%BC/">
 
 
 <script class="page-configurations">
@@ -57,7 +49,7 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>利用Hexo搭建GitHub | Zhu-ym's blog</title>
+<title>剑指5.替换空格 | Zhu-ym's blog</title>
   
 
 
@@ -166,7 +158,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%AD%E5%BB%BA%E5%89%8D%E6%8F%90"><span class="nav-number">1.</span> <span class="nav-text">搭建前提</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EGitHub%E7%9A%84%E9%83%A8%E7%BD%B2"><span class="nav-number">2.</span> <span class="nav-text">关于GitHub的部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EHexo%E7%9A%84%E9%83%A8%E7%BD%B2"><span class="nav-number">3.</span> <span class="nav-text">关于Hexo的部署</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E4%B8%80%EF%BC%9AStringBuilder"><span class="nav-number">2.</span> <span class="nav-text">思路一：StringBuilder</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E4%BA%8C%EF%BC%9AreplaceAll"><span class="nav-number">3.</span> <span class="nav-text">思路二：replaceAll</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -242,7 +234,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/24/%E5%88%A9%E7%94%A8Hexo%E6%90%AD%E5%BB%BAGitHub/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/01/%E5%89%91%E6%8C%875-%E6%9B%BF%E6%8D%A2%E7%A9%BA%E6%A0%BC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -255,7 +247,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          利用Hexo搭建GitHub
+          剑指5.替换空格
         </h1>
 
         <div class="post-meta-container">
@@ -265,23 +257,25 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2020-12-24 09:51:53" itemprop="dateCreated datePublished" datetime="2020-12-24T09:51:53+08:00">2020-12-24</time>
+      <time title="创建时间：2021-01-01 15:06:07 / 修改时间：16:11:09" itemprop="dateCreated datePublished" datetime="2021-01-01T15:06:07+08:00">2021-01-01</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-12-25 11:14:22" itemprop="dateModified" datetime="2020-12-25T11:14:22+08:00">2020-12-25</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/GitHub/" itemprop="url" rel="index"><span itemprop="name">GitHub</span></a>
+          <a href="/categories/%E5%89%91%E6%8C%87offer/" itemprop="url" rel="index"><span itemprop="name">剑指offer</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/%E5%AD%97%E7%AC%A6%E4%B8%B2/" itemprop="url" rel="index"><span itemprop="name">字符串</span></a>
         </span>
     </span>
 
@@ -295,73 +289,39 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>本文基于Windows环境配置。</p>
+        <p><strong>剑指 Offer 05. 替换空格</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/">力扣链接</a></p>
 <a id="more"></a>
 
-<h2 id="搭建前提"><a href="#搭建前提" class="headerlink" title="搭建前提"></a>搭建前提</h2><ul>
-<li>安装好Node.js、npm</li>
-<li>保证主机上有Git并同自己的GitHub账号通过SSH建立联系</li>
-<li>简单了解GitHub和Git</li>
-</ul>
-<h2 id="关于GitHub的部署"><a href="#关于GitHub的部署" class="headerlink" title="关于GitHub的部署"></a>关于GitHub的部署</h2><ul>
-<li><p>在GitHub上新建一个仓库，其命名保证为以下要求</p>
-<p><img src="/images/image-20201224100650328.png" alt="image-20201224100650328"></p>
-<p><code>username</code>要求为自己GitHub上面的账户名</p>
-</li>
-</ul>
+<h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p>请实现一个函数，把字符串 <code>s</code> 中的每个空格替换成”%20”。</p>
+<p><strong>示例 ：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：s &#x3D; &quot;We are happy.&quot;</span><br><span class="line">输出：&quot;We%20are%20happy.&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>限制：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 &lt;&#x3D; s 的长度 &lt;&#x3D; 10000</span><br></pre></td></tr></table></figure>
+<h1 id="思路一：StringBuilder"><a href="#思路一：StringBuilder" class="headerlink" title="思路一：StringBuilder"></a>思路一：StringBuilder</h1><p>简单的遍历字符串s，遇到非空格直接拼接该字符，遇到空格拼接”%20”</p>
+<p>然后利用Java的可变字符串StringBuilder类进行拼接处理,这里了解StringBuilder的实现是维护一个char数组，默认的长度为16，之后每次扩容为原来的2倍+2，并且涉及到字符复制的开销，这里直接将StringBuilder设置为原来的2倍，基本够用，基本就不会出现扩容问题。</p>
+<p>但是明显这个方法会浪费一定的空间，个人不太清楚这种可变长字符串的空间复杂度怎么算，当做O(n)</p>
+<p>综上时间复杂度O（n）,空间复杂度O（n）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">replaceSpace</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">char</span>[] chars = s.toCharArray();<span class="comment">// 可以直接遍历s，个人习惯</span></span><br><span class="line">        StringBuilder ans = <span class="keyword">new</span> StringBuilder(s.length()*<span class="number">2</span>);<span class="comment">//减少扩容次数</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">char</span> c: chars)&#123;</span><br><span class="line">            <span class="keyword">if</span>(c == <span class="string">&#x27; &#x27;</span>)</span><br><span class="line">            ans.append(<span class="string">&quot;%20&quot;</span>);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            ans.append(c);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>空间优化</strong>：</p>
+<p>可以用时间换空间，先遍历一遍s，统计空格数，那需要的数组大小即为<code>s.length()+count*2</code>,之后可以自己用该数组大小、或者指定StringBuilder的初始大小，避免空间浪费</p>
+<p>上述两种方法都可以在力扣上运行时间0ms，超越100%</p>
+<h1 id="思路二：replaceAll"><a href="#思路二：replaceAll" class="headerlink" title="思路二：replaceAll"></a>思路二：replaceAll</h1><p>直接利用String类的replaceAll操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">replaceSpace</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.replaceAll(<span class="string">&quot; &quot;</span>,<span class="string">&quot;%20&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意：</strong>结果比思路一慢</p>
+<p>我们探究Java的replaceAll方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">replaceAll</span><span class="params">(String regex, String replacement)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> Pattern.compile(regex).matcher(<span class="keyword">this</span>).replaceAll(replacement);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>其用到了正则表达式，这里就不再深究，可以看我关于正则表达式的文章</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>思路一的思想比较容易，主要是的明白方法的空间问题和底层实现</p>
+<p>思路二用到了库方法，本质是正则表达式，值得注意：其第一个参数需要注意<strong>转义问题</strong>。</p>
+<p>最后，个人不知道在哪里看的过，字符串处理问题一般比较难的情况需要开括三种思路：</p>
 <ul>
-<li><p>进入自己新建的仓库，在setting中向下拖，找到GitHub Pages，选择主分支保存</p>
-<p><img src="/images/image-20201224101348108.png" alt="image-20201224101348108"></p>
-<p>成功时，一般上方会显示<code>Your site is published at https://username.github.io/</code></p>
+<li><p>正则表达式</p>
 </li>
-</ul>
-<p>  到此GitHub的配置完成，已经可以通过<a target="_blank" rel="noopener" href="https://username.github.io访问你的github/">https://username.github.io访问你的GitHub</a> Pages界面，需要利用一些工具优化你的博客部署，这里我们采用Hexo进行优化。</p>
-<h2 id="关于Hexo的部署"><a href="#关于Hexo的部署" class="headerlink" title="关于Hexo的部署"></a>关于Hexo的部署</h2><ul>
-<li><p>利用<code>npm install -g hexo-cli</code>指令<strong>安装Hexo</strong>，可在Git、cmd上进行，推荐使用Git</p>
+<li><p>有限状态机</p>
 </li>
-<li><p>安装后在电脑选择一个文件夹作为今后放置自己文章的地方，打开Git命令行<code>hexo init </code>命令用于<strong>初始化本地文件夹为网站的根目录</strong></p>
-<p>这里简单了解下这些目录作用：</p>
-<p>Source文件夹用来存放文章、图片草稿</p>
-<p>scaffolds文件夹可以针对文章进行一些全局部署</p>
-<p>themes文件夹存放主题</p>
-<p>_config.yml文件对博客进行全局配置</p>
-</li>
-<li><p><strong>博客主题</strong></p>
-<p>此步可以略过，博客即是默认主题</p>
-<ul>
-<li><p>首先可以在<a target="_blank" rel="noopener" href="https://hexo.io/themes/">这个地址</a>选择自己喜欢的主题，并进入GitHub发现该主题项目</p>
-</li>
-<li><p>前面说到themes文件夹存放主题，所以在该文件夹中打开Git将该项目复制下来</p>
-<p><img src="/images/image-20201224105030661.png" alt="image-20201224105030661"></p>
-</li>
-<li><p>最后在前面说到的_config.yml文件对博客主题进行修改，找到theme选项，修改主题名为下载主题的文件夹名，注意空格</p>
-<p><img src="/images/image-20201224105351858.png" alt="image-20201224105351858"></p>
-</li>
-</ul>
-</li>
-<li><p><strong>本地测试</strong></p>
-<ul>
-<li>在根目录下，利用<code>hexo g</code>生成静态文件</li>
-<li>再利用<code>hexo s</code>可以启动本地服务器，即可在<a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000</a> 上查看自己的博客情况</li>
-</ul>
-<p>这里的两部操作对应就是保存修改生成静态文件、在本地查看修改看是否满意，一般用来测试用。</p>
-</li>
-<li><p><strong>上传博客</strong></p>
-<ul>
-<li><p>上传博客需要利用<code>hexo-deployer-git</code>,所以第一次操作时需要利用<code>npm install hexo-deployer-git --save</code>指令进行安装</p>
-<p>生成.deploy_git文件夹</p>
-</li>
-<li><p>安装后修改前面说到的_config.yml文件，建立与GitHub Pages的联系，这一步也是第一次操作需要修改</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: git@github.com:zhu-ym&#x2F;zhu-ym.github.io.git</span><br><span class="line">branch: main</span><br></pre></td></tr></table></figure>
-<p>这里注意空格，以及 repository后面地址就是对应上面GItHub部署的SSH key（克隆时用的SSH地址），分支那里之前见人写master,但是考虑到GitHub2020年的修改，我改为了main，没有影响，可以成功。</p>
-</li>
-<li><p>最后即是将文件部署到GitHub上，执行<code>hexo g -d</code>即可</p>
-<p>一般Git末尾出现如下图类似情况即成功</p>
-<p><img src="/images/image-20201224111652154.png" alt="image-20201224111652154"></p>
-<p>这步实质是生成静态文件，并将.deploy_git文件夹的内容上传到main（master）分支上去</p>
-</li>
-</ul>
-<p>最后，以后写文章，主要就是执行<code>hexo g -d</code>上传</p>
+<li><p>KMP算法</p>
+<p>个人博客将会在算法的字符串专题对这些算法进行介绍，这篇文章算抛砖引玉了</p>
 </li>
 </ul>
 
@@ -391,20 +351,18 @@
 </div>
 
           <div class="post-tags">
-              <a href="/tags/Blog/" rel="tag"># Blog</a>
-              <a href="/tags/Hexo/" rel="tag"># Hexo</a>
-              <a href="/tags/GitHub/" rel="tag"># GitHub</a>
+              <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%84%E7%90%86/" rel="tag"># 字符串处理</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/2020/12/31/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="prev" title="文件系统">
+                  <i class="fa fa-chevron-left"></i> 文件系统
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/12/27/%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" rel="next" title="进程与线程">
-                  进程与线程 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>

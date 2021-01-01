@@ -32,7 +32,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/image-20201231111415581.png">
 <meta property="article:published_time" content="2020-12-31T01:32:08.000Z">
-<meta property="article:modified_time" content="2020-12-31T07:33:05.680Z">
+<meta property="article:modified_time" content="2021-01-01T07:04:18.163Z">
 <meta property="article:author" content="Zhu-ym">
 <meta property="article:tag" content="文件管理">
 <meta name="twitter:card" content="summary">
@@ -160,7 +160,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%A1%A8%E7%8E%B0%E5%BD%A2%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">文件系统表现形式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.</span> <span class="nav-text">文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95"><span class="nav-number">1.2.</span> <span class="nav-text">目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">文件系统实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">文件实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">目录实现</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E8%A1%A8%E7%8E%B0%E5%BD%A2%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">文件系统表现形式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.</span> <span class="nav-text">文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95"><span class="nav-number">1.2.</span> <span class="nav-text">目录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">文件系统实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">文件实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">目录实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">文件系统管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E7%AE%A1%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">磁盘空间管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%A4%87%E4%BB%BD%E5%92%8C%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">3.2.</span> <span class="nav-text">文件系统备份和一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%80%A7%E8%83%BD"><span class="nav-number">3.3.</span> <span class="nav-text">文件系统性能</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -173,20 +173,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -259,10 +259,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2020-12-31 09:32:08 / 修改时间：15:33:05" itemprop="dateCreated datePublished" datetime="2020-12-31T09:32:08+08:00">2020-12-31</time>
+      <time title="创建时间：2020-12-31 09:32:08" itemprop="dateCreated datePublished" datetime="2020-12-31T09:32:08+08:00">2020-12-31</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-01-01 15:04:18" itemprop="dateModified" datetime="2021-01-01T15:04:18+08:00">2021-01-01</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -291,6 +297,7 @@
 <a id="more"></a>
 
 <p><strong>文件</strong>是进程创建的信息逻辑单元，是对磁盘的抽象，可以理解为每一个文件就是一个地址空间，而操作系统处理文件的部分就称为<strong>文件系统。</strong></p>
+<p>[TOC]</p>
 <h1 id="文件系统表现形式"><a href="#文件系统表现形式" class="headerlink" title="文件系统表现形式"></a>文件系统表现形式</h1><p>文件系统表现形式是用户所关心的，在用户眼中主要是文件和目录。</p>
 <h2 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h2><p>用户需要对文件进行命名、修改等操作。</p>
 <p>一般<strong>文件命名</strong>采用<code>文件名+.扩展名</code>的格式。扩展名可以是一种约定，表明文件的一些信息；windows的进程可以在操作系统中注册扩展名，于是双击文件的时候，拥有该扩展名的进程就会启动并运行该文件。</p>
@@ -312,15 +319,62 @@
 </li>
 <li><p><strong>利用内存中表进行内存分配：</strong>将前面链表分配的指针字，放在内存中一个<strong>文件分配表</strong>中（FAT），示意图如下</p>
 <p><img src="/images/image-20201231111415581.png" alt="image-20201231111415581"></p>
-<p>当有连续块是，就可存放在连续块中，当连续块不够，就指向其余空闲的块中，这时目录项就只需要记录一个起始块号的整数。这样操作用于内存中操作快，一定提高了随机访问的速度，整个块都可以存放数据。缺点就是当块很小或者磁盘很大的时候，这个文件分配表很大，不再实用。</p>
+<p>当有连续块时，就可存放在连续块中，当连续块不够，就指向其余空闲的块中，这时目录项就只需要记录一个起始块号的整数。这样操作用于内存中操作快，一定提高了随机访问的速度，整个块都可以存放数据。缺点就是当块很小或者磁盘很大的时候，这个文件分配表很大，不再实用。</p>
 </li>
 <li><p><strong>i节点：</strong>就维护一个i节点的数据结构，其保存文件属性和文件所有块的磁盘地址，但是仅在打开文件时，才将其保存在内存中。这时只要估计每个文件有多少块，最多会打开多少文件，预留一固定大小空间即可。如果超过了i节点所能容纳的块数，可以考虑i节点最后一个地址执行一个包含额外磁盘块地址的地址。</p>
 </li>
 </ul>
 <h2 id="目录实现"><a href="#目录实现" class="headerlink" title="目录实现"></a>目录实现</h2><p>打开文件时，操作系统利用用户给出的路径名找到相应的<strong>目录项</strong>，目录项中提供了查找文件磁盘块中所需要的信息。</p>
 <p>有的目录项还存储文件属性，但对采用i节点的系统，文件属性可以放在i节点中，目录项就只有文件名和i节点号。</p>
+<p><strong>文件名变长问题</strong></p>
 <p>由于文件名是变长的，如果固定一个最大值来固定文件名大小会浪费很大空间，毕竟不是每个文件会命长名。</p>
 <p>另外一个想法是目录项大小不定，前面是长度固定的文件长度、文件属性等信息，后面接长度不定的文件名。但是显然当文件移走后，就会产生间隙，即和连续磁盘文件一样的问题，可能需要紧凑操作。此外目录项可能会分布在多个页面上，可能读取文件名时发生缺页中断。</p>
+<p>此外，可以同上诉想法一样，使目录项有固定的长度，文件名放在目录后面的堆中，通过一个指针，指向该文件名，可以减少目录项中间隙问题，但还是有缺页中断。</p>
+<p><strong>文件查询</strong></p>
+<p>线性搜索目录速度比较慢，需要加速</p>
+<ul>
+<li><strong>高速缓存：</strong>将查找结果放入高速缓存中，之后查找时，查看文件名是否在高速缓存中，以此定位，对目标集中的相对较小范围的文件集合有效</li>
+<li><strong>散列表：</strong>散列表+拉链法的结构，管理复杂，预计文件目录过多时考虑</li>
+</ul>
+<h1 id="文件系统管理"><a href="#文件系统管理" class="headerlink" title="文件系统管理"></a>文件系统管理</h1><h2 id="磁盘空间管理"><a href="#磁盘空间管理" class="headerlink" title="磁盘空间管理"></a>磁盘空间管理</h2><p>如前所述，磁盘管理文件存储有连续字节存储文件后分块存储两种策略，由于磁盘中移动操作比内存慢，所以一般是采用分块存储。</p>
+<p>分块存储会带来以下问题：</p>
+<ul>
+<li><p><strong>块大小：</strong>随着块的增大、空间利用率会下降而性能会上升，再结合文件大多是小文件，一般取1-4KB为块；但随着磁盘的增大，或许块增大接受浪费空间也可以。</p>
+</li>
+<li><p><strong>空闲块管理：</strong>为了实现文件存储分配，就需要对空闲块进行管理，类似于内存的分块管理，可以采用磁盘块链表和位图管理空闲磁盘空间。</p>
+<ul>
+<li>位图：一位表示一块是否空闲，占用空间小，大小固定</li>
+<li>磁盘块链表：链表中每个块记录尽可能多的空闲磁盘号，空间较大。如果改用链表记录连续空闲磁盘块时要看磁盘是否产生严重碎片才能发挥效果</li>
+</ul>
+<p>现在再来考虑其存储问题，一般就将其存储在空闲块上，一般就在内存中保持一个指针块（链表）或者就一个块（位图，由于位图固定大小，可以分页可以将其放在虚拟内存中，需要时调用）。</p>
+<p>对于链表的指针块，当文件创建时所需要块从指针块取，文件删除时，添入指针块，当这个块满时，可以写入磁盘，但是有时会增加不必要的磁盘I/O（写入磁盘后空闲块少，再新建文件可能又要读入磁盘指针块）；针对上诉问题，可以拆分满了的指针块，比如保持半满。</p>
+</li>
+</ul>
+<h2 id="文件系统备份和一致性"><a href="#文件系统备份和一致性" class="headerlink" title="文件系统备份和一致性"></a>文件系统备份和一致性</h2><p><strong>文件系统备份</strong></p>
+<p>为了应对突发情况，需要对文件系统进行备份，一般有：</p>
+<ul>
+<li><strong>物理转储：</strong>从磁盘第0块开始，全部磁盘块按序输出到磁带上</li>
+<li><strong>逻辑转储：</strong>从一个或几个指定的目录开始，递归地转储其自给定自基准日期修改后的文件和目录。</li>
+</ul>
+<p>前者简单快速，无法跳过指定目录，也无法增量转储，所以大多使用逻辑转储</p>
+<p><strong>文件系统一致性</strong></p>
+<p>如果文件系统读取磁盘块修改后，在全部写回磁盘前系统崩溃，则文件系统可能处于不一致状态。</p>
+<p>这时候要保持文件系统一致性需要对<strong>块</strong>和<strong>文件（目录系统）</strong>进行一致性检测</p>
+<p>前者检测块使用次数和在空闲链表或者位图的出现次数</p>
+<p>对文件的一致性检测和链接有关</p>
+<p>这部分的内容和<strong>数据库恢复技术</strong>有着联系，可以对照学习</p>
+<h2 id="文件系统性能"><a href="#文件系统性能" class="headerlink" title="文件系统性能"></a>文件系统性能</h2><p>访问磁盘的速度比内存慢许多，文件系统对此进行优化改善性能</p>
+<ul>
+<li><p><strong>高速缓存：</strong>高速缓存值逻辑上属于磁盘，实际保存在内存中的一系列块，当执行读操作时，先在高速缓存中检索，如果存在就指向读操作无需访问磁盘，如果不在，读到高速缓存再复制到其他地方。高速缓存之于磁盘正如硬件之于内存（比如块表的思想）。</p>
+<p>为了方便检索，常用方法会将设备和磁盘地址进行散列操作</p>
+<p>注意到其有更新高速缓存的操作，这就和页面调度算法类似，有类似的算法，选择不常用的块调出。由于对高速缓存的引用不频繁，可以考虑用链表实现LRU算法</p>
+<p>高速缓存还需注意一致性问题，可以将修改定时写入磁盘，或者只要是高速缓存中修改的立即写入磁盘，即<strong>通写高速缓存</strong></p>
+</li>
+<li><p><strong>块提前读：</strong>当顺序读取文件时，可以提前将需要块读入高速缓存提高命中率。在不确定文件访问方式时，可以通过设置顺序访问方式位，一旦进行了查找，该位置0即可</p>
+</li>
+<li><p><strong>减少磁盘臂运动：</strong>将可能顺序访问的块放在一起，最好是一个柱面上，减少磁盘臂的移动次数。前面在FAT实现文件分配时，当有连续块时，就可存放在连续块中，当连续块不够，就指向其余空闲的块中就体现了这点。当然用位图很容易实现，空闲表稍微困难。</p>
+</li>
+</ul>
 
     </div>
 
@@ -329,6 +383,24 @@
     
 
     <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
           <div class="post-tags">
               <a href="/tags/%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86/" rel="tag"># 文件管理</a>
           </div>
@@ -342,6 +414,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2021/01/01/%E5%89%91%E6%8C%875-%E6%9B%BF%E6%8D%A2%E7%A9%BA%E6%A0%BC/" rel="next" title="剑指5.替换空格">
+                  剑指5.替换空格 <i class="fa fa-chevron-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -384,7 +459,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
