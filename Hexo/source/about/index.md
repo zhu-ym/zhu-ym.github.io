@@ -12,4 +12,4 @@ type: "about"
 
 **2020年末基于GitHub Pages和Hexo搭建此博客**
 
-**学习Java后端，希望进步**
+**学习Java后端，记录点滴生活**
