@@ -37,12 +37,12 @@
 <meta property="og:image" content="http://example.com/images/image-20201213145151710.png">
 <meta property="og:image" content="http://example.com/images/image-20201213150711955.png">
 <meta property="og:image" content="http://example.com/images/image-20201213151423266.png">
-<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201215185024659.png">
-<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105630851.png">
-<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105657740.png">
-<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201225102319804.png">
+<meta property="og:image" content="http://example.com/images/image-20201215185024659.png">
+<meta property="og:image" content="http://example.com/images/image-20201216105630851.png">
+<meta property="og:image" content="http://example.com/images/image-20201216105657740.png">
+<meta property="og:image" content="http://example.com/images/image-20201225102319804.png">
 <meta property="article:published_time" content="2021-01-06T01:29:35.000Z">
-<meta property="article:modified_time" content="2021-01-06T02:57:18.416Z">
+<meta property="article:modified_time" content="2021-01-06T03:03:35.613Z">
 <meta property="article:author" content="Zhu-ym">
 <meta property="article:tag" content="TCP">
 <meta name="twitter:card" content="summary">
@@ -271,7 +271,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-01-06 09:29:35 / 修改时间：10:57:18" itemprop="dateCreated datePublished" datetime="2021-01-06T09:29:35+08:00">2021-01-06</time>
+      <time title="创建时间：2021-01-06 09:29:35 / 修改时间：11:03:35" itemprop="dateCreated datePublished" datetime="2021-01-06T09:29:35+08:00">2021-01-06</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -477,7 +477,7 @@
 <ul>
 <li><p><strong>伪超时</strong></p>
 <p>下图序列号和ACK号都基于包而非字节来表示，并且ACK号表示已接收到的包，而非期望接收的下一个包</p>
-<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201215185024659.png" alt="image-20201215185024659"></p>
+<p><img src="/images/image-20201215185024659.png" alt="image-20201215185024659"></p>
 <p>这导致TCP出现了“回退N”的行为模式，并产生了更多的“重复ACK”返回发送端，这时就可能会触发快速重传</p>
 <p>所以针对于超时，我们需要检测某个超时引起的重传是否真实，如果是伪超时，需要撤销或者减轻此超时带来的影响，而避免出现上图等行为。</p>
 <p>下面是一些检测算法</p>
@@ -523,7 +523,7 @@
 <p><strong>流量控制和窗口管理</strong></p>
 <p>TCP是通过滑动窗口来进行流量控制的，下面是滑动窗口结构</p>
 <p>发送端：</p>
-<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105630851.png" alt="image-20201216105630851"></p>
+<p><img src="/images/image-20201216105630851.png" alt="image-20201216105630851"></p>
 <p>一般窗口有三个动作</p>
 <ul>
 <li>关闭:窗口左边界右移，与收到ACK有关</li>
@@ -531,7 +531,7 @@
 <li>收缩：窗口右边界左移，不支持做法，TCP需能够对其进行处理</li>
 </ul>
 <p>接收端：</p>
-<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105657740.png" alt="image-20201216105657740"></p>
+<p><img src="/images/image-20201216105657740.png" alt="image-20201216105657740"></p>
 <p>对于接收端，只有当达到序列号等于RCV.NEXT时，数据不会被丢弃，窗口才能向前滑动，对于带SACK选项的TCP，还可以接收窗口内其他报文</p>
 <p>下面将对窗口出现的几种特殊情况进行处理</p>
 <ul>
@@ -616,7 +616,7 @@
 </li>
 </ul>
 <h2 id="2-拥塞控制状态转换"><a href="#2-拥塞控制状态转换" class="headerlink" title="2.拥塞控制状态转换"></a>2.<strong>拥塞控制状态转换</strong></h2><p>前面介绍各种算法后，需了解拥塞控制的状态是如何转换的</p>
-<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201225102319804.png" alt="image-20201225102319804"></p>
+<p><img src="/images/image-20201225102319804.png" alt="image-20201225102319804"></p>
 <ul>
 <li>Open状态是拥塞控制状态机的默认状态。这种状态下，当ACK到达时，发送方根据拥塞窗口cwnd(Congestion Window)是小于还是大于慢启动阈值ssthresh(slow start threshold)，来按照慢启动或者拥塞避免算法来调整拥塞窗口。</li>
 <li>当发送方检测到DACK(重复确认)或者SACK(选择性确认)时，状态机将转变为Disorder状态。在此状态下，数据包的到达会触发新数据传输，也即限制传输、速率减半。</li>
