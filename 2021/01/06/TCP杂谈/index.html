@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="简单回顾一下所学的TCP知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP杂谈">
+<meta property="og:url" content="http://example.com/2021/01/06/TCP%E6%9D%82%E8%B0%88/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="简单回顾一下所学的TCP知识">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20201212104849119.png">
+<meta property="og:image" content="http://example.com/images/image-20201212104923393.png">
+<meta property="og:image" content="http://example.com/images/image-20201215192546442.png">
+<meta property="og:image" content="http://example.com/images/image-20201213144655277.png">
+<meta property="og:image" content="http://example.com/images/image-20201213145151710.png">
+<meta property="og:image" content="http://example.com/images/image-20201213150711955.png">
+<meta property="og:image" content="http://example.com/images/image-20201213151423266.png">
+<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201215185024659.png">
+<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105630851.png">
+<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105657740.png">
+<meta property="og:image" content="http://example.com/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201225102319804.png">
+<meta property="article:published_time" content="2021-01-06T01:29:35.000Z">
+<meta property="article:modified_time" content="2021-01-06T02:57:18.416Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="TCP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20201212104849119.png">
+
+
+<link rel="canonical" href="http://example.com/2021/01/06/TCP%E6%9D%82%E8%B0%88/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>TCP杂谈 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E6%96%87"><span class="nav-number">1.</span> <span class="nav-text">引文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E5%A4%B4%E9%83%A8%E4%B8%8E%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">TCP头部与状态转换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%B4%E9%83%A8"><span class="nav-number">2.1.</span> <span class="nav-text">头部</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.2.</span> <span class="nav-text">状态转换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E8%B6%85%E6%97%B6%E4%B8%8E%E9%87%8D%E4%BC%A0"><span class="nav-number">3.</span> <span class="nav-text">TCP超时与重传</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%9A%84%E9%87%8D%E4%BC%A0"><span class="nav-number">3.1.</span> <span class="nav-text">1.基于时间的重传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BF%AB%E9%80%9F%E9%87%8D%E4%BC%A0"><span class="nav-number">3.2.</span> <span class="nav-text">2.快速重传</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BC%AA%E9%87%8D%E4%BC%A0%E9%97%AE%E9%A2%98"><span class="nav-number">3.3.</span> <span class="nav-text">3.伪重传问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">TCP流量控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">5.</span> <span class="nav-text">TCP拥塞控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-cwnd%E7%9A%84%E7%A1%AE%E5%AE%9A%EF%BC%88%E5%9F%BA%E4%BA%8E%E4%B8%A2%E5%8C%85%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">1.cwnd的确定（基于丢包）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2"><span class="nav-number">5.2.</span> <span class="nav-text">2.拥塞控制状态转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%9F%BA%E4%BA%8E%E5%BB%B6%E8%BF%9F%E7%9A%84cwnd"><span class="nav-number">5.3.</span> <span class="nav-text">3.基于延迟的cwnd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-ECN-%E7%A7%AF%E6%9E%81%E9%98%9F%E5%88%97%E7%AE%A1%E7%90%86"><span class="nav-number">5.4.</span> <span class="nav-text">4.ECN+积极队列管理</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/06/TCP%E6%9D%82%E8%B0%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TCP杂谈
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-01-06 09:29:35 / 修改时间：10:57:18" itemprop="dateCreated datePublished" datetime="2021-01-06T09:29:35+08:00">2021-01-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>简单回顾一下所学的TCP知识</p>
+<a id="more"></a>
+
+<h1 id="引文"><a href="#引文" class="headerlink" title="引文"></a>引文</h1><p>如何保证一个传递数据的协议是可靠的，毕竟数据在链路层传输过程中可能会产生比特错误。</p>
+<p>思路有二，一是差错纠正，可以解决<strong>错误丢包</strong>的问题；但是如果一个包是由于路由缓存不够由于排队策略而丢包（<strong>拥塞丢包</strong>），接收方根本接收不到包，那又怎么办？</p>
+<p>这时第二个思路就是<strong>ARQ</strong>，自动重复请求，简单尝试重新发送，直到信息最终被接收。</p>
+<p>ARQ构成了TCP的基础，利用超时和重传，再加上校验和检错，最终可以保证接受方收到正确的数据。</p>
+<p>之后又产生了效率的问题，发送方不可能一次只发送一个小分组，不能充分利用带宽，所以TCP采用了<strong>滑动窗口</strong>的形式，希望充分利用带宽。发送的数据量多了，接收方可能接收不过来，又或者是网络中路由器处理过来，于此又引发了<strong>流量控制</strong>和<strong>拥塞控制</strong>等问题</p>
+<p>每一种问题都有很多思考的细节</p>
+<p>TCP是怎么连接的，分组的大小有限制吗?</p>
+<p>怎么判断数据有没有被送到，多久没有收到算超时？</p>
+<p>重传的策略，一定要超时重传吗？</p>
+<p>滑动窗口怎么控制流量，又怎么进行拥塞控制？</p>
+<p>…..</p>
+<p>以下内容简短回顾一下上诉一下问题解决方案的学习。</p>
+<h1 id="TCP头部与状态转换"><a href="#TCP头部与状态转换" class="headerlink" title="TCP头部与状态转换"></a>TCP头部与状态转换</h1><h2 id="头部"><a href="#头部" class="headerlink" title="头部"></a>头部</h2><p>下面是TCP的封装以及其头部信息 </p>
+<p><img src="/images/image-20201212104849119.png" alt="image-20201212104849119"></p>
+<p>TCP头部紧跟着IP头部或IPv6扩展头部，一般是20字节。如果带选项（如MSS、时间戳、窗口缩放），可达60字节。</p>
+<p>下面是关于TCP头部的详细介绍：</p>
+<p><img src="/images/image-20201212104923393.png" alt="image-20201212104923393"></p>
+<p><strong>基本头部</strong></p>
+<p>其中<strong>序列号</strong>可以让接受方判断是否收到重复数据、判断正确该TCP连接是否能正确建立</p>
+<p>而<strong>确认号</strong>让发送方知道接收方接受数据情况，是滑动窗口移动、超时判断、丢包判断的基础</p>
+<p><strong>CWR</strong>是发送方底层出现丢包（本地拥塞）或者收到显示拥塞通知ECN（即ECE置位）的分组时，采取的拥塞控制策略，每两个ACK减少一个cwnd。</p>
+<p><strong>ECE</strong>是ECN回显，ECN主要在IP层运作</p>
+<p><strong>ACK、SYN、FIN</strong>用于TCP连接的建立和关闭，其中ACK还可以用于数据的确认，窗口更新</p>
+<p><strong>RST</strong></p>
+<p>该位置位为重置报文段，同时ACK位也必须置位，确认号在正确窗口范围内，防止连接被恶意的RST报文段打断。主要作用：</p>
+<ul>
+<li>拒绝不正确的连接，表明目的端口不可达的消息</li>
+<li>终止一条连接：对于FIN终止连接，称为有序释放，FIN当之前的所有数据已经发送后发出，而采用RST终止，称为终止释放，会丢弃排队的数据，不需要另一端响应，另一端会终止连接并通知当前连接已经被重置</li>
+<li>未通知的半开连接：当未告知另一端的情况下一端关闭或者终止连接，TCP出于半开状态。当通信一方主机崩溃，只有不尝试通过半开连接传输数据，正常工作另一端不会检测出。而当服务器崩溃未通知重启时，收到半开连接对方的消息，由于丢失连接记忆，也有回应RST报文，关闭连接。当客户端崩溃时，收到服务器消息也同理</li>
+</ul>
+<p><strong>窗口大小</strong>用于流量控制，由于就16位，大小有限制，可以结合选项的窗口缩放选项进行放大，以适应高带宽情况</p>
+<p><strong>TCP校验和</strong>，检测收到的数据是否正确，是保证可靠传输的重要一环，如果错误，直接丢弃该分组</p>
+<p>紧急指针结合URG可以实现带外数据传输，和紧急传输</p>
+<p><strong>TCP选项</strong></p>
+<p>TCP头部包含多个选项，每一个选项头一个字节为种类，进行标识选项的类型。</p>
+<ul>
+<li><p><strong>最大段大小（MSS</strong>）：标识对方发送数据时能够使用的最大字段（TCP数据）</p>
+<p>该字段与TCP的<strong>路径最大传输单元发现</strong>有关</p>
+<p>路径最大传输单元发现：TCP为了避免分片，使用对外接口的MTU的最小值。在建立连接时，每一方会告知期待收到的MSS，如果对方没有指明MSS，己方默认发送536字节，设置DF字段。如果收到PTB（数据包过大消息），PTB中如果有推荐下一跳MTU，则使用，否则采用二分算法尝试多个数值（可能影响拥塞控制），直到满足。一定时间后，由于路由动态变化，会尝试一个更大值</p>
+<p><strong>MTU=MSS+ TCP Header + IP Header</strong></p>
+</li>
+<li><p>**选择确认选项(SACK)**：保证重传时立即重传丢失部分</p>
+<p>建立连接时建立，收到乱序的数据时，提供一个SACK选项来描述这些乱序数据，帮助对方有效重传，一般是SACK块保存已经收到的数据块序列号范围，在使用时间戳情况下，最大为3块（受选项大小和时间戳所限）</p>
+<p>当接收方收到失序数据，第一个SACK块包含最近的收到的报文段范围（尽可能大）即失序数据，其它块填充按照接收顺序填充之前失序块，所以SACK块可以重复之前其他报文的块，具有备份、鲁棒性高。</p>
+<p>发送方不仅记录积累的ACK信息，也记录接收到的SACK信息，以此来维护一个重传缓存，对相应的数据块标记SACKed，重发时跳过，最后根据优先级选择重传还是发送新数据（可以混合进行）</p>
+<p>下图是一种可能的优先级示意图</p>
+<p><img src="/images/image-20201215192546442.png" alt="image-20201215192546442"></p>
+<p>由于SACK可能会变更，所以发送端不会根据SACK后立即情况重传缓存中数据，而是根据普通ACK号来清除。当重传计数器超时时，重传缓存中的数据块的SACKed标记需要清除，因为接收方可能已经异常。</p>
+</li>
+<li><p><strong>窗口缩放选项（WSOPT）</strong>：扩大窗口广告字段大小</p>
+<p>正常窗口大小为16位，此选项可以扩大窗口广告字段大小到30位（1GB），在SYN报文中建立，与方向绑定，要双方响应有效。TCP用一个32位的值维护这个真实窗口的大小。</p>
+<p>假设自己发送移动窗口数组为S，收到对方移动窗口数值为R：收到对方的16广告窗口左移R位得真实值，自己发送32位真实大小右移S为取16位填入TCP头部</p>
+</li>
+<li><p><strong>时间戳选项（TSOPT）</strong>：精确估计往返时间、防止绕回序列号</p>
+<p>时间戳是一个单调增长的32位数值，使用该选项时，发送方发送自己时间戳做TSV部分，接收方将收到的时间戳做时间戳回显重试字段即TSER部分。</p>
+<p>时间戳提供更多样本估计往返时间，此外，由于时间戳单调，序列号回绕时可以辨别</p>
+<p>而一般，时间戳选项是默认开启的，下面是其具体作用详解</p>
+<ul>
+<li>时间戳测量RTT样本值:<ul>
+<li>发送方每个发送报文的TSOPT的TSV部分携带发送时刻的TCP时钟值</li>
+<li>接收方利用两个变量记录TSV和ACK号（LastACK）</li>
+<li>如果发送方序列号等于LastACK，将TSV记录在变量中，变量并写入ACK的TSOPT的TSER部分</li>
+<li>发送方收到ACK，利用当时TCP时钟值减去TSER即得新的RTT样本估计值</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="状态转换"><a href="#状态转换" class="headerlink" title="状态转换"></a>状态转换</h2><p><img src="/images/image-20201213144655277.png" alt="image-20201213144655277"></p>
+<p>图中虚线是典型的服务器TCP状态转移，黑实线是典型的客户端TCP状态转移</p>
+<p>状态解释：</p>
+<ul>
+<li>LISTEN：表示服务器的某个SOCKET处于监听状态，可以进行连接</li>
+<li>SYN_SENT(客):客户端发送SYN，等待服务器发送ACK+SYN报文，一般是端口未打开或者中毒</li>
+<li>SYN_RECV:服务器收到客户端发送的SYN报文，然后向客户端发送SYN+ACK报文，然后进入SYN_RECV状态</li>
+<li>ESTABLISHED：表示连接已经建立</li>
+<li>FIN_WAIT_1：客户端SOCKET想主动关闭连接，于是向服务器发送FIN报文，然后进入FIN_WAIT_1状态</li>
+<li>FIN_WAIT_2：客户端收到服务器发来的ACK报文，此时客户端进入FIN_WAIT_2状态，此时客户端这边的连接已经关闭</li>
+<li>CLOSING：双方刚好可能都在关闭连接</li>
+<li>TIME_WAIT：收到了服务器发来的FIN报文，然后客户端发送ACK报文，等待2MSL之后进入CLOSED状态（等待客户端重新发送可能丢失的ACK报文）</li>
+<li>CLOSE_WAIT:服务器收到客户端发来的FIN报文之后，发送ACK报文,随后服务器进入CLOSE_WAIT状态</li>
+<li>LAST_ACK:向客户端发送FIN报文后，随即进入LAST_ACK状态，如果收到了客户端发来的ACK报文之后，就进入CLOSED状态</li>
+</ul>
+<p><strong>TCP建立连接和断开连接</strong></p>
+<p><img src="/images/image-20201213145151710.png" alt="image-20201213145151710"></p>
+<p>典型的三次握手和四次挥手即TCP建立连接阶段和断开连接阶段</p>
+<p>建立连接过程：</p>
+<p>一般SYN报文在此时会携带一些选项，交换信息，决定是否打开某个选项服务</p>
+<p>除上述三次握手之外，如果双方同时打开，就需要发送4个报文段</p>
+<p><img src="/images/image-20201213150711955.png" alt="image-20201213150711955"></p>
+<p>双方先是进入SYN_SENT态，收到对方SYN后，发送SYN+ACK进入SYN_RECV态，等收到对方的SYN+ACK报文，再进入ESTABLISHED状态</p>
+<p>建立连接过程中一方进程退出会导致连接失败（RST），当客户端在SYN_SENT超时也会导致连接失败</p>
+<p>断开连接过程：</p>
+<p>断开连接过程除常见的四次挥手也会有特殊情况</p>
+<p>1.双方同时主动断开</p>
+<p><img src="/images/image-20201213151423266.png" alt="image-20201213151423266"></p>
+<p>双方同时发送FIN，先进入FIN_WAIT_1态,然后收到对方的FIN回复ACK进入CLOSING状态，等收到对方的ACK后进入TIME_WAIT态</p>
+<p>2.被动关闭方收到FIN，直接发FIN+ACK</p>
+<p>此时主动打开方会跳过FIN_WAIT_2，发送ACK，直接进入TIME_WAIT态</p>
+<p><strong>半关闭状态</strong></p>
+<p>仅关闭一条方向的数据流传输</p>
+<p><strong>半开连接状态</strong></p>
+<p>当未告知另一端的情况下一端关闭或者终止连接，TCP出于半开状态。当通信一方主机崩溃，只要不尝试通过半开连接传输数据，正常工作另一端不会检测出。此时崩溃方重启时，处于CLOSED态，收到对方消息，会发送RST报文关闭连接</p>
+<p><strong>详解TIME_WAIT态</strong></p>
+<p>TIME_WAIT也叫2MSL等待状态，客户端在此将会等待2倍最大段生存期，MSL是IP数据报在因特网中存活的最长时间。原因有以下几点：</p>
+<ul>
+<li>确保可靠终止，防止ACK丢失：注意细节是重发ACK不是TCP重传ACK（不消耗序列号，也不会被重传），而是另一方重传FIN</li>
+<li>让老的重复分节（数据报）在网络中消逝：处于这个状态，通信双方的四元组定义为不可重新使用，不能再建立新的连接，不可使用处于2MSL的端口号的，否则假定原先的连接中还有数据报残存在网络之中，这样新的连接建立以后传输的数据极有可能就是原先的连接的数据报。</li>
+</ul>
+<p>对于上面不可使用处于2MSL的端口号的约束，可以会被绕开，如果新的连接初始序列号比之前最高的序列号还高或者开启时间戳选项可以辨别时是可以建立连接的，充分相信其不会和之前的报文段混淆，即使在TIME_WAIT段也可以允许新的连接到达</p>
+<p>处于TIME_WAIT态，任何延迟到达的报文都被丢弃，但是会发送ACK，如果收到老报文，发送ACK给已经CLOSED的服务端，服务端会发送RET报文，加速客户端关闭</p>
+<h1 id="TCP超时与重传"><a href="#TCP超时与重传" class="headerlink" title="TCP超时与重传"></a>TCP超时与重传</h1><p>TCP拥有两套重传操作，分别是基于时间、确认信息</p>
+<h2 id="1-基于时间的重传"><a href="#1-基于时间的重传" class="headerlink" title="1.基于时间的重传"></a><strong>1.基于时间的重传</strong></h2><p>基于时间的重传在发送方发送数据时会启动一个计数器，如果超过时限没有收到确认就会触发重传。</p>
+<p>其关键在于计时超时RTO的确认</p>
+<p><strong>RTO确定</strong></p>
+<p>由于TCP工作环境是动态的，需要动态设置RTO</p>
+<p>下面是一些方法演变</p>
+<p>以下RTT表示新的RTT样本值</p>
+<ul>
+<li><p>经典方法：</p>
+<p>计算平滑的SRTT，再利用一个因子估计RTO，无法面对RTT变化大的情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SRTT &#x3D; ( ALPHA * SRTT ) + ((1-ALPHA) * RTT)</span><br><span class="line">RTO &#x3D; min[UBOUND,max[LBOUND,(BETA*SRTT)]]</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>标准方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SRTT &#x3D; (1 - alpha) * SRTT + alpha * R&#39;</span><br><span class="line">RTTVAR &#x3D; (1 - beta) * RTTVAR + beta * |SRTT - R&#39;|</span><br><span class="line">RTO &#x3D; SRTT + max (G, K*RTTVAR)</span><br><span class="line">&#x2F;&#x2F; 或便于迭代形式</span><br><span class="line">Err &#x3D; RTT - SRTT</span><br><span class="line">SRTT &#x3D; SRTT + gErr</span><br><span class="line">RTTVAR &#x3D; RTTVAR + h(|Err| - RTTVAR)</span><br><span class="line">RTO &#x3D; SRTT + max (G, K*RTTVAR)</span><br><span class="line">K一般为4</span><br></pre></td></tr></table></figure>
+<p>该方法利用平滑的SRTT和平滑偏差RTTVAR计算RTO，能适应RTT变化情况，但是在RTT大幅下降和时钟粒度过细时效果不好</p>
+</li>
+<li><p>Linux方法</p>
+<p>标准方法主要有两个问题：1、RTT测量频繁、时钟粒度过细时，RTTVAR随时间减少为最小。 2、由于RTTVAR比重大，RTT大幅下降反而RTO上升</p>
+<p>Linux时钟粒度很细，其特别设置RTO方法可以解决上述两个问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">记medv &#x3D; RTTVAR</span><br><span class="line">medv_max &#x3D; 出现medv最大值</span><br><span class="line">然后利用medv_max来更新RTO避免RTTVAR（medv）趋于最小</span><br><span class="line">再利用(SRTT - medv)作为RTT的估计范围下降，在RTT大幅下降时降低其对RTTVAR（medv）的影响，避免RTO增大</span><br><span class="line">if(RTT &lt; (SRTT - medv))</span><br><span class="line">medv &#x3D; (31&#x2F;32)*medv +1&#x2F;32 * Err</span><br><span class="line">else</span><br><span class="line">medv &#x3D; (3&#x2F;4)*medv +1&#x2F;4 * Err</span><br></pre></td></tr></table></figure>
+<p>其中medv_max 不小于50ms，RTO也就不小于200ms</p>
+</li>
+<li><p>Karn算法</p>
+<p>一个包出现重传后，不确定其收到的ACK对应哪个包也就不好计算RTT，此外重传二义性</p>
+<p>Karn算法，不用重传时的RTT样本数据即排除二义性数据计算SRTT（RTO），并且设置一个退避系数，每当RTO超时时系数加倍，直到收到非重传数据系数设为正常值1</p>
+<p>即RTO = kRTO</p>
+</li>
+</ul>
+<p>最后强调两个点：</p>
+<ul>
+<li><p><strong>关于RTT的计算</strong>：RTT计算有两种方法：</p>
+<ul>
+<li><p>利用时间戳计算（RTTM）</p>
+<p>在上文有所描述</p>
+<p>RTT=当前时钟- 数据包中Timestamp选项的回显时间</p>
+</li>
+<li><p>利用重传队列中数据包的TCP控制块</p>
+<p>在TCP重传队列中保存着发送而未被确认的数据包，数据包skb中的TCP控制块包含着一个变量，tcp_skb_cb-&gt;when，记录了该数据包的第一次发送时间。</p>
+<p>当收到确认时</p>
+<p>RTT = 当时时钟 - when</p>
+</li>
+</ul>
+<p>综上，可以深入理解karn算法中第一部分要排除重传二义性的数据，因为用第二种计算方法不知道ACK是真的新还是就数据包，而使用时间戳计算RTT时就没有这个问题</p>
+<p>一般Linux、近期Windows都默认启用时间戳选项（10字节），因为时间戳选项使发送方在丢包、延时、失序情况下也能测量RTT，此外其在处理失序、成功重传时具有鲁棒性</p>
+</li>
+<li><p><strong>关于RTO初始化问题</strong></p>
+<p>在首个SYN交换前，TCP无法设置RTO初始值，当收到首个RTT后用下式估计</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SRTT &#x3D; RTT</span><br><span class="line">RTTVAR &#x3D; RTT &#x2F; 2</span><br></pre></td></tr></table></figure>
+<p>时间上计时器超时重传不是必要的，由于RTO一般大于RTT，基于计时器的重传会导致网络利用率下降。</p>
+</li>
+</ul>
+<h2 id="2-快速重传"><a href="#2-快速重传" class="headerlink" title="2.快速重传"></a><strong>2.快速重传</strong></h2><p>我们知道TCP对失序报文段具有重复ACK的机制</p>
+<p>快速重传算法基于此机制：</p>
+<p>当重复ACK到达一定阈值时，很有可能包已经丢失（再有小概率原因是延时达到），通常这个阈值是3。当达到阈值时，可以不用等到计时器超时重传可能丢失的包（也可以同时发送新数据！）：这里不采用SACK，收到有效ACK前至多重传一个报文段，采用SACK可以多个</p>
+<ul>
+<li><p><strong>基本快速重传算法</strong></p>
+<p>重传+NewReno算法，如果是Reno算法，没有部分ACK的概念</p>
+</li>
+<li><p><strong>带选择确认的重传</strong></p>
+<p>重传+SACK算法</p>
+</li>
+</ul>
+<h2 id="3-伪重传问题"><a href="#3-伪重传问题" class="headerlink" title="3.伪重传问题"></a><strong>3.伪重传问题</strong></h2><p>称没有数据丢失引发的重传为伪重传，主要原因有伪超时、失序、包重复、ACK丢失</p>
+<ul>
+<li><p><strong>伪超时</strong></p>
+<p>下图序列号和ACK号都基于包而非字节来表示，并且ACK号表示已接收到的包，而非期望接收的下一个包</p>
+<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201215185024659.png" alt="image-20201215185024659"></p>
+<p>这导致TCP出现了“回退N”的行为模式，并产生了更多的“重复ACK”返回发送端，这时就可能会触发快速重传</p>
+<p>所以针对于超时，我们需要检测某个超时引起的重传是否真实，如果是伪超时，需要撤销或者减轻此超时带来的影响，而避免出现上图等行为。</p>
+<p>下面是一些检测算法</p>
+<ul>
+<li><p><strong>重复SACK（DSACK）</strong></p>
+<p>只要允许SACK中的序列号小于累计ACK，就可以实现DSACK。此时只要接收方收到重复的分段，也认为是失序，就会将其记录发送加入到SACK选项中，即DSACK，这时发送方比较如果累积ACK大于其选项值，就知道自己发送了重复分段。</p>
+<p>DSACK的信息只包含在单个ACK中，不会在通常的SACK信息中重复，鲁棒性较SACK低。</p>
+<p>如上图的伪超时、伪重传，其可以在发送一个重复分段并收到其返回DSACK（ACK）后，才能判决，所以也叫迟伪超时，不好避免后退N行为</p>
+</li>
+<li><p><strong>Eifel检测算法</strong></p>
+<p>该方法基于时间戳选项，当发送超时重传数据后等待下一个ACK，若是针对于前一次传输的ACK，可以认为该重传是伪重传，此方法针对个别ACK丢失也有很好的鲁棒性</p>
+<p>此方法比DSACK能更早检测到伪重传行为，能避免后退N</p>
+</li>
+<li><p><strong>前移RTO恢复（F-RTO）</strong></p>
+<p>该方法是检测伪超时引起的伪重传的标准方法，不需要任何TCP选项</p>
+<p>其修改TCP行为，在超时重传后收到第一个ACK时，发送新数据，响应一个ACK，如果两个ACK不重复，说明是伪重传</p>
+<p>此方法也比DSACK能更早检测到伪重传行为，能避免后退N</p>
+</li>
+</ul>
+<p>实际上上诉算法前者被被称为迟伪超时，后两者就称为伪超时。</p>
+<p>前文对正常超时有karn算法，而如果是伪超时，也会有特殊的响应算法，即Efiel响应算法</p>
+<p>此算法针对于检测出伪超时，通过将下一个要发送的报文段（SND.NXT）的序列号改为最新未发送过的报文段(SND.MAX)，避免了后退N，对于检测到一次迟伪超时，不改变SND.NXT。上面两种情况都会在收到重传报文的ACK后，以不同与前文的方式重设SRTT、RTTVAR、RTO的值，这时一般是居于新的RTT样本值是否较大判断是否重设</p>
+</li>
+<li><p>包失序</p>
+<p>出现包失序的原因主要在于IP层不保证包传输有序进行，失序问题可能会出现在TCP连接的正向链路或者反向链路中</p>
+<p>失序在反向链路中可能由于ACK引起发送端窗口快速前移，出现不必要的流量突然</p>
+<p>失序出现在正向链路中，就会有了前文中无法确认是失序还是丢包，也就可能会引起伪重传</p>
+<p>一般设置一个dupthresh，尽量避免伪重传，这也是快速重传的根据，一般设置为3就可以避免轻微的失序，Linux还可以动态调整dupthresh应对严重失序</p>
+</li>
+<li><p>包重复</p>
+<p>包重复一般是由链路层网络协议执行重传时生成多个副本导致</p>
+<p>当重复副本过多就会导致伪重传</p>
+<p>利用SACK特别是DSACK可以防止此类伪重传</p>
+</li>
+</ul>
+<h1 id="TCP流量控制"><a href="#TCP流量控制" class="headerlink" title="TCP流量控制"></a>TCP流量控制</h1><p>交互式TCP连接：传输按键操作、短消息、鼠标动作之类的小数据段用户数据，多用于远程登录、网络游戏</p>
+<p>批量式TCP连接：传输较大的数据段、大批量数据。如Web、文件共享、备份、电子邮件等</p>
+<p>后者通常占用了90%的TCP流量。</p>
+<p>针对于两种不同的连接，有不同的处理手段</p>
+<p><strong>延时确认ACK</strong>一般用于批量式数据传输，一般是2:1，减少网络负载</p>
+<p>对于交互式数据传输，则采用<strong>Nagle算法</strong>当一个TCP连接有在传数据时，小的报文段就不能发送（小于SMSS），直到所有在传数据都收到ACK后，将收集到的小数据整合发送，类似于停等规程。该算法使得传输的包的数目减少，但是传输时延增大。一般不适合用在时延要求小的交互式应用。</p>
+<p>如果结合累计确认和Nagle算法，很有可能造成一定程度死锁，影响性能，直到延时ACK计时器超时。下面SWS避免就有结合累计确认和Nagle算法。当然可以选择禁用Nagle算法</p>
+<p><strong>流量控制和窗口管理</strong></p>
+<p>TCP是通过滑动窗口来进行流量控制的，下面是滑动窗口结构</p>
+<p>发送端：</p>
+<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105630851.png" alt="image-20201216105630851"></p>
+<p>一般窗口有三个动作</p>
+<ul>
+<li>关闭:窗口左边界右移，与收到ACK有关</li>
+<li>打开：窗口右边界右移，与接收端可用缓存有关</li>
+<li>收缩：窗口右边界左移，不支持做法，TCP需能够对其进行处理</li>
+</ul>
+<p>接收端：</p>
+<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201216105657740.png" alt="image-20201216105657740"></p>
+<p>对于接收端，只有当达到序列号等于RCV.NEXT时，数据不会被丢弃，窗口才能向前滑动，对于带SACK选项的TCP，还可以接收窗口内其他报文</p>
+<p>下面将对窗口出现的几种特殊情况进行处理</p>
+<ul>
+<li><p><strong>零窗口</strong>：可知发送方的提供窗口由接收端的通告窗口控制，当其为0时，有效阻止发送方发送数据。当其可用时会再发送给发送端传输一个窗口更新。</p>
+<p>但这个窗口更新一般是纯ACK，不可重传，为了避免该ACK丢失后的双方等待死锁，发送端会采用一个持续计时器间歇查询接收端(发<strong>送方发送窗口探测的传输</strong>)，看其窗口是否增长（强制要求接收端返回ACK），该间歇的时间与Karn算法类似（实际就是窗口探测报文的重传）。但是注意，窗口探测报文段含一个字节的数据，接收端缓存空间不够不一定会接收。</p>
+</li>
+<li><p><strong>糊涂窗口综合症</strong></p>
+<p>Silly Window Syndrome（SWS），即交换数据段不是全长而是较小的数据段</p>
+<p>可以采用以下约定避免</p>
+<p>对于接收端：要求窗口更新通告大小需要为一个接收端MSS|接收端缓存窗口的一半，否则不能通告比当前窗 </p>
+<p>口更大的窗口值</p>
+<p>对于发送端：对于发送端报文段，一般用Nagle算法控制：全长MSS或者满足接收端通告过窗口最大值的一半          可以发送。对于Nagle算法，还注意其有个条件，如果没有未经确认的在传数据，显然无论大 小也可以发送 。如果Nagle算法被禁用，自然也能发送</p>
+<p>对于SWS避免有一个细节，通告比当前窗口大的值时有约束条件，但是如果窗口是减小情况没有约束条件，这是避免发送端窗口收缩的优先级高于SWS避免</p>
+</li>
+<li><p><strong>大容量缓存与自动调优</strong></p>
+<p>由上可知，当接收方缓存空间本身就小时，TCP吞吐性能会差，一般要求接收端缓存取一较大固定值，哪怕发送端指定较小值，也要忽略。</p>
+<p>为了达到最大可用吞吐率，提出自动调优的方法，动态估计该连接的在传数据值（连接的带宽延时积），通告窗口不得小于此值（此处与拥塞控制有联系），自动调优，避免提前在接收发送端设置过大缓存。</p>
+<p>在Windows系统中，默认自动设置接收端缓存大小，Linux较新版本默认支持自动调优</p>
+</li>
+</ul>
+<h1 id="TCP拥塞控制"><a href="#TCP拥塞控制" class="headerlink" title="TCP拥塞控制"></a>TCP拥塞控制</h1><p>拥塞是指路由器无法处理高速率到达的流量而被迫丢弃数据信息</p>
+<p>对于TCP发送方，没有精确的方法可以知道路由器状态，典型的TCP就用丢包来衡量拥塞状态，此外还有时延测量和显式拥塞通知可以在丢包前检测拥塞。</p>
+<p>当知道处于拥塞时，就需要减缓TCP传输，前面有接收端通知窗口大小(awnd)通过接受速率来调节发送速率，考虑到网络传输能力，可以引入一个反应网络传输能力的拥塞窗口（cwnd），发送端实际可用窗口<code>W=min(cwnd,awnd)</code></p>
+<p>为使TCP达到最大可用吞吐率，期待W接近带宽时延积（BDP），为RTT和链路最小通行速率的乘积，所以前面自动调优的awnd不能小于这个值（接收端缓存足够）</p>
+<h2 id="1-cwnd的确定（基于丢包）"><a href="#1-cwnd的确定（基于丢包）" class="headerlink" title="1.cwnd的确定（基于丢包）"></a><strong>1.cwnd的确定（基于丢包）</strong></h2><p>一般获取cwnd最佳值的唯一方法是以越来越快的速率不断发送数据，直到出现数据包丢失，在不同阶段获取cwnd的方式有所不同</p>
+<p>通常在传输初始阶段，由于未知网络传输能力，需要缓慢探测可用传输资源，防止大量数据注入导致拥塞，到达一定条件后使用其他算法</p>
+<p><strong>慢启动</strong></p>
+<p>在TCP连接建立阶段、或检测到重传超时导致的丢包时，执行慢启动算法。甚至发送端长时间处于空闲状态（即cwnd不能精确反应当前网络拥塞状态）也可能调用慢启动算法。</p>
+<p>一般SYN交换之后，TCP发送一定大小的初始窗口（IW，IW一般较小，远比awnd小，这就是慢启动的由来）开始慢启动，之后假设没有丢包，每个数据包会有一个相应ACK，每收到一个好的ACK（大于之前ACK），慢启动算法会以<code>min(N,SMSS)</code>来增加cwnd的值，其中N为好的ACK能确定字节数，SMSS为发送方最大段大小。</p>
+<p>于是在没有ACK延时的时候，意味着每收到一个好的ACK可以发两个新包，所以每一个RTT发送窗口随时间指数增长。如果ACK延时，也是指数增长，但是增长速度更慢，所以有的TCP连接会在慢启动阶段采用快速ACK，完成之后采用延迟ACK。</p>
+<p><strong>拥塞避免</strong></p>
+<p>慢启动一个RTT随指数增长，当awnd较大时，W由cwnd决定，可能cwnd突然翻倍之后，网络直接瘫痪，所以会采用一个阈值，当大于这个阈值之后，采用别的算法。</p>
+<p>这个阈值称为慢启动阈值（ssthresh），记录没有丢包情况下，上一次最好的操作窗口估计值，即TCP最优窗口估计值的下界，当有重传现象发生<code>ssthresh=max(在外数据值（或者当前W）/ 2,2*SMSS)</code>,。至于为什么是W/2，为了达到最高的网络利用率，我们希望A和B之间的缓存(包括节点队列以及网络本身)中完全充盈着TCP的数据段，并且是持续维持，假设这个缓存数量为N，发送速率为r，发送端每发送一个数据段，接收端同时也会消费掉一个数据段，同时发出一个ACK，直到填满A，B间网络的那个数据段的ACK到达发送端为止，依照假定，ACK的速率和数据段的速率一致，则一个RTT内有<code>2N = r*RTT</code>,显然N没有被填满时，有空闲空间可以缓存，N被填满后，一旦拥塞，数据必丢失，而这个N值就是慢启动阈值，小于这个阈值时，采用慢启动可以激进的增加cwnd，一个ACK一个SMSS，大于这个阈值后，则需谨慎，一个窗口的ACK才增加一个SMSS即拥塞避免。</p>
+<p>这里采用别的算法即拥塞避免算法，每收到一个ACK只增大SMSS/cwnd个SMSS大小的窗口，随时间呈线性增长。</p>
+<p>拥塞控制算法假设有比特错误引起的丢包率很小，所有一旦丢包，则认为出现拥塞，故在无限网络中没有拥塞也传输很慢。此外慢启动和拥塞避免的cwnd的增大与RTT关系很大，在RTT较大时，可能网络资源得不到充分利用</p>
+<p><strong>Tahoe算法</strong></p>
+<p>连接之初慢启动，一旦丢包（超时或者快重）也是慢启动，并把cwnd设置为初始值，ssthresh设置为当前窗口值一半。</p>
+<p>总结具有慢启动、快重传、拥塞避免</p>
+<p><strong>Reno算法（几近于标准TCP）</strong></p>
+<p>相较与Tahoe，多了一个快速回复阶段，当快速重传时，ssthresh设置和之前一致，而将cwnd设置为ssthresh+3SMSS，之后每收到一个重复ACK将cwnd临时增加1SMSS，直到收到好的ACK，再将ACK设置为ssthresh，进入拥塞避免，这就是快速恢复。</p>
+<p>标准TCP<code>ssthresh大于max(在外数据值（或者当前W）/ 2,2*SMSS)</code>其他与Reno一致</p>
+<p>总结有慢启动、快重传、快速恢复、拥塞避免</p>
+<p><strong>NewReno算法</strong></p>
+<p>Reno的快速恢复有一个问题，当有多个包丢失时，可能快速重传一个包收到好的ACK窗口膨胀停止，而其他丢失数据未必重传，之后可能会触发快速重传，导致ssthresh和cwnd再次下降；又或者是在传数据没有足够的ACK触发快速重传，导致重传计时器超时，进入慢启动。这两者操作都会影响网络吞吐性能。</p>
+<p>我们称这种好的ACK为部分ACK（PACK），再定义上一个数据传输窗口的最大序列号，记为恢复点，当收到好的ACK小于恢复点ACK时（RACK），不会结束快速恢复阶段。在此种情况下，重传第一个没有确认的数据段。按确认的新数据量来减小拥塞窗口，如果这个部分确认确认了至少一个MSS的新数据，则加回一个MSS。如果cwnd的新值允许的话，发送一个新数据段</p>
+<p>总结有慢启动、快重传、改进的快速恢复、拥塞避免</p>
+<p><strong>SACK算法</strong></p>
+<p>缺乏SACK算法时发送端只能选择两种恢复策略：</p>
+<ol>
+<li>每一个RTT时间内至多重传一个丢弃的包  (Reno和New Reno)</li>
+<li>重传所有包，其中包括可能已经正确发送的包。  (Tahoe)</li>
+</ol>
+<p>TCP SACK在TCP Reno基础上增加了选择确认和选择重传，其快速重传时cwnd和ssthresh设置同Reno，但是随着快速恢复阶段cwnd的膨胀，发送方可以发送更多数据，此时理论上可以重传多个丢失包，即时重传。</p>
+<p>但是如果短时间向网络注入大量数据可能起不到拥塞控制效果，显然恢复阶段只用cwnd作为发送方滑动窗口界限不够。这时可以采用一个pipe记录注入网络的数据量，假设awnd较大，W与cwnd有关，只要<code>cwnd - pipe &gt;= SMSS</code>任何时候SACK TCP均可发送数据。</p>
+<p><strong>一些改进</strong></p>
+<ul>
+<li><p><strong>限制传输</strong>：目的在于使TCP能在更小的窗口下工作。Reno三次重复ACK才能触发快速重传/恢复机制，当窗口较小时可能不能触发，此时采用限制传输策略：TCP发送方每接收两个连续的重复ACK，就能发送一个新数据包，避免了长时间等待RTO超时而导致吞吐性能下降。限制传输在Linux中默认开启</p>
+</li>
+<li><p><strong>拥塞窗口校验（CWV）：</strong>如果发送方长期不发送数据（如发送端空闲，或者是应用受限），那cwnd也不会及时更新，可能不能准确反映当前网络的拥塞状况，这时可以采用CWV，用ssthresh记录之前的cwnd的记忆，再让cwnd随时间衰减。具体原理如下，需要发送新数据时，距离上次操作超过一个RTO空闲后：</p>
+<ul>
+<li><code>ssthresh = max（ssthresh，3/4cwnd）</code></li>
+<li>对于发送端空闲，每一个RTT，<code>cwnd = 1/2cwnd</code></li>
+<li>如果是应用受限，<code>cwnd = （已用窗口大小 + cwnd）/2</code></li>
+</ul>
+<p>一般在发送方长时间暂停后会进入慢启动阶段，Linux默认开启CWV</p>
+</li>
+<li><p><strong>拥塞窗口缩减（CWR）：</strong>一般出现本地拥塞或者受到ECE置位的ACK，发送端会进入CWR状态，在此阶段，先将ssthresh减半，之后发送方每收到两个ACK就将cwnd减一，直到cwnd到达新的ssthresh的值或者出现丢包。</p>
+</li>
+</ul>
+<p><strong>Eifel响应算法</strong></p>
+<p>如果出现伪超时引起的重传，前面讲诉了RTO的操作，以及防止后退的措施：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">此算法针对于检测出伪超时,通过将下一个要发送的报文段（SND.NXT）的序列号改为最新未发送过的报文段(SND.MAX)，避免了后退N，对于检测到一次迟伪超时，不改变SND.NXT。上面两种情况都会在收到重传报文的ACK后，以不同与前文的方式重设SRTT、RTTVAR、RTO的值，这时一般是居于新的RTT样本值是否较大判断是否重设</span><br></pre></td></tr></table></figure>
+<p>这里讲诉其关于拥塞控制的反应</p>
+<p>对于RTO超时，ssthresh会修改，并用pipe_prev = min(pipe,ssthresh)记录之前的ssthresh，并运行之前提到的检测算法</p>
+<p>如果确定是伪超时，则达到第一个ACK后执行以下操作：</p>
+<ul>
+<li><p>若接收包含ECN-Echo标志位好的ACK，停止操作，避免引入不安全元素，否则：</p>
+</li>
+<li><p>cwnd = pipe + min(bytes_acked,IW),即运行不超过IW的新数据进入管道</p>
+</li>
+<li><p>ssthresh = pipe_prev ，撤销之前更改。</p>
+</li>
+</ul>
+<h2 id="2-拥塞控制状态转换"><a href="#2-拥塞控制状态转换" class="headerlink" title="2.拥塞控制状态转换"></a>2.<strong>拥塞控制状态转换</strong></h2><p>前面介绍各种算法后，需了解拥塞控制的状态是如何转换的</p>
+<p><img src="/_posts/TCP%E6%9D%82%E8%B0%88.assets/image-20201225102319804.png" alt="image-20201225102319804"></p>
+<ul>
+<li>Open状态是拥塞控制状态机的默认状态。这种状态下，当ACK到达时，发送方根据拥塞窗口cwnd(Congestion Window)是小于还是大于慢启动阈值ssthresh(slow start threshold)，来按照慢启动或者拥塞避免算法来调整拥塞窗口。</li>
+<li>当发送方检测到DACK(重复确认)或者SACK(选择性确认)时，状态机将转变为Disorder状态。在此状态下，数据包的到达会触发新数据传输，也即限制传输、速率减半。</li>
+<li>当发送方接收到足够的DACK(重复确认)后，进入该状态。在该状态下，拥塞窗口cnwd每收到两个ACK就减少一个段，直到cwnd等于慢启动阈值ssthresh</li>
+<li>一般出现本地拥塞或者受到ECE置位的ACK，发送端会进入CWR状态，在此阶段，先将ssthresh减半，之后发送方每收到两个ACK就将cwnd减一，直到cwnd到达新的ssthresh的值或者出现丢包。</li>
+<li>当一个RTO(重传超时时间)到期后，发送方进入Loss状态。所有正在发送的数据标记为丢失，拥塞窗口cwnd设置为一个段发送方再次以慢启动算法增大拥塞窗口cwnd。Loss 和 Recovery 状态的区别是:Loss状态下，拥塞窗口在发送方设置为一个段后增大，而 Recovery 状态下，拥塞窗口只能被减小。Loss 状态不能被其他的状态中断，因此，发送方只有在所有 Loss 开始时正在传输的数据都得到成功确认后，才能退到 Open 状态。</li>
+</ul>
+<h2 id="3-基于延迟的cwnd"><a href="#3-基于延迟的cwnd" class="headerlink" title="3.基于延迟的cwnd"></a><strong>3.基于延迟的cwnd</strong></h2><p>通过检测RTT变化来判断是否拥塞，将不断增长的RTT作为拥塞形成的信号。</p>
+<p><strong>Vegas算法</strong></p>
+<p>经典的Vegas算法的基本思路：RTT增加，拥塞窗口减小；RTT减少，拥塞窗口变大。</p>
+<p>Vegas通过比较实际吞吐量和期望吞吐量来调节拥塞窗口的大小。</p>
+<p>期望吞吐量：Expected=cwmd/BaseRTT</p>
+<p>实际吞吐量：Actual=cwnd/RTT</p>
+<p>计算差值：diff=（Expected-Actual）*BaseRTT</p>
+<p>BaseRTT是所有观测来回响应时间的最小值，一般是建立连接后所发的第一个数据包的RTT。</p>
+<p>定义阈值a、b，当diff &lt; a,拥塞窗口增大，+1;当diff&gt;b，拥塞窗口缩小，-1;当a&lt;=diff&lt;=b,拥塞窗口不变。通常a=1，b=3，意味着该连接至少保留一个包在队列中。</p>
+<p>由将上述方法用于慢启动：慢启动时，Vegas每经过两个RTT使cwnd拥塞窗口增加1倍。然后计算diff，当diff&gt;a,则结束慢启动，转入拥塞避免。这种慢启动事实严重降低了传输速率。</p>
+<p>Vagas算法很容易受到反方向的拥塞的影响减小窗口大小。此外，由于一旦发生时延，Vegas算法可能就减小cwnd，所以其在和标准TCP算法竞争时是不公平的，标准TCP想填满网络中等待队列，而Vegas想让其保持空闲</p>
+<p><strong>Westwood算法</strong></p>
+<p>类似于Vegas，发送端维护一合格速率估计值，对连接中可用带宽进行估计（ERE，<code>单位时间分组数目*分组大小</code>），当出现丢包时，不会将cwnd减半，而是用估计的BDP值（观察到最小<code>RTT*ERE</code>）作为ssthresh值。</p>
+<p>此外其比Vegas的慢启动也有所改变，其会反复设置ssthresh值，当ssthresh增长时，cwnd会指数增长</p>
+<h2 id="4-ECN-积极队列管理"><a href="#4-ECN-积极队列管理" class="headerlink" title="4.ECN+积极队列管理"></a><strong>4.ECN+积极队列管理</strong></h2><p>传统路由采用FIFO+尾部丢弃处理，如果路由不采用上诉管理方式，我们认为路由采用了积极队列管理（AQM），若此时能将路由器和交换机的状态传输给端系统来实现AQM，就可以对经过路由器的数据包进行标记，以此得到拥塞状态，即显示拥塞通知（ECN）</p>
+<p>当路由队列管理采用随机早期检测（RED）机制时，可以探测拥塞情况的发送，并控制数据包标记，当数据包被接收，如果其被拥塞标记了，接收端向发送端返回一个ACK数据包来通知拥塞情况。</p>
+<p>整个ECN过程如下：</p>
+<p>当包含ECN功能的路由器拥塞时，收到一个Ip数据包，检测IP头部ECN传输能力（ECT）标识是否置位，如果有效，传输层协议将开启ECN功能，路由器在IP头设置已发生拥塞（CE）标识。如果接收端收到数据包CE被置位，将ECE置位，接收端收到之后，将CWR置位，并进入CWR阶段。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/TCP/" rel="tag"># TCP</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/05/HTTP/" rel="prev" title="HTTP">
+                  <i class="fa fa-chevron-left"></i> HTTP
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
