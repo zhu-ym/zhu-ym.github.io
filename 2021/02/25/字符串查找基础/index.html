@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="描述字符串查找匹配的一些通用方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符串查找基础">
+<meta property="og:url" content="http://example.com/2021/02/25/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="描述字符串查找匹配的一些通用方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210225151110363.png">
+<meta property="article:published_time" content="2021-02-25T05:40:00.000Z">
+<meta property="article:modified_time" content="2021-02-25T07:50:11.023Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="字符串处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210225151110363.png">
+
+
+<link rel="canonical" href="http://example.com/2021/02/25/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E5%9F%BA%E7%A1%80/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>字符串查找基础 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">字符串匹配问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#KMP%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">KMP算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E7%AE%80%E8%A6%81"><span class="nav-number">2.1.</span> <span class="nav-text">算法简要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DFA"><span class="nav-number">2.2.</span> <span class="nav-text">DFA</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/25/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          字符串查找基础
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-02-25 13:40:00 / 修改时间：15:50:11" itemprop="dateCreated datePublished" datetime="2021-02-25T13:40:00+08:00">2021-02-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">字符串处理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>描述字符串查找匹配的一些通用方法</p>
+<a id="more"></a>
+
+<h1 id="字符串匹配问题"><a href="#字符串匹配问题" class="headerlink" title="字符串匹配问题"></a>字符串匹配问题</h1><p>字符串匹配问题一般都可以简化为在一个文本S中，是否存在一个模式P，一般P是子字符串较小，而文本S较大</p>
+<p>最简单的想法是暴力搜索，如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">int</span> <span class="title">search</span><span class="params">(String s,String p)</span></span>&#123;</span><br><span class="line">       <span class="keyword">int</span> n = s.length();</span><br><span class="line">       <span class="keyword">int</span> m = p.length();</span><br><span class="line">       <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span> ; i &lt;= m - n; i ++)&#123;</span><br><span class="line">           <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; m; j++)&#123;</span><br><span class="line">               <span class="keyword">if</span>(p.charAt(j) != s.charAt(i + j))&#123;</span><br><span class="line">                   <span class="keyword">break</span>;</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">if</span>(j == m - <span class="number">1</span>)</span><br><span class="line">                   <span class="keyword">return</span> i;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span>  -<span class="number">1</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>该算法的时间复杂度是O(NM)</p>
+<h1 id="KMP算法"><a href="#KMP算法" class="headerlink" title="KMP算法"></a>KMP算法</h1><h2 id="算法简要"><a href="#算法简要" class="headerlink" title="算法简要"></a>算法简要</h2><p>上诉暴力搜索法，在匹配i不成功时，又从j = 0开始匹配,。</p>
+<p>但是实际上，可能匹配不成功时，我们已经看了到了S到了第i 位，P的第j位。我们知道了S的前<code>j - 1</code>个内容，与P的前<code> j - 1</code>个内容，由于P较短，我们可以预先处理P，在已知P和S前 <code>j - 1</code>个内容，并且知道<code>s.charAt( i)</code>，j应该回退到哪个位置开始同S下一位比较，减少j的回退，从而对算法进行优化</p>
+<p>于是假设<code>dfa[s.charAt( i)][j]</code>表示文本在第i个位置与<code>p.charAt(j)</code>比较失败时，文本下一个字符比较时j应该回退多远,则此时，仅当<code>s.charAt( i) == p.charAt(j)</code>时，其值为j + 1，代表匹配继续比较下一位字符。</p>
+<p>于是KMP算法可以写成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span>  <span class="keyword">int</span> <span class="title">search</span><span class="params">(String s,String p)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n = s.length();</span><br><span class="line">        <span class="keyword">int</span> m = p.length();</span><br><span class="line">        makeDfa(p);</span><br><span class="line">        <span class="keyword">int</span> i ,j ;</span><br><span class="line">        <span class="keyword">for</span>(i = <span class="number">0</span> , j = <span class="number">0</span>; i &lt; n &amp;&amp; j &lt; m; i++)&#123;</span><br><span class="line">            j = dfa[s.charAt(i)][j];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>( j == m)</span><br><span class="line">            <span class="keyword">return</span> i - m;</span><br><span class="line">        <span class="keyword">return</span> - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>实际上，问题的关键是在于如果给定一个p，制定对于的dfa数组；</p>
+<p>这里可以利用确定有限状态自动机完成，即DFA</p>
+<h2 id="DFA"><a href="#DFA" class="headerlink" title="DFA"></a>DFA</h2><p>我们假设模式中每一个字符对应着一个状态，并且每个状态可以通过转换到达另一个状态，由于字符是有限的，所以是有限自动机</p>
+<p>转换可以有匹配转化（比较下一个），和非匹配转换（回退），分别用右左箭头表示，下面就是一个模式的转化图</p>
+<p><img src="/images/image-20210225151110363.png" alt="image-20210225151110363"></p>
+<p>实际上，当在文本中查找p的过程，就是在状态转换图中进行状态转化的过程，起始状态为0，之后不断扫描S，当与P首字母状态相同时，进入状态1，如果找到匹配会进入下一个状态，否则，又会回退，直到p所有字符匹配完，到达终止态，就说明匹配成功。</p>
+<p>具体到一个dfa的制作，p的长度决定了状态数，所有可能出现的字符是转化的条件。</p>
+<p>当j = 0 时，显然只能通过<code>dfa[p.charAt(0)][0],</code>进入1状态</p>
+<p>…</p>
+<p>当j = k 时</p>
+<ul>
+<li>我们知道由于匹配失败只会回到之前的状态X&lt;j（向左），所以情况和前面相同</li>
+<li>匹配成功<code>dfa[p.charAt(j)][j] == j + 1</code></li>
+<li>X怎么确定：显然<code>X = dfa[p.charAt(j)][X]</code></li>
+</ul>
+<p>于是确定dfa的代码就如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>  <span class="keyword">static</span> <span class="keyword">int</span> [][] dfa;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span>  <span class="keyword">int</span> M;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">makeDfa</span><span class="params">(String p)</span></span>&#123;</span><br><span class="line">        M = p.length(); <span class="comment">// 状态数</span></span><br><span class="line">        dfa = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">256</span>][M];</span><br><span class="line">        dfa[p.charAt(<span class="number">0</span>)][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> X = <span class="number">0</span>,j = <span class="number">1</span>; j &lt; M; j++)&#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">256</span>; i++)</span><br><span class="line">                dfa[i][j] = dfa[i][X];</span><br><span class="line">            dfa[p.charAt(j)][j] = j + <span class="number">1</span>;</span><br><span class="line">            X = dfa[p.charAt(j)][X];</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%84%E7%90%86/" rel="tag"># 字符串处理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/22/%E5%89%91%E6%8C%8719-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8D/" rel="prev" title="剑指19-正则表达式匹配">
+                  <i class="fa fa-chevron-left"></i> 剑指19-正则表达式匹配
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/02/26/%E5%89%91%E6%8C%8716-%E6%95%B0%E5%80%BC%E7%9A%84%E6%95%B4%E6%95%B0%E6%AC%A1%E6%96%B9/" rel="next" title="剑指16-数值的整数次方">
+                  剑指16-数值的整数次方 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
