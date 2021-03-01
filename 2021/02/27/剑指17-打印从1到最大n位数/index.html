@@ -31,7 +31,7 @@
 <meta property="og:description" content="剑指 Offer 17. 打印从1到最大的n位数 力扣链接">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-27T03:14:20.000Z">
-<meta property="article:modified_time" content="2021-03-01T07:14:20.189Z">
+<meta property="article:modified_time" content="2021-03-01T11:36:48.952Z">
 <meta property="article:author" content="Zhu-ym">
 <meta property="article:tag" content="模拟题">
 <meta name="twitter:card" content="summary">
@@ -265,7 +265,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-01 15:14:20" itemprop="dateModified" datetime="2021-03-01T15:14:20+08:00">2021-03-01</time>
+        <time title="修改时间：2021-03-01 19:36:48" itemprop="dateModified" datetime="2021-03-01T19:36:48+08:00">2021-03-01</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -313,9 +313,8 @@
 <p>这里有两种思路，一个是用字符串模拟大数加法，思路比较类似，可以见算法模拟题分类的一篇文章，另一个是利用全排列的思路，就在此描述</p>
 <p>实际上该题要求输出的数字也是0-9的数字全排列，共n位，再考虑到全排列可能前面高位为0的问题，我们可以专门建个函数进行打印。</p>
 <p>下述为代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
-
-
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">permutation</span><span class="params">(<span class="keyword">int</span> n,String s)</span></span>&#123;</span><br><span class="line">     <span class="keyword">if</span>(n == <span class="number">0</span>)</span><br><span class="line">     &#123;</span><br><span class="line">         SpecialPrint(s);</span><br><span class="line">         <span class="keyword">return</span>;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;=<span class="number">9</span> ; i++)&#123;</span><br><span class="line">         permutation(n-<span class="number">1</span>,s+i);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">SpecialPrint</span><span class="params">(String s)</span></span>&#123;</span><br><span class="line">     <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">     <span class="keyword">while</span>(i &lt; s.length() &amp;&amp; s.charAt(i) == <span class="string">&#x27;0&#x27;</span>)</span><br><span class="line">         i++;</span><br><span class="line">     <span class="keyword">if</span>(i == <span class="number">0</span>)</span><br><span class="line">         System.out.println(s);</span><br><span class="line">     <span class="keyword">else</span>&#123;</span><br><span class="line">     <span class="keyword">if</span>(i &lt; s.length())</span><br><span class="line">         System.out.println(s.substring(i,s.length()));&#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>该方法可以解决大数问题</p>
 
     </div>
 
