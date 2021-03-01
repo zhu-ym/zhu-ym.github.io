@@ -23,14 +23,17 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
+<meta name="description" content="剑指 Offer 17. 打印从1到最大的n位数 力扣链接">
 <meta property="og:type" content="article">
 <meta property="og:title" content="剑指17-打印从1到最大n位数">
 <meta property="og:url" content="http://example.com/2021/02/27/%E5%89%91%E6%8C%8717-%E6%89%93%E5%8D%B0%E4%BB%8E1%E5%88%B0%E6%9C%80%E5%A4%A7n%E4%BD%8D%E6%95%B0/index.html">
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="剑指 Offer 17. 打印从1到最大的n位数 力扣链接">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-02-27T03:14:20.000Z">
-<meta property="article:modified_time" content="2021-02-27T03:14:20.711Z">
+<meta property="article:modified_time" content="2021-03-01T07:14:20.189Z">
 <meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="模拟题">
 <meta name="twitter:card" content="summary">
 
 
@@ -142,7 +145,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -155,6 +158,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E9%A2%98%E7%9B%AE"><span class="nav-number">2.</span> <span class="nav-text">解决题目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%85%A8%E6%8E%92%E5%88%97"><span class="nav-number">3.</span> <span class="nav-text">题目进阶：全排列</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -167,20 +171,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -256,6 +260,30 @@
 
       <time title="创建时间：2021-02-27 11:14:20" itemprop="dateCreated datePublished" datetime="2021-02-27T11:14:20+08:00">2021-02-27</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-01 15:14:20" itemprop="dateModified" datetime="2021-03-01T15:14:20+08:00">2021-03-01</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%89%91%E6%8C%87Offer/" itemprop="url" rel="index"><span itemprop="name">剑指Offer</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/%E6%A8%A1%E6%8B%9F%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">模拟题</span></a>
+        </span>
+    </span>
 
   
 </div>
@@ -267,7 +295,28 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        
+        <p><strong>剑指 Offer 17. 打印从1到最大的n位数</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/">力扣链接</a></p>
+<a id="more"></a>
+
+<h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p>输入数字 <code>n</code>，按顺序打印出从 1 到最大的 n 位十进制数。比如输入 3，则打印出 1、2、3 一直到最大的 3 位数 999。</p>
+<p><strong>示例 1:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: n &#x3D; 1</span><br><span class="line">输出: [1,2,3,4,5,6,7,8,9]</span><br></pre></td></tr></table></figure>
+<p>说明：</p>
+<ul>
+<li>用返回一个整数列表来代替打印</li>
+<li>n 为正整数</li>
+</ul>
+<h1 id="解决题目"><a href="#解决题目" class="headerlink" title="解决题目"></a>解决题目</h1><p>由于题目要求返回一个整数列表，所以该题难度急速下降，没有难度，不用考虑大数问题</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] printNumbers(<span class="keyword">int</span> n) &#123;</span><br><span class="line">        <span class="keyword">int</span>[] a = &#123;<span class="number">0</span>,<span class="number">9</span>,<span class="number">99</span>,<span class="number">999</span>,<span class="number">9999</span>,<span class="number">99999</span>,<span class="number">999999</span>,<span class="number">9999999</span>,<span class="number">99999999</span>,<span class="number">999999999</span>&#125;;</span><br><span class="line">        <span class="keyword">int</span> max = a[n];</span><br><span class="line">        <span class="keyword">int</span>[] ans = <span class="keyword">new</span> <span class="keyword">int</span>[max];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; max; i++)</span><br><span class="line">            ans[i] = i + <span class="number">1</span>; </span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="题目进阶：全排列"><a href="#题目进阶：全排列" class="headerlink" title="题目进阶：全排列"></a>题目进阶：全排列</h1><p>如果该题考虑大数问题，只是单纯的要求打印出来，难度也会上升。</p>
+<p>这里有两种思路，一个是用字符串模拟大数加法，思路比较类似，可以见算法模拟题分类的一篇文章，另一个是利用全排列的思路，就在此描述</p>
+<p>实际上该题要求输出的数字也是0-9的数字全排列，共n位，再考虑到全排列可能前面高位为0的问题，我们可以专门建个函数进行打印。</p>
+<p>下述为代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
     </div>
 
     
@@ -293,6 +342,9 @@
   </div>
 </div>
 
+          <div class="post-tags">
+              <a href="/tags/%E6%A8%A1%E6%8B%9F%E9%A2%98/" rel="tag"># 模拟题</a>
+          </div>
 
         
 
