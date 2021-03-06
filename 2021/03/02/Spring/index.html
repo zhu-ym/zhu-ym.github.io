@@ -23,12 +23,12 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
-<meta name="description" content="初步学习Spring">
+<meta name="description" content="初步学习Spring,主要了解IoC和AOP，并在IDEA上简单应用">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring">
 <meta property="og:url" content="http://example.com/2021/03/02/Spring/index.html">
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
-<meta property="og:description" content="初步学习Spring">
+<meta property="og:description" content="初步学习Spring,主要了解IoC和AOP，并在IDEA上简单应用">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/image-20210303150900100.png">
 <meta property="og:image" content="http://example.com/images/image-20210303151457605.png">
@@ -38,8 +38,10 @@
 <meta property="og:image" content="http://example.com/images/image-20200924104801025.png">
 <meta property="og:image" content="http://example.com/images/image-20210303170847683.png">
 <meta property="og:image" content="http://example.com/images/image-20210303210646137.png">
+<meta property="og:image" content="http://example.com/images/image-20210306164521962.png">
+<meta property="og:image" content="http://example.com/images/image-20210306165608843.png">
 <meta property="article:published_time" content="2021-03-02T07:36:58.000Z">
-<meta property="article:modified_time" content="2021-03-06T03:32:06.686Z">
+<meta property="article:modified_time" content="2021-03-06T08:59:34.471Z">
 <meta property="article:author" content="Zhu-ym">
 <meta property="article:tag" content="Spring">
 <meta name="twitter:card" content="summary">
@@ -167,7 +169,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">Spring概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EIDEA%E7%9A%84%E4%B8%80%E4%B8%AA%E5%85%A5%E9%97%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">基于IDEA的一个入门实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A5%E9%97%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">入门实例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IoC%E5%AE%B9%E5%99%A8%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">IoC容器底层原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%8F%8A%E7%AE%A1%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">Bean的生命周期及管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Beam%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">4.1.</span> <span class="nav-text">Beam的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xml%E7%AE%A1%E7%90%86bean"><span class="nav-number">4.2.</span> <span class="nav-text">xml管理bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E8%A7%A3%E7%AE%A1%E7%90%86bean"><span class="nav-number">4.3.</span> <span class="nav-text">注解管理bean</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AOP"><span class="nav-number">5.</span> <span class="nav-text">AOP</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">Spring概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EIDEA%E7%9A%84%E4%B8%80%E4%B8%AA%E5%85%A5%E9%97%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">基于IDEA的一个入门实例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A5%E9%97%A8%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">入门实例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IoC%E5%AE%B9%E5%99%A8%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">IoC容器底层原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bean%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%8F%8A%E7%AE%A1%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">Bean的生命周期及管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Beam%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">4.1.</span> <span class="nav-text">Beam的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xml%E7%AE%A1%E7%90%86bean"><span class="nav-number">4.2.</span> <span class="nav-text">xml管理bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E8%A7%A3%E7%AE%A1%E7%90%86bean"><span class="nav-number">4.3.</span> <span class="nav-text">注解管理bean</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AOP"><span class="nav-number">5.</span> <span class="nav-text">AOP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">AOP底层原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AAAOP%E5%AE%9E%E4%BE%8B%EF%BC%88%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">一个AOP实例（基于注解）</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -274,7 +276,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-06 11:32:06" itemprop="dateModified" datetime="2021-03-06T11:32:06+08:00">2021-03-06</time>
+        <time title="修改时间：2021-03-06 16:59:34" itemprop="dateModified" datetime="2021-03-06T16:59:34+08:00">2021-03-06</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -300,7 +302,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>初步学习Spring</p>
+        <p>初步学习Spring,主要了解IoC和AOP，并在IDEA上简单应用</p>
 <a id="more"></a>
 
 <h1 id="Spring概述"><a href="#Spring概述" class="headerlink" title="Spring概述"></a>Spring概述</h1><p>Spring是轻量级的JavaEE框架，其主要有两个核心部分IoC和AOP</p>
@@ -458,7 +460,73 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.AnnotationConfigApplicationContext;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringConfigTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        ApplicationContext context = <span class="keyword">new</span> AnnotationConfigApplicationContext(SpringConfig.class);</span><br><span class="line">        System.out.println(context.getBean(<span class="string">&quot;student&quot;</span>).toString());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>结果</p>
 <p><img src="/images/image-20210303210646137.png" alt="image-20210303210646137"></p>
-<h1 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h1>
+<h1 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h1><p>即面向切面编程，可以对业务逻辑的各个部分进行隔离从而使业务的耦合度降低，提高程序可重用性和开发效率</p>
+<p>我们如果把把功能分为<strong>核心业务功能</strong>，和<strong>周边功能</strong>。<br>所谓的核心业务，比如登陆，增加数据，删除数据都叫核心业务<br>所谓的周边功能，比如性能统计，日志，事务管理等等</p>
+<p>周边功能在Spring的面向切面编程AOP思想里，即被定义为<strong>切面</strong></p>
+<p>在面向切面编程AOP的思想里面，核心业务功能和切面功能分别<strong>独立进行开发</strong><br>然后把切面功能和核心业务功能 <strong>“编织”</strong> 在一起，这就叫AOP</p>
+<p>其实和代理模式比较像，就是在不修改核心业务代码的前提下，增加其功能。</p>
+<h2 id="AOP底层原理"><a href="#AOP底层原理" class="headerlink" title="AOP底层原理"></a>AOP底层原理</h2><p><strong>动态代理</strong></p>
+<ul>
+<li>如果有接口，则使用jDK的动态代理</li>
+</ul>
+<p>即类似于在设计模式中的动态代理，使用<code>InvocationHandler</code>接口和<code>Proxy</code>类实现接口类，增强接口的功能</p>
+<ul>
+<li><p>如果没有接口，使用了CGLIB动态代理</p>
+<p>创建当前类子类的代理对象增强功能</p>
+</li>
+</ul>
+<h2 id="一个AOP实例（基于注解）"><a href="#一个AOP实例（基于注解）" class="headerlink" title="一个AOP实例（基于注解）"></a>一个AOP实例（基于注解）</h2><ul>
+<li><strong>环境配置（引入依赖）</strong></li>
+</ul>
+<p>Spring的AOP实际是利用aspectJ框架实现，除了上诉入门实例引入的依赖，需要在Maven项目中的pom文件中引入aspectj的相关依赖，下载相关资源</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-context<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.1.5.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.aspectj<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>aspectjrt<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6.12<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.aspectj<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>aspectjweaver<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6.12<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>同上，可以在<code>src/main</code>目录下新建一个resources文件夹，将其设置为Resources Root （右键设置</p>
+<p>最后生成一个该项目的Spring xml配置文件</p>
+<p>（前面我们完全基于注解完成，用注解类代替xml，这里我们尝试利用两者共同工作）</p>
+<ul>
+<li><strong>基础知识和继承类</strong></li>
+</ul>
+<p>首先了解一些AOP的一些术语</p>
+<p>连接点：可以被增强的方法</p>
+<p>切入点：实际增强的方法</p>
+<p>通知：实际增强的逻辑部分：有前置、后置、环绕、异常、最终通知</p>
+<p>切面：把通知应用到切入点的过程</p>
+<p>了解这些术语后我们首先创建一个用户类，包含核心业务，之后在创建一个增强类，增加日志的辅助功能</p>
+<p>用户类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.springaop;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">core</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;核心业务执行中&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>增强类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.springaop;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserProxy</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span></span>&#123;</span><br><span class="line">        SimpleDateFormat formatter = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd  HH:mm:ss&quot;</span>);</span><br><span class="line">        Date date = <span class="keyword">new</span> Date(System.currentTimeMillis());</span><br><span class="line">        System.out.println(<span class="string">&quot;业务执行时间:&quot;</span>+formatter.format(date));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>xml文件配置</strong></p>
+<p>之前我们是用注解开启来组件扫描的区域，这里我们用在Spring xml文件进行配置，需要先导入context名称空间，在context中确定要扫描的区域</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.springframework.org/schema/beans&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">&quot;http://www.springframework.org/schema/context&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:aop</span>=<span class="string">&quot;http://www.springframework.org/schema/aop&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd   </span></span></span><br><span class="line"><span class="tag"><span class="string">                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">&quot;com.springaop&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">context:component-scan</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">aop:aspectj-autoproxy</span>&gt;</span><span class="tag">&lt;/<span class="name">aop:aspectj-autoproxy</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>最后利用<code>&lt;context:component-scan base-package=&quot;com.springaop&quot;&gt;&lt;/context:component-scan&gt;</code>,确定扫描的包</p>
+<p>此外，在这里我们还加入了aop的命名空间，目的在于利用<code>&lt;aop:aspectj-autoproxy&gt;&lt;/aop:aspectj-autoproxy&gt;</code>可以自动生成功能增强的代理类</p>
+</li>
+<li><p><strong>增加对应注解</strong></p>
+</li>
+</ul>
+<p>首先这两个类都是bean，都需要增加<code>@Component</code>注解</p>
+<p>当增强方法是，我们要知道，哪个类是增强类，需要添加<code>@Aspect</code>注解</p>
+<p>前面说到通知有五种：有前置、后置、环绕、异常、返回通知，对应以下注解</p>
+<p><img src="/images/image-20210306164521962.png" alt="image-20210306164521962"></p>
+<p>我们将对应的通知弄到增强类的对应方法上，这里是一个日志，我设为<code>@Before</code></p>
+<p>最后一步，确定该增强的方法给谁增强，即找到正确的切入点</p>
+<p>这里有一个切入点表达式</p>
+<p><code>execution([返回类型][类全路径][方法名称]([参数列表]))</code></p>
+<p>Spring 通过这个正则表达式判断具体要拦截的是哪一个类的哪一个方法</p>
+<p>将这个切点表达式放在<code>@Before</code>注解的值里即可</p>
+<p>最终注解代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">core</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;核心业务执行中&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 两个顶级类是分开的，这里只是为了便于观察</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserProxy</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Before( value = &quot;execution(* com.springaop.User.core())&quot;)</span></span><br><span class="line">    <span class="comment">// 切点表达式是*表示任意返回值，之后是包路径里面User类的被增强的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span></span>&#123;</span><br><span class="line">        SimpleDateFormat formatter = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd  HH:mm:ss&quot;</span>);</span><br><span class="line">        Date date = <span class="keyword">new</span> Date(System.currentTimeMillis());</span><br><span class="line">        System.out.println(<span class="string">&quot;业务执行时间:&quot;</span>+formatter.format(date));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>结果</p>
+<p>我们可以在一个Test中查看最后的结果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span>  <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        ApplicationContext context = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">&quot;aopBean.xml&quot;</span>);</span><br><span class="line">        User user = (User) context.getBean(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">        user.core();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20210306165608843.png" alt="image-20210306165608843"></p>
+</li>
+</ul>
+<p>可以发现，我们只是创建了一个User bean，但是Spring直到帮我们创建了代理类，并成功将其日志方法增加到了核心业务执行前，实现了核心业务和周边事物的解耦</p>
+
     </div>
 
     
