@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="安装Tomcat，设置环境变量，并且在IDEA上进行配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat安装">
+<meta property="og:url" content="http://example.com/2021/03/07/Tomcat%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="安装Tomcat，设置环境变量，并且在IDEA上进行配置">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210307153940964.png">
+<meta property="og:image" content="http://example.com/images/image-20210307155114695.png">
+<meta property="og:image" content="http://example.com/images/image-20210307150608806.png">
+<meta property="og:image" content="http://example.com/images/image-20210307151107180.png">
+<meta property="og:image" content="http://example.com/images/image-20210307160037872.png">
+<meta property="og:image" content="http://example.com/images/image-20210307160209360.png">
+<meta property="article:published_time" content="2021-03-07T06:52:36.000Z">
+<meta property="article:modified_time" content="2021-03-07T08:02:58.626Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="Tomcat">
+<meta property="article:tag" content="IDEA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210307153940964.png">
+
+
+<link rel="canonical" href="http://example.com/2021/03/07/Tomcat%E5%AE%89%E8%A3%85/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Tomcat安装 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Tomcat%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">Tomcat概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tomcat%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">Tomcat安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8IDEA%E9%9B%86%E6%88%90Tomcat"><span class="nav-number">3.</span> <span class="nav-text">在IDEA集成Tomcat</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/Tomcat%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tomcat安装
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-07 14:52:36 / 修改时间：16:02:58" itemprop="dateCreated datePublished" datetime="2021-03-07T14:52:36+08:00">2021-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index"><span itemprop="name">框架</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%A1%86%E6%9E%B6/Tomcat/" itemprop="url" rel="index"><span itemprop="name">Tomcat</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/IDEA%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">IDEA相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>安装Tomcat，设置环境变量，并且在IDEA上进行配置</p>
+<a id="more"></a>
+
+<h1 id="Tomcat概述"><a href="#Tomcat概述" class="headerlink" title="Tomcat概述"></a>Tomcat概述</h1><p>Tomcat 服务器是一个免费的开放源代码的Web 应用服务器，属于轻量级应用服务器，在中小型系统和并发访问用户不是很多的场合下被普遍使用，也是Servlet的容器</p>
+<p>其目录结构一般如下</p>
+<p><img src="/images/image-20210307153940964.png" alt="image-20210307153940964"></p>
+<p>其中</p>
+<ul>
+<li><p>bin是命令文件，我们一般只会用到其中startup和shutdown打开和关闭服务器</p>
+</li>
+<li><p>conf是配置文件，我们可能会需要打开其server.xml文件，在如下位置修改端口号</p>
+<p>默认是8080，我们可以选择修改为8088，因为安装Oracle数据库，Oracle会占用8080端口，可能造成端口冲突</p>
+<p><img src="/images/image-20210307155114695.png" alt="image-20210307155114695"></p>
+</li>
+<li><p>lib：tomcat运行所需要的jar包</p>
+</li>
+<li><p>logs：tomcat服务器日志文件</p>
+</li>
+<li><p>temp：tomcat运行产生的临时文件</p>
+</li>
+<li><p><strong>webapps：需要发布的项目存放在webapps下，放置web应用</strong></p>
+</li>
+<li><p>work：JSP翻译（编译）成servlet产生的代码</p>
+</li>
+</ul>
+<h1 id="Tomcat安装"><a href="#Tomcat安装" class="headerlink" title="Tomcat安装"></a>Tomcat安装</h1><ul>
+<li><p><strong>下载zip包（免安装，解压即可）</strong>，解压在自己常用的根目录下</p>
+<p><a target="_blank" rel="noopener" href="https://tomcat.apache.org/download-10.cgi">下载链接</a></p>
+<p>解压打开后目录一个同概述的目录一致</p>
+</li>
+<li><p><strong>环境配置</strong></p>
+<ul>
+<li><p>在高级系统设置中，点击环境变量，配置系统变量</p>
+</li>
+<li><p>新建一个TOMCAT_HOME系统变量，变量值同解压后绝对路径</p>
+<p><img src="/images/image-20210307150608806.png" alt="image-20210307150608806"></p>
+</li>
+<li><p>在Path中新建%TOMCAT_HOME%\bin;</p>
+<p><img src="/images/image-20210307151107180.png" alt="image-20210307151107180"></p>
+</li>
+<li><p>在Classpath（没有即新建）中最后添加%TOMCAT_HOME%\lib\servlet-api.jar</p>
+</li>
+</ul>
+</li>
+<li><p><strong>配置完成</strong></p>
+<p>双击解压后bin目录下的startup批处理文件，如果窗口能够打开，上面环境配置成功，此时相当于打开了Tomcat服务器</p>
+<p>点击<a target="_blank" rel="noopener" href="http://localhost:8080/%EF%BC%8C%E4%BE%BF%E5%8F%AF%E4%BB%A5%E8%AE%BF%E9%97%AE">http://localhost:8080/，便可以访问</a></p>
+</li>
+</ul>
+<h1 id="在IDEA集成Tomcat"><a href="#在IDEA集成Tomcat" class="headerlink" title="在IDEA集成Tomcat"></a>在IDEA集成Tomcat</h1><p>点击file-&gt;settings</p>
+<p>找到如下位置</p>
+<p><img src="/images/image-20210307160037872.png" alt="image-20210307160037872"></p>
+<p>初始时应该是空的，点击+号，添加Tomcat server</p>
+<p><img src="/images/image-20210307160209360.png" alt="image-20210307160209360"></p>
+<p>添加路径时，到我们解压目录bin上一级即可</p>
+<p>之后一直ok，集成完毕</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Tomcat/" rel="tag"># Tomcat</a>
+              <a href="/tags/IDEA/" rel="tag"># IDEA</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/07/Servlet/" rel="prev" title="Servlet">
+                  <i class="fa fa-chevron-left"></i> Servlet
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
