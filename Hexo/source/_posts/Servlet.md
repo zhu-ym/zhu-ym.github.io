@@ -184,7 +184,9 @@ public class ServletLearn extends HttpServlet {
 
 我们主要需要取出该对象中的数据、进行分析、处理
 
-## 请求信息
+## Request常见方法
+
+**常见方法**
 
 下列方法可以从request对象中获取相应的信息，其中，最重要的是前两个获取具体参数的方法
 
@@ -248,13 +250,249 @@ public class RequestMethod extends HttpServlet {
 
 ![image-20210308172213170](/images/image-20210308172213170.png)
 
+
+
+**获取头信息**
+
+`equest.getHeader(String s)`可以获取浏览器传递过来的头信息。
+`request.getHeaderNames() `获取浏览器所有的头信息名称，根据头信息名称就能遍历出所有的头信息
+
+下面是一些常见的头信息
+
+host: 主机地址
+user-agent: 浏览器基本资料
+accept: 表示浏览器接受的数据类型
+accept-language: 表示浏览器接受的语言
+accept-encoding: 表示浏览器接受的压缩方式，是压缩方式，并非编码
+connection: 是否保持连接
+cache-control: 缓存时限
+
+```java
+@WebServlet("/method")
+public class RequestMethod extends HttpServlet {
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // 获取头部信息
+        Enumeration<String> names = req.getHeaderNames();
+        while(names.hasMoreElements()){
+            String name = names.nextElement();
+            String info = req.getHeader(name);
+            System.out.println(name + ": " + info);
+            resp.getWriter().println(name + ": " + info);
+        }
+
+    }
+}
+```
+
+![image-20210311134606550](/images/image-20210311134606550.png)
+
+## 乱码问题
+
+原来的TomCat服务器有中文乱码问题，对于Request
+
+- TomCat 7 以下 get 方法和post方法均有中文乱码问题,默认情况下，使用`getParameter()`请求参数时，默认使用的是ISO-8859-1编码，不支持中文
+
+  可以采用`req.setCharacterEncoding()`方式设置正文即实体编码，但此方法只对实体有效，也即只对post方法有效；get方法的参数在url中，得设置server配置文件或者利用`new String(name.getBytes("ISO-8859-1"), "UTF-8");`将参数转化为字节码后，再编码
+
+- TomCat 8 已经将get 方法的的url编码方法默认设为UTF-8，不会乱码，只需要考虑post方法
+- TomCat 10 当我测试乱码问题时发现无论是post还是get方法都很正常，查找文档发现使用`<request-character-encoding>`和 `<response-character-encoding>`in `conf/web.xml`将默认请求和响应字符编码设置为UTF-8，所以可能对于request不用再考虑中文乱码问题了
+
+## 请求转发
+
+请求转发属于服务器跳转，相当于方法调用，在执行当前文件的过程中转向执行目标文件，两个文件(当前文件和目标文件)属于同一次请求，前后页共用一个request，这时可以通过下列两个方法传递、获取一些参数
+
+```java
+req.getRequestDispatcher("/loadfail.jsp").forward(req,resp);// 请求转发命令
+request.setAttribute() 设置参数
+request.getAttribute() 获取参数
+```
+
+值得注意的是该跳转得在web应用内，即站内跳转，可以跳转到一个servlet、html、jsp，当然如果要使用数据的话，不能跳转到html，因为其是静态页面
+
+## 登陆界面制作
+
+这里简单利用表单和请求转发做一个小demo
+
+首先制作一个登陆的表单，利用post方法将其参数传递到我们的`method`Servlet中，我们再检测用户参数，利用请求转发跳转到登陆成功或者失败的界面
+
+登陆表单
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>登录界面</title>
+</head>
+<body>
+<form action="method" method="post">
+   用户名： <input type="text" name="uname"><br>
+    密码：<input type="password" name="psd"><br>
+    <button>登陆</button>
+</form>
+</body>
+</html>
+```
+
+method逻辑处理和请求转发
+
+```java
+@WebServlet("/method")
+public class RequestMethod extends HttpServlet {
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        String name = req.getParameter("uname");
+        String psw = req.getParameter("psd");
+        System.out.println("uname : " + name );
+        System.out.println("psw : " + psw );
+        req.setAttribute("name",name);
+        if(name == null || psw == null){
+
+            req.getRequestDispatcher("/loadfail.jsp").forward(req,resp);
+        }
+        else{
+            req.getRequestDispatcher("/loadok.jsp").forward(req,resp);
+        }
+    }
+}
+```
+
+登陆成功或者失败界面
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>登陆成功</title>
+</head>
+<body>
+<%
+    String name = (String) request.getAttribute("name");
+    System.out.println(name + request.getParameter("psd"));
+    response.getWriter().println(name + "你好！");
+%>
+</body>
+</html>
+```
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>登陆失败</title>
+</head>
+<body>
+<h1>登陆失败</h1>
+
+</body>
+</html>
+```
+
+登陆界面
+
+![image-20210311151913935](/images/image-20210311151913935.png)
+
+请求跳转界面，注意地址没有改变
+
+![image-20210311151940188](/images/image-20210311151940188.png)
+
+
+
+# HTTPServletRespose对象
+
+Web服务器收到客户端的http请求，会针对每一次请求，分别创建一个用于代表请求的request对象、和代表响应的response对象。获取网页提交过来的数据，只需要找request对象就行了。要向网页输出数据，只需要找response对象。
+
+HttpServletResponse对象代表服务器的响应。这个对象中封装了向客户端发送数据、发送响应头，发送响应状态码的方法。
+
+## 消息响应
+
+Response向客户端发送数据主要使用下面两种方法
+
+```
+getOutputStream() 该方法用于返回Servlet引擎创建的字节输出流对象，Servlet程序可以按字节形式输出响应正文。   
+getWriter() 该方法用于返回Servlet引擎创建的字符输出流对象，Servlet程序可以按字符形式输出响应正文。
+```
+
+需要注意
+
+- getOutputStream()和getWriter()这两个方法互相排斥，调用了其中的任何一个方法后，就不能再调用另一方法。
+
+- getOutputStream()返回的字节输出流对象，类型为：ServletOutputStream，直接输出字节数组中的二进制数据。
+
+- getWriter()方法将Servlet引擎的数据缓冲区包装成PrintWriter类型的字符输出流对象后返回，PrintWriter对象只能输出字符文本内容
+
+## 乱码问题
+
+response在响应时也可能会有乱码问题，其原因在于服务器和客户端的编码方式不一致
+
+同request一样，我们可以使用`setCharacterEncoding()`方式设置正文即实体编码为UTF-8,但是如果客户端没有使用相同的编码也会出现乱码问题
+
+```java
+@WebServlet("/output")
+public class OutPut extends HttpServlet {
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().println("你好");
+    }
+}
+```
+
+![image-20210311164049627](/images/image-20210311164049627.png)
+
+可以通过设置响应对象头，确保浏览器或者客户端的编码方式也为"UTF-8"
+
+```java
+@WebServlet("/output")
+public class OutPut extends HttpServlet {
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setCharacterEncoding("UTF-8");
+        resp.setHeader("content-type", "text/html;charset=UTF-8");
+        resp.getWriter().println("你好");
+    }
+}
+```
+
+![image-20210311164317137](/images/image-20210311164317137.png)
+
+更简洁的方法，还是利用`setContentType("text/html;charset=UTF-8")`,该方法可以控制服务器和浏览器的编码方式
+
+```java
+@WebServlet("/output")
+public class OutPut extends HttpServlet {
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html;charset=UTF-8");
+        resp.getWriter().println("你好");
+    }
+}
+```
+
+之后，我并没有设置`resp.setCharacterEncoding("UTF-8")`,仅控制了客户端的编码也是正常的，可见TomCat 10 以后应该默认是UTF-8
+
+## 重定向
+
+利用`resp.sendRedirect(String s)`,可以实现重定向
+
+重定向是指一个web资源收到客户端请求后，通知客户端去访问另外一个web资源，这称之为请求重定向
+
+重定向与请求转发主要区别：在于是否能跨域以及请求转发是一次请求，重定向是两次请求 
+
+
+
+
+
 # ServConfig和ServerContext对象
 
 ## ServConfig接口
 
 
-
-**request和response对象**就是封装HTTP的请求头和响应头，与外界交互
 
 再学习Cookie和Session回话机制即可了
 
