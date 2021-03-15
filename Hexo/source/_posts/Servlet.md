@@ -577,15 +577,394 @@ public class DownloadFile extends HttpServlet {
 
  当用户通过浏览器访问Web服务器时，服务器会给客户端发送一些信息，这些信息会保存在Cookie中。这样，当浏览器再次访问服务器时，会在请求头中将Cookie发送给服务器，方便服务器对浏览器做出正确的响应。 
 
+下面是一个简单的Cookie学习demo
 
+首先做个一个post的登陆界面表单
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>load...</title>
+</head>
+<body>
+<form method="post" action="co">
+    用户名：<input name="uname" type="text"><br>
+    密码：<input name="psd" type="password"><br>
+    <button>登陆</button>
+</form>
+
+</body>
+</html>
+```
+
+由于收到post方法的数据，所以重写doPost方法逻辑
+
+```java
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+
+@WebServlet("/co")
+public class CookieLearn extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+
+        req.setCharacterEncoding("UTF-8");
+        // 遍历cookie
+        Cookie[] cookies = req.getCookies();
+        for (Cookie cookie : cookies) {
+            System.out.println(cookie.getName()+" " + cookie.getValue());
+        }
+
+        // 读取表单参数
+        String uname = req.getParameter("uname");
+        String psd = req.getParameter("psd");
+        
+       // 新建cookie
+        Cookie cookie1 = new Cookie("uname",uname);
+        Cookie cookie2 = new Cookie("psd",psd);
+       
+        // 设置cookie作用路径
+        cookie1.setPath(req.getContextPath() );
+        cookie2.setPath(req.getContextPath());
+
+        // cookie 持久化时间
+        cookie1.setMaxAge(100);
+        cookie2.setMaxAge(100);
+        
+        // 添加cookie
+        resp.addCookie(cookie1);
+        resp.addCookie(cookie2);
+
+    }
+}
+```
+
+当两次登陆后，打印结果如下
+
+![image-20210315105919816](/images/image-20210315105919816.png)
+
+可见第一次登陆没有新建cookie的信息，第二次就多了用户名和密码信息
+
+对于上诉cookie，除了新建和添加cookie比较固定，还有一些关键点
+
+- **cookie作用路径**
+
+  可以通过`setPath()`方法设置Cookie的作用域，即在那些地方可以看到cookie，可以作用域当前目录及其子目录
+
+  所以主要如下
+
+  ```java
+  默认不设置为新建Cookie的目录
+  
+  // 当前Tomcat下的所有web项目
+      setPath("/");
+  // 具体目录
+      setPath(req.getContextPath() + "/load.jsp");
+  	setPath("/cookie/load.jsp")
+  ```
+
+  如果需要跨域访问或者说是不同Tomcat访问同一个Cookie，就需要用到`setDomain()`方法
+
+- **cookie持久化时间**
+
+  cookie的默认存活时间是浏览器关闭，可以通过`setMaxAge()`方法设置其存活时间，将Cookie存到硬盘中，注意单位是秒，这时可以关闭浏览器后打开也能获取
 
 ## Session
 
-# ServConfig和ServerContext对象
+### **Session底层原理**
 
-## ServConfig接口
+- 浏览器访问某个Servlet，这时如果服务器要从请求对象中获取Session对象（第一次获取也是创建），那么服务器会为这个Session对象创建一个id：JSESSIONID
+
+- 同时在对浏览器的响应过程中，这个Session会将JSESSIONID这个id以Cookie形式回送给客户端浏览器，记住，这时候Cookie服务器没有设置有效时间，因此是存在浏览器的缓存中，而不是在硬盘文件。
+
+- 当用户继续在这个会话过程中访问其他Servlet，这时候这个Servlet再从请求对象中获取Session对象，注意这时候获取Session对象是从浏览器发来的请求中查询是否有名为JSESSIONID的这个Cookie，如果有，那么这个Session就不用再创建，而是直接根据查询服务器中这个相同JSESSIONID值的Session，换句话说就可以取得之前存在这个Session中的数据。
+
+即Session的底层原理是通过**Cookie实现**的
+
+### **Session常用方法**
+
+下面是一个创建Session，并且利用Session的实例
+
+首先创建一个Servlet，在其内部可以创建Session
+
+```java
+package com.xxx.servlet;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.util.Enumeration;
+
+@WebServlet("/se")
+public class SessionBase extends HttpServlet {
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        HttpSession session = req.getSession();
+        System.out.println(session.getId());
+        if(session.isNew()){
+        String uname = req.getParameter("uname");
+        String hobby = req.getParameter("hobby");
+        session.setAttribute("hobby",hobby);
+        session.setAttribute("uname",uname);}
+        else{
+            Enumeration<String> it = session.getAttributeNames();
+            while(it.hasMoreElements()){
+                String name = it.nextElement();
+                System.out.println(name + ": " + session.getAttribute(name));
+            }
+        }
+        resp.sendRedirect(req.getContextPath() + "/show.jsp");
+    }
+}
+```
+
+最后在重定向的页面中查看Session携带的数据
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>show</title>
+</head>
+<body>
+<%
+    HttpSession session1 = request.getSession();
+    if(!session1.isNew()){
+        Enumeration<String> it = session1.getAttributeNames();
+        while(it.hasMoreElements()){
+            String name = it.nextElement();
+            response.getWriter().println(name + ": " + session1.getAttribute(name));
+        }
+    }
+%>
+</body>
+</html>
+```
+
+两次访问`http://localhost:8088/session/se?uname=andy&hobby=rap`
+
+`http://localhost:8088/session/se`
+
+第一次带参，第二次不带参结果均如下
+
+![image-20210315153733059](/images/image-20210315153733059.png)
+
+控制台结果如下
+
+![image-20210315153830459](/images/image-20210315153830459.png)
+
+可见其确实靠JSESSIONID作为标识
 
 
 
-再学习Cookie和Session回话机制即可了
+
+
+### **对Session进行设置**
+
+我们已经知道Session是靠名为JSESSIONID的Cookie的ID值标识定位的，所以Session的生命周期和作用域都和这个Cookie有关。
+
+由于这个cookie没有设置`setMaxAge`，因此这个cookie只存在于浏览器的缓冲，浏览器关闭即被销毁。
+
+又由于这个cookie不设置路径默认为新建Cookie的目录,所以可能访问这个web应用的其他资源就无法再使用Session了，得注意一下路径问题
+
+综上，如果需要对这些进行修改，主要是对JSESSIONID的Cookie进行修改
+
+通过`Cookie cookie = new Cookie("JSESSIONID", session.getId());`就可以对此Cookie进行修改。
+
+此外当不关闭浏览器用户不进行操作时，session默认维持30分钟，可以在Tomcat的`web.xml`进行全局设置修改，或者在每个web应用中的web.xml文件中自定义添加`<session-config>`和`<session-timeout>`进行设置。这里得注意**设置的cookie有效时间就不要超过服务器默认的`session-timeout`时间。**
+
+## 表单重复提交demo
+
+学习完Cookie和Session后，我们考虑一个运用场景
+
+在平时开发中，如果网速比较慢的情况下，用户提交表单后，发现服务器半天都没有响应，那么用户可能会以为是自己没有提交表单，就会再点击提交按钮重复提交表单，我们在开发中必须防止表单重复提交。
+
+可以在表单提交后，将提交按钮设置为不可用，但是如果用户刷新界面、或者利用回退提交表单，该场景就很难在客户端解决
+
+这时可以用Session在服务端解决该问题
+
+**思路：**
+
+在服务器端生成一个唯一的随机标识号，专业术语称为Token(令牌)，同时在当前用户的Session域中保存这个Token。然后将Token发送到客户端的Form表单中，在Form表单中使用隐藏域来存储这个Token，表单提交的时候连同这个Token一起提交到服务器端，然后在服务器端判断客户端提交上来的Token与服务器端生成的Token是否一致，如果不一致，那就是重复提交了，此时服务器端就可以不处理重复提交的表单。如果相同则处理表单提交，处理完后清除当前用户的Session域中存储的标识号。
+
+**步骤：**
+
+- 创建一个FormServlet类，生成token保存到Session中并传递到表单
+
+  ```java
+  package com.xxx.servlet;
+  
+  import jakarta.servlet.ServletException;
+  import jakarta.servlet.annotation.WebServlet;
+  import jakarta.servlet.http.HttpServlet;
+  import jakarta.servlet.http.HttpServletRequest;
+  import jakarta.servlet.http.HttpServletResponse;
+  
+  import java.io.IOException;
+  
+  @WebServlet("/form")
+  public class FromServlet extends HttpServlet {
+      @Override
+      protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+  
+          String token = Token.getInstance().getToken();
+          System.out.println(token);
+          req.getSession().setAttribute("token",token);
+          req.getRequestDispatcher("/form.jsp").forward(req,resp);
+      }
+  }
+  ```
+
+- 在表单中传递隐藏数据
+
+  ```jsp
+  <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+  <html>
+  <head>
+      <title>提交界面</title>
+  </head>
+  <body>
+  <form method="post" action= "${pageContext.request.contextPath}/doform" >
+      <input type="hidden" name="token" value="<%=request.getSession().getAttribute("token") %>">
+      提交数据:<input type="text" name="userdata">
+      <input type="submit" value="提交">
+  </form>
+  </body>
+  </html>
+  ```
+
+- 对表单数据进行处理，判重
+
+  ```java
+  @WebServlet("/doform")
+  public class DoForm extends HttpServlet {
+      @Override
+      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          if(isRepeated(req)){
+              System.out.println("你已重复提交数据");
+          }
+          else{
+              System.out.println("正在处理提交数据");
+          }
+          req.getSession().removeAttribute("token");
+      }
+  
+  
+      private boolean isRepeated(HttpServletRequest request){
+          String client_token = request.getParameter("token");
+          if(client_token == null)
+              return true;
+          String server_token = (String) request.getSession().getAttribute("token");
+          if(server_token == null)
+              return true;
+          return !client_token.equals(server_token);
+      }
+  }
+  ```
+
+- 用一个Token类来生成token
+
+  ```java
+  package com.xxx.servlet;
+  
+  import java.util.Random;
+  
+  public class Token {
+      private static final Token token = new Token();
+      private Token(){
+      }
+  
+      public static Token getInstance() {
+          return token;
+      }
+      public String getToken(){
+          return (System.currentTimeMillis() + new Random().nextInt(999999999)) + "";
+      }
+  }
+  ```
+
+  
+
+
+
+![image-20210315171953967](/images/image-20210315171953967.png)
+
+# ServletConfig和ServerContext对象
+
+## ServletConfig
+
+当servlet配置了初始化参数后，web容器在创建servlet实例对象时，会自动将这些初始化参数封装到ServletConfig对象中，并在调用servlet的init()方法时，将ServletConfig 对象传递给servlet。进而，通过ServletConfig对象就可以得到当前servlet的初始化参数。
+
+## ServerContext
+
+每一个web应用都有且仅有一个ServletContext对象，其与应用程序相关，在Web容器启动时为web应用创建
+
+其主要用来作为**域对象共享数据（整个程序中）**和保存了一些**应用程序相关信息**或者**读取资源文件**
+
+**常用方法**
+
+```java
+@WebServlet("/con")
+public class ContentLearn extends HttpServlet {
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ServletContext c1= req.getServletContext();
+        ServletContext c2 = getServletContext();
+        ServletContext c3 = req.getSession().getServletContext();
+        ServletContext c4 = getServletConfig().getServletContext();
+        
+        // 结果为true
+        System.out.println(c1 == c2 && c3 == c4 && c1 == c4);
+
+        System.out.println("服务器信息：" + c1.getServerInfo());
+        System.out.println("真实路径：" + c1.getRealPath("/"));
+    }
+}
+```
+
+ServletContext对象的获取比较多元化，有直接获取或者利用其它域对象获取，一般主要是利用其来获取一些信息，很少用其来共享数据，其共享数据的方法命名和Request和Session一致
+
+
+
+**两者的区别**
+
+- 定义
+
+ServletConfig：Servlet的配置对象，容器在初始化Servlet时通过它传递信息给Servlet。
+
+ServletContext：上下文对象，提供了一系列方法供Servlet与Web容器交互。
+
+- 创建时机
+
+ ServletConfig：在容器初始化Servlet的时候，并为其提供上下文初始化参数的名/值对的引用。
+
+ ServletContext：容器启动的时候，并为其提供Servlet初始化参数的名/值对的引用。
+
+- 作用范围（可见性）
+
+ ServletContext：每个Web应用一个ServletContext。
+
+ ServletConfig：每个Web应用的每个Servlet一个ServletConfig。
+
+
+
+
+
+
 
