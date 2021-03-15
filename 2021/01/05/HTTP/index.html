@@ -31,8 +31,10 @@
 <meta property="og:description" content="简单介绍HTTP协议在Web中的应用，简单了解其工作机制、HTTP报文信息、以及其版本迭代">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/images/image-20210105211339300.png">
+<meta property="og:image" content="http://example.com/images/image-20210313101500745.png">
+<meta property="og:image" content="http://example.com/images/image-20210313111945041.png">
 <meta property="article:published_time" content="2021-01-05T12:47:29.000Z">
-<meta property="article:modified_time" content="2021-01-06T01:27:57.211Z">
+<meta property="article:modified_time" content="2021-03-15T02:01:21.823Z">
 <meta property="article:author" content="Zhu-ym">
 <meta property="article:tag" content="HTTP">
 <meta name="twitter:card" content="summary">
@@ -160,7 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Web%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%91%88%E7%8E%B0"><span class="nav-number">1.</span> <span class="nav-text">1.Web页面的呈现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-HTTP%E5%8D%8F%E8%AE%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">2.HTTP协议结构</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Web%E9%A1%B5%E9%9D%A2%E7%9A%84%E5%91%88%E7%8E%B0"><span class="nav-number">1.</span> <span class="nav-text">1.Web页面的呈现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-HTTP%E6%A6%82%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">2.HTTP概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-HTTP%E8%AF%B7%E6%B1%82%E6%8A%A5%E6%96%87"><span class="nav-number">3.</span> <span class="nav-text">3.HTTP请求报文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">请求方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A6%96%E9%83%A8%E5%AD%97%E6%AE%B5"><span class="nav-number">3.2.</span> <span class="nav-text">首部字段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E9%A6%96%E9%83%A8%E5%AD%97%E6%AE%B5"><span class="nav-number">3.2.1.</span> <span class="nav-text">通用首部字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E9%A6%96%E9%83%A8%E5%AD%97%E6%AE%B5"><span class="nav-number">3.2.2.</span> <span class="nav-text">请求首部字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E4%BD%93%E9%A6%96%E9%83%A8%E5%AD%97%E6%AE%B5"><span class="nav-number">3.2.3.</span> <span class="nav-text">实体首部字段</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-HTTP%E5%93%8D%E5%BA%94%E6%8A%A5%E6%96%87"><span class="nav-number">4.</span> <span class="nav-text">4.HTTP响应报文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E7%A0%81"><span class="nav-number">4.1.</span> <span class="nav-text">状态码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E9%A6%96%E9%83%A8%E5%AD%97%E6%AE%B5"><span class="nav-number">4.2.</span> <span class="nav-text">响应首部字段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-HTTPS"><span class="nav-number">5.</span> <span class="nav-text">5.HTTPS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSL%E5%8A%A0%E5%AF%86"><span class="nav-number">5.1.</span> <span class="nav-text">SSL加密</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%AF%86%E6%96%B9%E6%B3%95"><span class="nav-number">5.1.1.</span> <span class="nav-text">加密方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPS%E5%8A%A0%E5%AF%86"><span class="nav-number">5.1.2.</span> <span class="nav-text">HTTPS加密</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A4%E8%AF%81"><span class="nav-number">5.2.</span> <span class="nav-text">认证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E6%80%A7%E4%BF%9D%E6%8A%A4"><span class="nav-number">5.3.</span> <span class="nav-text">完整性保护</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -267,7 +269,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-01-06 09:27:57" itemprop="dateModified" datetime="2021-01-06T09:27:57+08:00">2021-01-06</time>
+        <time title="修改时间：2021-03-15 10:01:21" itemprop="dateModified" datetime="2021-03-15T10:01:21+08:00">2021-03-15</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +304,332 @@
 <li>服务器收到请求报文后，返回HTTP响应报文</li>
 <li>由于HTTP/1.1是默认连接是持久连接，可能还会多次重复前两步步骤，直到最后提出断开连接，才会断开TCP连接</li>
 </ul>
-<h1 id="2-HTTP协议结构"><a href="#2-HTTP协议结构" class="headerlink" title="2.HTTP协议结构"></a>2.HTTP协议结构</h1>
+<p><strong>DNS补充</strong></p>
+<p>DNS是分布式集群的层次结构的计算机和网络服务命名系统</p>
+<p>一般主要可以分为根域名服务器、顶级域名服务器、权限域名服务器、本地域名服务器</p>
+<p>当真的需要对域名的IP地址进行查询的时候，一般有以下方案</p>
+<p><strong>客户端缓存</strong>：查询客户端浏览器、本机系统是否缓存过该IP</p>
+<p><strong>直接解析：</strong>本地域名服务器有缓存</p>
+<p>当本地服务器不能从本地缓存回复客户端时，又有两种方式查询</p>
+<p><strong>递归查询：</strong>本地DNS服务器自己负责向其他DNS服务器进行查询，一般是先向该域名的根域服务器查询，再由根域名服务器一级级向下查询。最后得到的查询结果返回给局部DNS服务器，再由本地DNS服务器返回给客户端。</p>
+<p><strong>迭代查询：</strong>当根域名服务器收到本地域名服务器发出的迭代查询请求报文时，要么给出所要查询的IP地址，要么告诉本地服务器：“你下一步应当向哪一个域名服务器进行查询”。然后让本地服务器进行后续的查询。</p>
+<h1 id="2-HTTP概述"><a href="#2-HTTP概述" class="headerlink" title="2.HTTP概述"></a>2.HTTP概述</h1><p>HTTP协议用于客户端和服务端之间，通过请求和响应报文的交换达成通信。HTTP不保存状态、1.1版本默认使用长连接节省通信量，但是为了实现期望的保持状态功能，引入了Cookie技术管理状态。</p>
+<p><strong>HTTP的优缺点：</strong></p>
+<ul>
+<li>优点<ul>
+<li>简单灵活易于拓展</li>
+<li>应用广泛</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>通信明文可能被窃听</li>
+<li>通信身份可能造伪装</li>
+<li>无法证明报文完整性，可能已经被篡改</li>
+</ul>
+</li>
+</ul>
+<p>学习HTTP,重点和难点就是在于其请求报文和响应报文的学习，下面是具体内容</p>
+<h1 id="3-HTTP请求报文"><a href="#3-HTTP请求报文" class="headerlink" title="3.HTTP请求报文"></a>3.HTTP请求报文</h1><p>HTTP请求报文格式如下</p>
+<p><img src="/images/image-20210313101500745.png" alt="image-20210313101500745"></p>
+<p>了解其格式之后，主要还得了解常用请求方法和一些请求头部字段的含义</p>
+<h2 id="请求方法"><a href="#请求方法" class="headerlink" title="请求方法"></a>请求方法</h2><p>请求报文通过请求报文告知服务器自己的意图</p>
+<p><strong>GET</strong></p>
+<p><code>获取资源</code></p>
+<p>GET方法用来访问已被URI识别的资源，指定的资源经服务器端解析后返回响应内容</p>
+<p>GET方法是请求报文使用得最多的方法下面是一个常见的get访问URL</p>
+<p><code>http://mp.weixin.qq.com/s?src=11&amp;timestamp=1615599911&amp;...</code></p>
+<p>其？后面是一些传递的参数</p>
+<p><strong>POST</strong></p>
+<p><code>传输实体的主体</code></p>
+<p>POST方法也可以获取响应，但更重要的目的是为了传输一些主体参数,虽然一般GET也能传输参数，但一般不用GET传输</p>
+<p><strong>HEAD</strong></p>
+<p><code>获取报文首部</code></p>
+<p>和 GET 方法类似，但是不返回报文实体主体部分。</p>
+<p>主要用于确认 URL 的有效性以及资源更新的日期时间等。</p>
+<p><strong>PUT、DELETE</strong></p>
+<p><code>上传、删除文件</code></p>
+<p>由于HTTP/1.1的这两个方法不带验证机制，存在安全性问题，所以一般都不使用</p>
+<p><strong>OPTIONS</strong></p>
+<p><code>查询服务器支持方法</code></p>
+<p>查询指定的 URL 服务器能够支持的方法。</p>
+<p><strong>CONNECT</strong></p>
+<p><code>要求用隧道协议连接代理</code></p>
+<p>该方法要求在代理服务器通信时建立隧道，实现用隧道协议进行TCP通信。一般主要使用SSL和TLS协议将通信内容加密后经网络隧道传输</p>
+<h2 id="首部字段"><a href="#首部字段" class="headerlink" title="首部字段"></a>首部字段</h2><p>总的来说一个完整的HTTP请求报文包括，请求行、首部字段、其他和报文主题</p>
+<p>首部字段又由请求首部字段、通用首部字段和实体首部字段</p>
+<p>下面对这些字段进行介绍</p>
+<h3 id="通用首部字段"><a href="#通用首部字段" class="headerlink" title="通用首部字段"></a>通用首部字段</h3><p>通用首部字段是指请求报文和响应报文都会使用的首部</p>
+<table>
+<thead>
+<tr>
+<th>首部字段名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cache-Control</td>
+<td>控制缓存的行为</td>
+</tr>
+<tr>
+<td>Connection</td>
+<td>控制不再转发给代理的首部字段、管理持久连接</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>创建报文的日期时间</td>
+</tr>
+<tr>
+<td>Pragma</td>
+<td>报文指令</td>
+</tr>
+<tr>
+<td>Trailer</td>
+<td>报文末端的首部一览</td>
+</tr>
+<tr>
+<td>Transfer-Encoding</td>
+<td>指定报文主体的传输编码方式</td>
+</tr>
+<tr>
+<td>Upgrade</td>
+<td>升级为其他协议</td>
+</tr>
+<tr>
+<td>Via</td>
+<td>代理服务器的相关信息</td>
+</tr>
+<tr>
+<td>Warning</td>
+<td>错误通知</td>
+</tr>
+</tbody></table>
+<h3 id="请求首部字段"><a href="#请求首部字段" class="headerlink" title="请求首部字段"></a>请求首部字段</h3><table>
+<thead>
+<tr>
+<th>首部字段名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Accept</td>
+<td>用户代理可处理的媒体类型</td>
+</tr>
+<tr>
+<td>Accept-Charset</td>
+<td>优先的字符集</td>
+</tr>
+<tr>
+<td>Accept-Encoding</td>
+<td>优先的内容编码</td>
+</tr>
+<tr>
+<td>Accept-Language</td>
+<td>优先的语言（自然语言）</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>Web 认证信息</td>
+</tr>
+<tr>
+<td>Expect</td>
+<td>期待服务器的特定行为</td>
+</tr>
+<tr>
+<td>From</td>
+<td>用户的电子邮箱地址</td>
+</tr>
+<tr>
+<td>Host</td>
+<td>请求资源所在服务器</td>
+</tr>
+<tr>
+<td>If-Match</td>
+<td>比较实体标记（ETag）</td>
+</tr>
+<tr>
+<td>If-Modified-Since</td>
+<td>比较资源的更新时间</td>
+</tr>
+<tr>
+<td>If-None-Match</td>
+<td>比较实体标记（与 If-Match 相反）</td>
+</tr>
+<tr>
+<td>If-Range</td>
+<td>资源未更新时发送实体 Byte 的范围请求</td>
+</tr>
+<tr>
+<td>If-Unmodified-Since</td>
+<td>比较资源的更新时间（与 If-Modified-Since 相反）</td>
+</tr>
+<tr>
+<td>Max-Forwards</td>
+<td>最大传输逐跳数</td>
+</tr>
+<tr>
+<td>Proxy-Authorization</td>
+<td>代理服务器要求客户端的认证信息</td>
+</tr>
+<tr>
+<td>Range</td>
+<td>实体的字节范围请求</td>
+</tr>
+<tr>
+<td>Referer</td>
+<td>对请求中 URI 的原始获取方</td>
+</tr>
+<tr>
+<td>TE</td>
+<td>传输编码的优先级</td>
+</tr>
+<tr>
+<td>User-Agent</td>
+<td>HTTP 客户端程序的信息</td>
+</tr>
+</tbody></table>
+<h3 id="实体首部字段"><a href="#实体首部字段" class="headerlink" title="实体首部字段"></a>实体首部字段</h3><table>
+<thead>
+<tr>
+<th>首部字段名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Allow</td>
+<td>资源可支持的 HTTP 方法</td>
+</tr>
+<tr>
+<td>Content-Encoding</td>
+<td>实体主体适用的编码方式</td>
+</tr>
+<tr>
+<td>Content-Language</td>
+<td>实体主体的自然语言</td>
+</tr>
+<tr>
+<td>Content-Length</td>
+<td>实体主体的大小</td>
+</tr>
+<tr>
+<td>Content-Location</td>
+<td>替代对应资源的 URI</td>
+</tr>
+<tr>
+<td>Content-MD5</td>
+<td>实体主体的报文摘要</td>
+</tr>
+<tr>
+<td>Content-Range</td>
+<td>实体主体的位置范围</td>
+</tr>
+<tr>
+<td>Content-Type</td>
+<td>实体主体的媒体类型</td>
+</tr>
+<tr>
+<td>Expires</td>
+<td>实体主体过期的日期时间</td>
+</tr>
+<tr>
+<td>Last-Modified</td>
+<td>资源的最后修改日期时间</td>
+</tr>
+</tbody></table>
+<h1 id="4-HTTP响应报文"><a href="#4-HTTP响应报文" class="headerlink" title="4.HTTP响应报文"></a>4.HTTP响应报文</h1><p>HTTP响应报文和请求报文类似，只是第一行叫状态行、再由响应首部和响应数据组成</p>
+<h2 id="状态码"><a href="#状态码" class="headerlink" title="状态码"></a>状态码</h2><p>状态码类别</p>
+<p><img src="/images/image-20210313111945041.png" alt="image-20210313111945041"></p>
+<p>下面是一些常用状态码</p>
+<p><strong>2XX:成功</strong></p>
+<p>200 OK 正常处理</p>
+<p>204 No Content 请求处理成功，但是没有资源可返回</p>
+<p>206 Partial Content 客户端范围请求，请求成功</p>
+<p><strong>3XX：重定向</strong></p>
+<p>301 永久重定向       资源分配了新的URI，以后使用该URI</p>
+<p>302 临时重定向       希望用户本次访问使用该URI</p>
+<p>303 See Other         功能和302类似，但制定客户端用GET方法访问</p>
+<p>304 Not Modified    如果请求报文首部包含一些条件，例如：If-Match，If-Modified-Since等如果不满足条件，则服务器会返回 304 状态码。</p>
+<p>307   临时重定向，与 302 的含义类似，但是 307 要求浏览器不会把重定向请求的 POST 方法改成 GET 方法。</p>
+<p><strong>4XX：客户端错误</strong></p>
+<p>400 请求报文语法错误</p>
+<p>401 HTTP认证</p>
+<p>403 服务器拒绝访问</p>
+<p>404 没有请求资源</p>
+<p><strong>5XX：服务器错误</strong></p>
+<p>500 服务器内部执行请求发生错误</p>
+<p>503 服务器超负载或者停机</p>
+<h2 id="响应首部字段"><a href="#响应首部字段" class="headerlink" title="响应首部字段"></a>响应首部字段</h2><table>
+<thead>
+<tr>
+<th>Accept-Ranges</th>
+<th>是否接受字节范围请求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Age</td>
+<td>推算资源创建经过时间</td>
+</tr>
+<tr>
+<td>ETag</td>
+<td>资源的匹配信息</td>
+</tr>
+<tr>
+<td>Location</td>
+<td>令客户端重定向至指定 URI</td>
+</tr>
+<tr>
+<td>Proxy-Authenticate</td>
+<td>代理服务器对客户端的认证信息</td>
+</tr>
+<tr>
+<td>Retry-After</td>
+<td>对再次发起请求的时机要求</td>
+</tr>
+<tr>
+<td>Server</td>
+<td>HTTP 服务器的安装信息</td>
+</tr>
+<tr>
+<td>Vary</td>
+<td>代理服务器缓存的管理信息</td>
+</tr>
+<tr>
+<td>WWW-Authenticate</td>
+<td>服务器对客户端的认证信息</td>
+</tr>
+</tbody></table>
+<h1 id="5-HTTPS"><a href="#5-HTTPS" class="headerlink" title="5.HTTPS"></a>5.HTTPS</h1><p>前面说到HTTP有三个缺点。但是如果对这个三个缺点进行改进，即用</p>
+<p>HTTP+加密+认证+完整性保护=HTTPS</p>
+<p>HTTPS是身批SSL外壳的HTTP，SSL是指Secure Socket Layer，通常，HTTP直接与TCP通信，当使用SSL后，HTTP通信接口部分先和SSL通信，再由SSL和TCP通信</p>
+<h2 id="SSL加密"><a href="#SSL加密" class="headerlink" title="SSL加密"></a>SSL加密</h2><h3 id="加密方法"><a href="#加密方法" class="headerlink" title="加密方法"></a>加密方法</h3><p><strong>对称密钥加密</strong></p>
+<p>也叫共享密钥加密，即加密和解密用同一个密钥</p>
+<ul>
+<li>优点：运算速度快；</li>
+<li>缺点：无法安全地将密钥传输给通信方</li>
+</ul>
+<p><strong>非对称密钥加密</strong></p>
+<p>也叫公开密钥加密，加密和解密使用不同的密钥。</p>
+<p>公开密钥所有人都可以获得，通信发送方获得接收方的公开密钥之后，就可以使用公开密钥进行加密，接收方收到通信内容（内含私有秘钥）后使用私有密钥解密。</p>
+<p>非对称密钥除了用来加密，还可以用来进行签名。因为私有密钥无法被其他人获取，因此通信发送方使用其私有密钥进行签名，通信接收方使用发送方的公开密钥对签名进行解密，就能判断这个签名是否正确。</p>
+<ul>
+<li>优点：可以更安全地将公开密钥传输给通信发送方；</li>
+<li>缺点：运算速度慢。</li>
+</ul>
+<h3 id="HTTPS加密"><a href="#HTTPS加密" class="headerlink" title="HTTPS加密"></a>HTTPS加密</h3><p>上面提到对称密钥加密方式的传输效率更高，但是无法安全地将密钥 Secret Key 传输给通信方。而非对称密钥加密方式可以保证传输的安全性，因此我们可以利用非对称密钥加密方式将 Secret Key 传输给通信方。之后再采用对称加密的方式进行通信。</p>
+<p>即HTTPS采用混合加密机制</p>
+<h2 id="认证"><a href="#认证" class="headerlink" title="认证"></a>认证</h2><p>通过使用 <strong>证书</strong> 来对通信方进行认证。</p>
+<p>数字证书认证机构（CA，Certificate Authority）是客户端与服务器双方都可信赖的第三方机构。</p>
+<p>服务器的运营人员向 CA 提出公开密钥的申请，CA 在判明提出申请者的身份之后，会对已申请的公开密钥做数字签名，然后分配这个已签名的公开密钥，并将该公开密钥放入公开密钥证书后绑定在一起。</p>
+<p>进行 HTTPS 通信时，服务器会把证书发送给客户端。客户端取得其中的公开密钥之后，先使用数字签名进行验证，如果验证通过，就可以开始通信了。</p>
+<h2 id="完整性保护"><a href="#完整性保护" class="headerlink" title="完整性保护"></a>完整性保护</h2><p>SSL 提供报文摘要功能来进行完整性保护。</p>
+<p>HTTP 也提供了 MD5 报文摘要功能，但不是安全的。例如报文内容被篡改之后，同时重新计算 MD5 的值，通信接收方是无法意识到发生了篡改。</p>
+<p>HTTPS 的报文摘要功能之所以安全，是因为它结合了加密和认证这两个操作。试想一下，加密之后的报文，遭到篡改之后，也很难重新计算报文摘要，因为无法轻易获取明文。</p>
+<p>最后学习了加密、认证、完整性保护，可以发现HTTPS还是有一定缺点</p>
+<ul>
+<li>因为需要进行加密解密等过程，因此速度会更慢</li>
+<li>由于消耗更多的CPU资源，能处理的请求数量减少</li>
+<li>需要支付证书授权的高额费用。</li>
+</ul>
+
     </div>
 
     
