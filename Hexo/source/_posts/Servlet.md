@@ -486,7 +486,100 @@ public class OutPut extends HttpServlet {
 
 
 
+## 文件下载demo
 
+了解response后，需要学会利用其做一些小demo，比如文件下载、页面自动刷新、生成验证码图片等
+
+下面是一个文件下载的小demo
+
+首先可以在web应用中建立一个资源文件夹，作为存储供下载文件的文件夹，这里我命名为download
+
+![image-20210312202353988](/images/image-20210312202353988.png)
+
+设置一个download.jsp页面，打开这个界面可以呈现资源的下载链接
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>下载资源</title>
+</head>
+<body>
+<a href="/response/do?fileName=捕获.JPG">图片</a>
+<a href="/response/do?fileName=捕获.docx">文档</a>
+</body>
+</html>
+```
+
+效果如下
+
+![image-20210312202703167](/images/image-20210312202703167.png)
+
+下载文件的链接指向我们定义的一个servlet类，传递文件名作为参数
+
+我们就在这个servlet类中进行下载处理，代码如下
+
+```java
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+@WebServlet("/do")
+public class DownloadFile extends HttpServlet {
+
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        download(req, resp);
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        download(req, resp);
+    }
+    
+    protected void download(HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException{
+        
+        resp.setContentType("UTF-8");
+        // 获取文件名
+        String filename = req.getParameter("fileName");
+        // 获取资源所在位置的决对路径
+        String path = req.getServletContext().getRealPath("/download/" + filename);
+        // 设置响应对象头，使浏览器以附件方式打开资源
+        resp.setHeader("Content-Disposition","attachment;filename="+filename);
+        
+        // 下载资源的步骤
+        FileInputStream in = new FileInputStream(path);
+     
+        ServletOutputStream out = resp.getOutputStream();
+        int len = 0;
+        byte[] bytes = new byte[1024];
+        while((len = in.read(bytes)) > 0){
+            out.write(bytes,0,len);
+        }
+        in.close();
+        out.flush();
+        out.close();
+    }
+}
+```
+
+其中下载资源步骤就是设置文件输入流，设置文件输出流、创建一个缓存数组，读写文件的过程
+
+
+
+# Cookie和Session
+
+我们认为会话是指客户端和web服务器之间连续发生的一系列请求和响应的过程，而Cookie和Session的作用就在于保存会话过程中产生的数据
+
+## Cookie
+
+ 当用户通过浏览器访问Web服务器时，服务器会给客户端发送一些信息，这些信息会保存在Cookie中。这样，当浏览器再次访问服务器时，会在请求头中将Cookie发送给服务器，方便服务器对浏览器做出正确的响应。 
+
+
+
+## Session
 
 # ServConfig和ServerContext对象
 
