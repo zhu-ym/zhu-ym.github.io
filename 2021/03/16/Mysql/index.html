@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="了解MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql">
+<meta property="og:url" content="http://example.com/2021/03/16/Mysql/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="了解MySQL">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210317164459805.png">
+<meta property="og:image" content="http://example.com/images/image-20210318095103092.png">
+<meta property="og:image" content="http://example.com/images/image-20210318104619541.png">
+<meta property="og:image" content="http://example.com/images/image-20210317201823243.png">
+<meta property="article:published_time" content="2021-03-16T02:10:34.000Z">
+<meta property="article:modified_time" content="2021-03-18T03:30:25.597Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210317164459805.png">
+
+
+<link rel="canonical" href="http://example.com/2021/03/16/Mysql/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Mysql | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">MySQL概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85MySQL"><span class="nav-number">2.</span> <span class="nav-text">安装MySQL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">基础使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E7%9B%B8%E5%85%B3"><span class="nav-number">3.1.</span> <span class="nav-text">表相关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A2%9E%E5%88%A0%E6%9F%A5%E6%94%B9"><span class="nav-number">3.2.</span> <span class="nav-text">增删查改</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mysql%E5%92%8CIDEA%E7%9A%84%E8%BF%9E%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">Mysql和IDEA的连接</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDBC"><span class="nav-number">5.</span> <span class="nav-text">JDBC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E4%B8%80%E4%B8%AAJDBC%E5%AE%9E%E4%BE%8B"><span class="nav-number">5.1.</span> <span class="nav-text">建立一个JDBC实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E6%93%8D%E4%BD%9C"><span class="nav-number">5.2.</span> <span class="nav-text">特殊操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL%E7%B4%A2%E5%BC%95"><span class="nav-number">6.</span> <span class="nav-text">MySQL索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#B-Tree%E7%B4%A2%E5%BC%95"><span class="nav-number">6.1.</span> <span class="nav-text">B+Tree索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%E7%B4%A2%E5%BC%95"><span class="nav-number">6.2.</span> <span class="nav-text">哈希索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%9A%84%E9%80%82%E5%BA%94%E8%8C%83%E5%9B%B4"><span class="nav-number">6.3.</span> <span class="nav-text">索引的适应范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E6%80%A7%E8%83%BD%E7%B4%A2%E5%BC%95%E7%AD%96%E7%95%A5"><span class="nav-number">6.4.</span> <span class="nav-text">高性能索引策略</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/16/Mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mysql
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-16 10:10:34" itemprop="dateCreated datePublished" datetime="2021-03-16T10:10:34+08:00">2021-03-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-18 11:30:25" itemprop="dateModified" datetime="2021-03-18T11:30:25+08:00">2021-03-18</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>了解MySQL</p>
+<a id="more"></a>
+
+<h1 id="MySQL概念"><a href="#MySQL概念" class="headerlink" title="MySQL概念"></a>MySQL概念</h1><p>数据库（Database）是按照数据结构来组织、存储和管理数据的仓库。</p>
+<p>每个数据库都有一个或多个不同的 API 用于创建，访问，管理，搜索和复制所保存的数据。</p>
+<p>我们也可以将数据存储在文件中，但是在文件中读写数据速度相对较慢。</p>
+<p>所以，现在我们使用关系型数据库管理系统（RDBMS）来存储和管理大数据量。所谓的关系型数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。</p>
+<p>RDBMS 即关系数据库管理系统(Relational Database Management System)的特点：</p>
+<ul>
+<li>1.数据以表格的形式出现</li>
+<li>2.每行为各种记录名称</li>
+<li>3.每列为记录名称所对应的数据域</li>
+<li>4.许多的行和列组成一张表单</li>
+<li>5.若干的表单组成database</li>
+</ul>
+<p>MySQL 是最流行的关系型数据库管理系统，在 WEB 应用方面 MySQL 是最好的 RDBMS(Relational Database Management System：关系数据库管理系统)应用软件之一。</p>
+<h1 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h1><ul>
+<li><p><strong>下载安装包</strong></p>
+<p>  <a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/windows/installer/8.0.html">下载链接</a>，点击链接后，选择 第二个（为安装版），点击下载，可以选择不注册下载</p>
+</li>
+<li><p><strong>具体安装教程</strong></p>
+<p>该部分是在网上找的，我把自己安装参考的博客转载过来</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/2020javamianshibaodian/p/mysql8020anzhuangjiaocheng.html">参考博客</a></p>
+</li>
+<li><p><strong>客户端选择</strong></p>
+<p>正常来说安装完mysql可以使用客户端，这里我使用官方的Mysql  WorkBench，按照上诉过程安装既有</p>
+<p>据说最好用的客户端是 Navicat，但不免费</p>
+</li>
+</ul>
+<h1 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h1><p>基于Mysql  WorkBench使用一些常见命令</p>
+<h2 id="表相关"><a href="#表相关" class="headerlink" title="表相关"></a>表相关</h2><ul>
+<li><p>创建一个数据库和表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create database tablelearn;</span><br><span class="line">use tablelearn;</span><br><span class="line">CREATE TABLE hero (</span><br><span class="line">  id int(11) AUTO_INCREMENT,</span><br><span class="line">  name varchar(30) ,</span><br><span class="line">  hp float ,</span><br><span class="line">  damage int(11) ,</span><br><span class="line">  PRIMARY KEY (id)</span><br><span class="line">)  DEFAULT CHARSET&#x3D;utf8;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>修改表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">  </span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<h2 id="增删查改"><a href="#增删查改" class="headerlink" title="增删查改"></a>增删查改</h2><ul>
+<li><p>插入数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into hero values (null, &#39;盖伦&#39;, 616, 100)</span><br></pre></td></tr></table></figure></li>
+<li><p>修改数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update hero set name &#x3D; &quot;典韦&quot; where id &#x3D; 2</span><br></pre></td></tr></table></figure></li>
+<li><p>查询数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from hero limit 0,2</span><br></pre></td></tr></table></figure></li>
+<li><p>删除数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete from hero where id &#x3D; 1</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<h1 id="Mysql和IDEA的连接"><a href="#Mysql和IDEA的连接" class="headerlink" title="Mysql和IDEA的连接"></a>Mysql和IDEA的连接</h1><p>该连接的效果仅仅是使IDEA充当Mysql  WorkBench可视化的功能，真正要在代码中使用还得用JDBC</p>
+<ul>
+<li><p>点<code>view-&gt;tool windows-&gt;database</code></p>
+<p>之后点击database的+号，添加mysql源</p>
+<p><img src="/images/image-20210317164459805.png" alt="image-20210317164459805"></p>
+</li>
+<li><p>填入个人信息，即下载主要是下载时设置的密码，其他可以保持默认</p>
+<p><img src="/images/image-20210318095103092.png" alt="image-20210318095103092"></p>
+<p>如果用的是mysql 8 以上版本需要注意时区问题，要在Url加上<code>?serverTimezone=GMT%2B8</code></p>
+<p>最后选择<code>test Connection</code>即可</p>
+<p>第一次注意在左下角点击下载驱动</p>
+</li>
+<li><p>连接成功</p>
+<p>此时可以尝试在IDEA中编辑数据库、表</p>
+</li>
+</ul>
+<h1 id="JDBC"><a href="#JDBC" class="headerlink" title="JDBC"></a>JDBC</h1><p>在代码中使用数据库数据</p>
+<h2 id="建立一个JDBC实例"><a href="#建立一个JDBC实例" class="headerlink" title="建立一个JDBC实例"></a>建立一个JDBC实例</h2><ul>
+<li><p>新建一个简单的Maven项目</p>
+</li>
+<li><p>在pom.xml文件中添加数据库驱动的依赖</p>
+<p>可以在该网站查询<a target="_blank" rel="noopener" href="https://mvnrepository.com/%EF%BC%8C%E6%9C%80%E5%90%8E%E6%9F%A5%E8%AF%A2%E7%9A%84%E6%88%91mysql">https://mvnrepository.com/，最后查询的我mysql</a> 8.0.23对对应的数据库驱动的依赖如下</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java --&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">version</span>&gt;</span>8.0.23<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>编写一个JDBC代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.sql.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">jdbc</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ClassNotFoundException, SQLException </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 数据库url，tablelearn为数据库的名字</span></span><br><span class="line">        String url = <span class="string">&quot;jdbc:mysql://localhost:3306/tablelearn?serverTimezone=GMT%2B8&quot;</span>;</span><br><span class="line">        String user = <span class="string">&quot;root&quot;</span>;</span><br><span class="line">        String psd = <span class="string">&quot;root&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注册驱动</span></span><br><span class="line">        Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line">        <span class="comment">// 连接数据库</span></span><br><span class="line">        Connection connection = DriverManager.getConnection(url,user,psd);</span><br><span class="line">        <span class="comment">//   实例化statement对象</span></span><br><span class="line">        Statement statement = connection.createStatement();</span><br><span class="line">        <span class="comment">//定义数据库查询语句</span></span><br><span class="line">        String sql = <span class="string">&quot;select id,name from hero&quot;</span>;</span><br><span class="line">        <span class="comment">// 执行语句返回结果</span></span><br><span class="line">        ResultSet resultSet = statement.executeQuery(sql);</span><br><span class="line">        <span class="comment">// 查询结果处理</span></span><br><span class="line">        <span class="keyword">while</span>(resultSet.next())&#123;</span><br><span class="line">            String name = resultSet.getString(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">            <span class="keyword">int</span> id = resultSet.getInt(<span class="string">&quot;id&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;id: &quot;</span> + id + <span class="string">&quot; name: &quot;</span> + name);</span><br><span class="line">        &#125;</span><br><span class="line">        resultSet.close();</span><br><span class="line">        statement.close();</span><br><span class="line">        connection.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<p><img src="/images/image-20210318104619541.png" alt="image-20210318104619541"></p>
+<p>总结编写一个JDBC代码主要需要以下几步：</p>
+<ul>
+<li>加载驱动</li>
+<li>连接数据库  DriverManager</li>
+<li>获得执行sql的对象 Statement</li>
+<li>获得返回结果集  resultSet</li>
+<li>数据处理</li>
+<li>释放连接</li>
+</ul>
+</li>
+</ul>
+<h2 id="特殊操作"><a href="#特殊操作" class="headerlink" title="特殊操作"></a>特殊操作</h2><ul>
+<li><p><strong>事务</strong></p>
+<p>可以利用connext的下列两个方法规定事务的多组操作,这些操作要么都执行，要么都不执行</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setAutoCommit(<span class="keyword">false</span>);</span><br><span class="line">....</span><br><span class="line">commit();</span><br></pre></td></tr></table></figure>
+<p> 下面是一段代码</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.sql.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Transaction</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ClassNotFoundException </span>&#123;</span><br><span class="line">        <span class="comment">// 数据库url，tablelearn为数据库的名字</span></span><br><span class="line">        String url = <span class="string">&quot;jdbc:mysql://localhost:3306/tablelearn?serverTimezone=GMT%2B8&quot;</span>;</span><br><span class="line">        String user = <span class="string">&quot;root&quot;</span>;</span><br><span class="line">        String psd = <span class="string">&quot;root&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注册驱动</span></span><br><span class="line">        Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// try-with-resources</span></span><br><span class="line">        <span class="keyword">try</span>(Connection connection = DriverManager.getConnection(url,user,psd);</span><br><span class="line">            Statement statement = connection.createStatement())&#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 事务开始点</span></span><br><span class="line">            connection.setAutoCommit(<span class="keyword">false</span>);</span><br><span class="line">            String sql1 = <span class="string">&quot;insert into hero values(null,&quot;</span>+<span class="string">&quot;&#x27;凯&#x27;&quot;</span>+<span class="string">&quot;,&quot;</span>+<span class="number">400</span>+<span class="string">&quot;,&quot;</span>+<span class="number">120</span>+<span class="string">&quot;)&quot;</span>;</span><br><span class="line">            String sql2 = <span class="string">&quot;insert into hero values(null,&quot;</span>+<span class="string">&quot;&#x27;刘备&#x27;&quot;</span>+<span class="string">&quot;,&quot;</span>+<span class="number">400</span>+<span class="string">&quot;,&quot;</span>+<span class="number">100</span>+<span class="string">&quot;)&quot;</span>;</span><br><span class="line">            String sql3 = <span class="string">&quot;select id,name from hero&quot;</span>;</span><br><span class="line">            statement.execute(sql1);</span><br><span class="line">            statement.execute(sql2);</span><br><span class="line">            ResultSet resultSet = statement.executeQuery(sql3);</span><br><span class="line">            <span class="comment">// 事务结束点</span></span><br><span class="line">            connection.commit();</span><br><span class="line">            <span class="keyword">while</span>(resultSet.next())&#123;</span><br><span class="line">                String name = resultSet.getString(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">                <span class="keyword">int</span> id = resultSet.getInt(<span class="string">&quot;id&quot;</span>);</span><br><span class="line">                System.out.println(<span class="string">&quot;id: &quot;</span> + id + <span class="string">&quot; name: &quot;</span> + name);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (SQLException e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在事务中的多个操作，<strong>要么都成功，要么都失败</strong><br>通过setAutoCommit(false);<strong>关闭自动提交</strong><br>使用 commit();进行<strong>手动提交</strong></p>
+</li>
+</ul>
+<h1 id="MySQL索引"><a href="#MySQL索引" class="headerlink" title="MySQL索引"></a>MySQL索引</h1><p>Mysql服务器逻辑架构如下</p>
+<p><img src="/images/image-20210317201823243.png" alt="image-20210317201823243"></p>
+<ul>
+<li>其中最上服务器层主要负责连接管理与安全性，MySQL客户端与服务端的通信连接管理以及用户名密码、对数据库及表的权限校验，都是在这一层完成的</li>
+<li>第二层包括MySQL核心服务功能，像查询解析、分析、优化、缓存、所有的内置函数以及所有跨存储引擎的功能（存储过程、触发器、视图等）都在这一层</li>
+<li>第三层就是存储引擎层，存储引擎负责数据的存储和提取，服务器通过一套标准的API可以和不同的存储引擎进行通信，这些API屏蔽了不同存储引擎之间的差异</li>
+</ul>
+<p>而mysql中的索引是在最底层的存储引擎层实现的，不同存储引擎可能使用不同的存储结构存储索引。</p>
+<h2 id="B-Tree索引"><a href="#B-Tree索引" class="headerlink" title="B+Tree索引"></a>B+Tree索引</h2><p>InnoDB是mysql的默认事务型引擎，主要采用<strong>B+Tree</strong>的结构存储索引</p>
+<p>B+Tree主要是由B树演变而来，相较于B-Tree，主要有以下区别：</p>
+<ul>
+<li><p>B树每个节点都存储数据，所有节点组成这棵树，B+树只有叶子节点存储数据，所有非叶节点只起到索引作用。</p>
+</li>
+<li><p>B+所有的叶子结点使用链表相连</p>
+</li>
+<li><p>关键字和子树范围不一致</p>
+</li>
+</ul>
+<p>首先最大的区别B+树只有叶子节点存储数据，其一个关键字代表一个子树的最值，并指向该子树，所以造成了第三点区别</p>
+<p>其次正是由于B+树只有叶子节点存储数据，所以其所有的叶子结点使用链表相连才有意义，这给B+数带来了很大的优点：</p>
+<ul>
+<li>所有的叶子结点使用链表相连，<strong>便于区间查找和遍历</strong></li>
+<li>B+树叶子节点顺序存储，B树则需要进行每一层的递归遍历，相邻的元素可能在内存中不相邻，所以<strong>缓存命中性</strong>没有B+树好。</li>
+</ul>
+<p>数据库索引是存储在磁盘上的，考虑磁盘IO的影响，无论是B+树还是B树，都能<strong>减少IO次数</strong>，特别数据量大时，就不能把整个索引全部加载到内存了，只能逐一加载每一个磁盘页（对应索引树的节点），对于树来说，IO次数就是树的高度，而m的大小取决于磁盘页的大小。<br>由于采用了B+Tree结构，mysql非常适用于<strong>全键值、键值范围或键前缀查找</strong></p>
+<p>值得注意，其中mysql键前缀查找只适用于<strong>最左前缀的查找</strong>，所以对索引列的顺序要求很高，不可能跳过第一列索引去查找其他列索引，第一列索引也是最左前缀查找，比如以名字为索引的索引中，很难查找以名字的最后一个字为结尾的人</p>
+<h2 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h2><p>哈希索引基于hash表实现，只有在精确匹配索引所有列的查询才有效，即<strong>全键值查找</strong></p>
+<p>采用Hash索引时，对于每行数据，存储引擎都会根据所有索引列值计算一个哈希码，哈希索引将所有的哈希码存储在索引中，同时哈希表中保存指向每个数据行的指针</p>
+<p>在mysql中只有Memory引擎显示支持哈希索引，并且支持非唯一值哈希索引（即可以存在hash冲突）</p>
+<p>由于hash表的特性其在<strong>全键值查找</strong>中有很快的速度，但是不能支持<strong>范围查询</strong>或者<strong>部分索引列查询</strong></p>
+<p>InnoDB引擎有一个特殊的功能加做<strong>自适应哈希索引</strong>，当某些索引值被频繁使用时，会在内存中基于B+Tree的索引上再创建一个哈希索引，这个是自动的、内部的行为。</p>
+<h2 id="索引的适应范围"><a href="#索引的适应范围" class="headerlink" title="索引的适应范围"></a>索引的适应范围</h2><p>总的来说，索引的目的是为了快速定位到表的指定位置，但是除此之外，索引还有以下几个优点：</p>
+<ul>
+<li>大大减少服务器需要扫描的数据量</li>
+<li>使服务器避免排序和临时表</li>
+<li>可以将随机I/O变成顺序I/O</li>
+</ul>
+<p>但是注意索引页带来了额外的开销，只有其快速定位的好处大于这些开销时，索引才是有效的，因此索引主要用于中到大型表。对于小表，简单的全表扫描更高效，对于特大的表维护索引的开销代价更大，需要类似于分区技术等技术直接区分出查询需要的一组数据</p>
+<h2 id="高性能索引策略"><a href="#高性能索引策略" class="headerlink" title="高性能索引策略"></a>高性能索引策略</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/16/Spring-MVC/" rel="prev" title="Spring MVC">
+                  <i class="fa fa-chevron-left"></i> Spring MVC
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/18/JDBC/" rel="next" title="JDBC">
+                  JDBC <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
