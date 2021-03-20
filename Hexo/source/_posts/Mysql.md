@@ -134,141 +134,6 @@ MySQL 是最流行的关系型数据库管理系统，在 WEB 应用方面 MySQL
 
   此时可以尝试在IDEA中编辑数据库、表
 
-
-
-# JDBC
-
-在代码中使用数据库数据
-
-## 建立一个JDBC实例
-
-- 新建一个简单的Maven项目
-
-- 在pom.xml文件中添加数据库驱动的依赖
-
-  可以在该网站查询https://mvnrepository.com/，最后查询的我mysql 8.0.23对对应的数据库驱动的依赖如下
-
-  ```xml
-  <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-       <dependency>
-           <groupId>mysql</groupId>
-           <artifactId>mysql-connector-java</artifactId>
-           <version>8.0.23</version>
-       </dependency>
-  ```
-
-- 编写一个JDBC代码
-
-  ```java
-  import java.sql.*;
-  
-  public class jdbc {
-  
-      public static void main(String[] args) throws ClassNotFoundException, SQLException {
-  
-  
-          // 数据库url，tablelearn为数据库的名字
-          String url = "jdbc:mysql://localhost:3306/tablelearn?serverTimezone=GMT%2B8";
-          String user = "root";
-          String psd = "root";
-  
-          // 注册驱动
-          Class.forName("com.mysql.cj.jdbc.Driver");
-          // 连接数据库
-          Connection connection = DriverManager.getConnection(url,user,psd);
-          //   实例化statement对象
-          Statement statement = connection.createStatement();
-          //定义数据库查询语句
-          String sql = "select id,name from hero";
-          // 执行语句返回结果
-          ResultSet resultSet = statement.executeQuery(sql);
-          // 查询结果处理
-          while(resultSet.next()){
-              String name = resultSet.getString("name");
-              int id = resultSet.getInt("id");
-              System.out.println("id: " + id + " name: " + name);
-          }
-          resultSet.close();
-          statement.close();
-          connection.close();
-      }
-  }
-  ```
-
-  结果
-
-  ![image-20210318104619541](/images/image-20210318104619541.png)
-
-  总结编写一个JDBC代码主要需要以下几步：
-
-  - 加载驱动
-  - 连接数据库  DriverManager
-  - 获得执行sql的对象 Statement
-  - 获得返回结果集  resultSet
-  - 数据处理
-  - 释放连接
-
-## 特殊操作
-
-- **事务**
-
-  可以利用connext的下列两个方法规定事务的多组操作,这些操作要么都执行，要么都不执行
-
-  ```java
-  setAutoCommit(false);
-  ....
-  commit();
-  ```
-
-   下面是一段代码
-
-    ```java
-import java.sql.*;
-
-public class Transaction {
-    public static void main(String[] args) throws ClassNotFoundException {
-        // 数据库url，tablelearn为数据库的名字
-        String url = "jdbc:mysql://localhost:3306/tablelearn?serverTimezone=GMT%2B8";
-        String user = "root";
-        String psd = "root";
-
-        // 注册驱动
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        // try-with-resources
-        try(Connection connection = DriverManager.getConnection(url,user,psd);
-            Statement statement = connection.createStatement()){
-
-            // 事务开始点
-            connection.setAutoCommit(false);
-            String sql1 = "insert into hero values(null,"+"'凯'"+","+400+","+120+")";
-            String sql2 = "insert into hero values(null,"+"'刘备'"+","+400+","+100+")";
-            String sql3 = "select id,name from hero";
-            statement.execute(sql1);
-            statement.execute(sql2);
-            ResultSet resultSet = statement.executeQuery(sql3);
-            // 事务结束点
-            connection.commit();
-            while(resultSet.next()){
-                String name = resultSet.getString("name");
-                int id = resultSet.getInt("id");
-                System.out.println("id: " + id + " name: " + name);
-            }
-
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-    }
-}
-    ```
-
-在事务中的多个操作，**要么都成功，要么都失败**
-通过setAutoCommit(false);**关闭自动提交**
-使用 commit();进行**手动提交**
-
-
-
 # MySQL索引
 
 Mysql服务器逻辑架构如下
@@ -333,4 +198,80 @@ InnoDB引擎有一个特殊的功能加做**自适应哈希索引**，当某些�
 
 
 ## 高性能索引策略
+
+索引三个等级：
+
+1.索引将相关记录放在一起
+
+2.索引数据顺序和查找排列顺序一致
+
+3.索引列包含查询需要的全部列
+
+
+
+- **独立的列**
+
+  索引列不要作为表达式的一部分，也不能是函数的参数，应该使索引列单独放在比较符号的一侧
+
+  ```sql
+  where id + 1 > 5   error
+  where id > 4       right
+  ```
+
+- **前缀索引和索引选择性**
+
+  **索引选择性**是指不重复的索引值和数据表的记录总数的比值
+
+  **前缀索引**在于选择足够长的前缀保持较高的选择性，同时又不能太长（和完整列的选择性比较即可）可以节约索引空间，从而提高索引效率
+
+  创建前列索引
+
+  ```java
+  alter table xx add key (city(7)) // 7是前缀长度
+  ```
+
+- **多列索引和单列索引比较**
+
+  多个单例索引最多只能保持第一个等级，这时需要考虑创建多列索引，特别是会对这**多个单列索引进行相交、联合操作时**
+
+- **选择合适的索引列顺序**
+
+  不考虑排序和分组时，考虑**选择性高**的索引放前面通常较好
+
+  同时也要注意where子句中的排序、分组和范围条件等其他因素
+
+- **覆盖索引**
+
+  指一个索引包含（覆盖）所有需要查询的字段的值，这时就不需要回表，能极大的提高性能，减少数据访问量。此外我们知道InnoDB的二级索引中保存了行的主键值，如果二级主键能够覆盖查询，可以避免对主键的二次查询，
+
+- **聚簇索引**
+
+  聚簇索引不是一种单独的索引类型，也是一种数据存储方式，**聚簇表示数据行和相邻的键值紧凑地存储在一起**
+
+  InnoDB通过主键聚集数据
+
+  优点：
+
+  - 相关数据保存在一起减少磁盘I/O
+  - 数据访问比非聚簇索引中查找块
+  - 使用覆盖索引扫描的查询可以直接使用页节点主键值
+
+  缺点：
+
+  - 数据如果全在内存中优势不大
+  - 插入速度严重依赖插入顺序：主键最快
+  - 更新代价高，每个被更新行会被移动到新的位置
+  - 插入、更新行可能会导致页分裂占用更多的磁盘空间
+  - 可能导致全表扫描变慢
+  - 二级索引可能更大（引用行主键列），访问也需要两次，先找到主键值再去聚簇查询
+
+- 利用索引扫描来做排序
+
+  mysql可以考索引顺序扫描和顺序全表排序操作生成有序的结果，和覆盖索引类似。如果索引列顺序和排序列顺序一致，就可以使用索引来对结果做排序优化性能
+
+- **索引选择基本原则**
+
+  索引的使用尽量选择`查询频率比较高的字段`作为`最左字段`，优先考虑`联合索引`, 尽量查询可以去做到`覆盖索引`，索引字段需要`比较小的字段` ，没事不要把`范围查询`放在联合索引，`变得快的字段`不建议建立索引
+
+# Mysql查询优化
 

@@ -285,7 +285,7 @@ Tomcat默认使用了开源的DBCP连接池
 
 `ORM=Object Relationship Database Mapping`
 
-即对象和关系数据库的映射
+即**对象和关系数据库的映射**
 
 比如下列根据id返回一个对象
 
@@ -342,7 +342,7 @@ public class TestJDBC {
 
 DAO=**D**ata**A**ccess **O**bject
 
-数据访问对象
+**数据访问对象**
 
 实际上就是运用了ORM中的思路，把数据库相关的操作都封装在这个类里面，其他地方看不到JDBC的代码
 
