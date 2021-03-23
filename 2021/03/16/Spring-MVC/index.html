@@ -30,16 +30,17 @@
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
 <meta property="og:description" content="学习Spring MVC框架">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210322100338290.png">
 <meta property="og:image" content="http://example.com/images/image-20210316151825513.png">
 <meta property="og:image" content="http://example.com/images/image-20210316153142758.png">
 <meta property="og:image" content="http://example.com/images/image-20210316153652673.png">
 <meta property="og:image" content="http://example.com/images/image-20210316154055526.png">
 <meta property="article:published_time" content="2021-03-16T02:10:13.000Z">
-<meta property="article:modified_time" content="2021-03-16T07:44:57.482Z">
+<meta property="article:modified_time" content="2021-03-22T07:31:05.151Z">
 <meta property="article:author" content="Zhu-ym">
 <meta property="article:tag" content="Spring MVC">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/images/image-20210316151825513.png">
+<meta name="twitter:image" content="http://example.com/images/image-20210322100338290.png">
 
 
 <link rel="canonical" href="http://example.com/2021/03/16/Spring-MVC/">
@@ -163,7 +164,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MVC%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">MVC原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EIDEA%E6%96%B0%E5%BB%BA%E4%B8%80%E4%B8%AASpring-MVC%E9%A1%B9%E7%9B%AE"><span class="nav-number">2.</span> <span class="nav-text">基于IDEA新建一个Spring MVC项目</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-MVC%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">Spring MVC原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MVC"><span class="nav-number">1.1.</span> <span class="nav-text">MVC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-MVC-%E5%8E%9F%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">Spring MVC 原理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-MVC-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">Spring MVC 环境搭建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EIDEA%E6%96%B0%E5%BB%BA%E4%B8%80%E4%B8%AASpring-MVC%E9%A1%B9%E7%9B%AE"><span class="nav-number">3.</span> <span class="nav-text">基于IDEA新建一个Spring MVC项目</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -176,7 +177,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -189,7 +190,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">42</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -262,10 +263,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-03-16 10:10:13 / 修改时间：15:44:57" itemprop="dateCreated datePublished" datetime="2021-03-16T10:10:13+08:00">2021-03-16</time>
+      <time title="创建时间：2021-03-16 10:10:13" itemprop="dateCreated datePublished" datetime="2021-03-16T10:10:13+08:00">2021-03-16</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-22 15:31:05" itemprop="dateModified" datetime="2021-03-22T15:31:05+08:00">2021-03-22</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -289,7 +296,68 @@
         <p>学习Spring MVC框架</p>
 <a id="more"></a>
 
-<h1 id="MVC原理"><a href="#MVC原理" class="headerlink" title="MVC原理"></a>MVC原理</h1><h1 id="基于IDEA新建一个Spring-MVC项目"><a href="#基于IDEA新建一个Spring-MVC项目" class="headerlink" title="基于IDEA新建一个Spring MVC项目"></a>基于IDEA新建一个Spring MVC项目</h1><p>这里主要基于Maven配置</p>
+<h1 id="Spring-MVC原理"><a href="#Spring-MVC原理" class="headerlink" title="Spring MVC原理"></a>Spring MVC原理</h1><h2 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h2><p>MVC是一种架构方式，其中：</p>
+<p>M是模型，代表一个存取数据的对象</p>
+<p>V是视图，负责页面的显示，与用户的交互，包含各种表单。 实现视图用到的技术有html/css/jsp/js等前端技术。</p>
+<p>C是控制器，控制器作用于模型和视图上。它控制数据流向模型对象，并在数据变化时更新视图。它使视图与模型分离开。</p>
+<p>MVC通过分离模型、视图以及控制器在应用程序中的角色将业务逻辑从界面中解耦，模型通过封装应用程序数据在视图层展示，视图仅仅只是展示这些数据，不包含任何业务逻辑。控制器负责接收用户请求，并调用后台服务（service、dao）来处理业务逻辑。<strong>其核心在于将业务逻辑从视图中分离出来</strong>，允许其单独改变而不会相互影响。</p>
+<p>具体到Spring MVC，其是基于Java实现了Web MVC设计思想的请求驱动类型的轻量级web框架。其以请求为驱动，围绕Servlet设计，将请求发给控制器，然后通过模型对象，分派器来展示请求结果视图。其中核心类是DispatcherServlet，它是一个Servlet，顶层是实现的Servlet接口。</p>
+<h2 id="Spring-MVC-原理"><a href="#Spring-MVC-原理" class="headerlink" title="Spring MVC 原理"></a>Spring MVC 原理</h2><p>Spring MVC 的请求流程主要如下图所示：</p>
+<p><img src="/images/image-20210322100338290.png" alt="image-20210322100338290"></p>
+<p><strong>服务器运行准备</strong></p>
+<ul>
+<li><p>tomcat启动SpringMVC项目，加载该项目的web.xml文件（其中listener监听器可以监听到一些请求进行分配）</p>
+</li>
+<li><p>通过web.xml文件加载其中配置的SpringMVC配置文件</p>
+</li>
+<li><p>java文件扫描SpringMVC配置文件中设置的扫描路径</p>
+</li>
+<li><p>配置了@Controller注解的类可以接受相应的数据，检索所有的Controller下的@RequestMapping，每个@Controller下的@RequestMapping对应一个map，其中整个@RequestMapping的全路径为key，（类路径+方法签名）为value。所有的Map放入一个map结构中。</p>
+</li>
+</ul>
+<p><strong>MVC工作流程</strong></p>
+<ul>
+<li><p>服务器接受到http格式的请求信息，将其中所需要的信息提取出来，并将请求发送至前端控制器DispatcherServlet</p>
+</li>
+<li><p>DispatcherServlet收到请求调用HandlerMapping处理器映射器，通过key找到实际访问的方法路径</p>
+</li>
+<li><p>处理器映射器找到具体的处理器(可以根据xml配置、注解进行查找)，通过反射生成处理器对象及处理器拦截器(如果有则生成)一并返回给DispatcherServlet。</p>
+</li>
+<li><p>DispatcherServlet调用HandlerAdapter处理器适配器。</p>
+</li>
+<li><p>HandlerAdapter经过适配调用具体的处理器(Controller，也叫后端控制器)，其实就是代理执行相应的方法</p>
+</li>
+<li><p>Controller执行完成返回ModelAndView。</p>
+</li>
+<li><p>HandlerAdapter将controller执行结果ModelAndView返回给DispatcherServlet。</p>
+</li>
+<li><p>DispatcherServlet将ModelAndView传给ViewReslover视图解析器。</p>
+</li>
+<li><p>ViewReslover解析后返回具体View。</p>
+</li>
+<li><p>DispatcherServlet根据View进行渲染视图（即将模型数据填充至视图中）。</p>
+</li>
+<li><p>DispatcherServlet响应用户。</p>
+</li>
+</ul>
+<p><strong>组件说明</strong></p>
+<ul>
+<li><p>前端控制器DispatcherServlet,由框架提供<br>作用：接收请求，响应结果，相当于转发器，中央处理器。有了dispatcherServlet减少了其它组件之间的耦合度。<br>用户请求到达前端控制器，它就相当于mvc模式中的c，dispatcherServlet是整个流程控制的中心，由它调用其它组件处理用户的请求，dispatcherServlet的存在降低了组件之间的耦合性。</p>
+</li>
+<li><p>处理器映射器HandlerMapping(不需要工程师开发),由框架提供<br>作用：根据请求的url查找Handler<br>HandlerMapping负责根据用户请求找到Handler即处理器，springmvc提供了不同的映射器实现不同的映射方式，例如：配置文件方式，实现接口方式，注解方式等。</p>
+</li>
+<li><p>处理器适配器HandlerAdapter<br>作用：按照特定规则（HandlerAdapter要求的规则）去执行Handler<br>通过HandlerAdapter执行处理器，这是适配器模式的应用，会把处理器包装成适配器，这样就可以支持多种类型的处理器，类比笔记本的适配器（适配器模式的应用）</p>
+</li>
+<li><p><strong>处理器Handler</strong>(需要工程师开发)<br>注意：编写Handler时按照HandlerAdapter的要求去做，这样适配器才可以去正确执行Handler<br>Handler 是继DispatcherServlet前端控制器的后端控制器，在DispatcherServlet的控制下Handler对具体的用户请求进行处理。<br>由于Handler涉及到具体的用户业务请求，所以一般情况需要工程师根据业务需求开发Handler。</p>
+</li>
+<li><p>视图解析器View resolver,由框架提供<br>作用：进行视图解析，根据逻辑视图名解析成真正的视图（view）<br>View Resolver负责将处理结果生成View视图，View Resolver首先根据逻辑视图名解析成物理视图名即具体的页面地址，再生成View视图对象，最后对View进行渲染将处理结果通过页面展示给用户。 springmvc框架提供了很多的View视图类型，包括：jstlView、freemarkerView、pdfView等。<br>一般情况下需要通过页面标签或页面模版技术将模型数据通过页面展示给用户，需要由工程师根据业务需求开发具体的页面。</p>
+</li>
+<li><p><strong>视图View</strong>(需要工程师开发)<br>View是一个接口，实现类支持不同的View类型（jsp、freemarker、pdf…）</p>
+</li>
+</ul>
+<h1 id="Spring-MVC-环境搭建"><a href="#Spring-MVC-环境搭建" class="headerlink" title="Spring MVC 环境搭建"></a>Spring MVC 环境搭建</h1><p><strong>开发环境</strong></p>
+<p>IDEA + Maven + Jdk1.8 + Tomcat</p>
+<h1 id="基于IDEA新建一个Spring-MVC项目"><a href="#基于IDEA新建一个Spring-MVC项目" class="headerlink" title="基于IDEA新建一个Spring MVC项目"></a>基于IDEA新建一个Spring MVC项目</h1><p>这里主要基于Maven配置</p>
 <ul>
 <li><p><strong>首先创建一个Maven项目</strong></p>
 <p>注意图中勾选</p>
