@@ -20,7 +20,7 @@ categories:
 
 - 在pom.xml文件中添加数据库驱动的依赖
 
-  可以在该网站查询https://mvnrepository.com/，最后查询的我mysql 8.0.23对对应的数据库驱动的依赖如下
+  可以在该网站查询[Maven查询](https://mvnrepository.com/)最后查询的我mysql 8.0.23对对应的数据库驱动的依赖如下
 
   ```xml
   <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->

@@ -6,7 +6,7 @@ tags:
 - Tomcat
 - IDEA
 categories:
-- [框架,Tomcat]
+- [框架]
 - [IDEA相关]
 ---
 
@@ -64,7 +64,7 @@ Tomcat 服务器是一个免费的开放源代码的Web 应用服务器，属于
 
   双击解压后bin目录下的startup批处理文件，如果窗口能够打开，上面环境配置成功，此时相当于打开了Tomcat服务器
 
-  点击http://localhost:8080/，便可以访问
+  点击http://localhost:8080/     便可以访问
 
 # 在IDEA集成Tomcat
 
