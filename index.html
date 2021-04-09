@@ -172,7 +172,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-count">30</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -252,7 +252,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-31 09:57:12 / 修改时间：11:28:24" itemprop="dateCreated datePublished" datetime="2021-03-31T09:57:12+08:00">2021-03-31</time>
+      <time title="创建时间：2021-03-31 09:57:12 / 修改时间：16:50:40" itemprop="dateCreated datePublished" datetime="2021-03-31T09:57:12+08:00">2021-03-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -337,7 +337,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-03-31 09:44:24 / 修改时间：09:55:48" itemprop="dateCreated datePublished" datetime="2021-03-31T09:44:24+08:00">2021-03-31</time>
+      <time title="创建时间：2021-03-31 09:44:24 / 修改时间：14:46:50" itemprop="dateCreated datePublished" datetime="2021-03-31T09:44:24+08:00">2021-03-31</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -345,7 +345,11 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%EF%BC%8CLinux/" itemprop="url" rel="index"><span itemprop="name">操作系统，Linux</span></a>
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
         </span>
     </span>
 
@@ -416,10 +420,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-03-30 10:24:35 / 修改时间：11:25:46" itemprop="dateCreated datePublished" datetime="2021-03-30T10:24:35+08:00">2021-03-30</time>
+      <time title="创建时间：2021-03-30 10:24:35" itemprop="dateCreated datePublished" datetime="2021-03-30T10:24:35+08:00">2021-03-30</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-01 10:59:51" itemprop="dateModified" datetime="2021-04-01T10:59:51+08:00">2021-04-01</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -497,10 +507,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-03-29 11:12:56 / 修改时间：19:35:55" itemprop="dateCreated datePublished" datetime="2021-03-29T11:12:56+08:00">2021-03-29</time>
+      <time title="创建时间：2021-03-29 11:12:56" itemprop="dateCreated datePublished" datetime="2021-03-29T11:12:56+08:00">2021-03-29</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-09 10:25:02" itemprop="dateModified" datetime="2021-04-09T10:25:02+08:00">2021-04-09</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -526,64 +542,14 @@
     
     <div class="post-body" itemprop="articleBody">
           <p>对秒杀系统进行压力测试</p>
-<h1 id="1-安装Jmeter"><a href="#1-安装Jmeter" class="headerlink" title="1.安装Jmeter"></a>1.安装Jmeter</h1><ul>
-<li><p><strong>下载压缩包</strong></p>
-<p><a target="_blank" rel="noopener" href="https://jmeter.apache.org/download_jmeter.cgi">下载地址</a></p>
-</li>
-<li><p><strong>解压到安装目录</strong></p>
-<p>解压目录即安装目录，<code>D:\Program\apache-jmeter-5.4.1</code></p>
-</li>
-<li><p><strong>配置系统环境变量</strong></p>
-<ul>
-<li>首先保证自己之前已经建立好Java环境，然后在打开系统属性，选择高级-&gt;环境变量中新建一个JMETER_Home系统变量，值为其安装目录bin上一级，我的是<code>D:\Program\apache-jmeter-5.4.1</code>,</li>
-<li>最后在在编辑CLASSPATH对象，加上<code>%JMETER_HOME%\lib\ext\ApacheJMeter_core.jar;%JMETER_HOME%\lib\jorphan.jar;%JMETER_HOME%\lib\logkit-2.0.jar;</code>即可</li>
-</ul>
-</li>
-<li><p><strong>打开Jmeter</strong></p>
-<p>在安装目录下打开bin文件夹，找到<code>jmeter.bat</code>打开即可启用</p>
-</li>
-</ul>
-<h1 id="2-简单使用Jmeter进行压测"><a href="#2-简单使用Jmeter进行压测" class="headerlink" title="2.简单使用Jmeter进行压测"></a>2.简单使用Jmeter进行压测</h1><p>首先打开Jmeter后，可以在<code>Options</code>-&gt;<code>choose language</code>里面将语言改为中文</p>
-<p><strong>1.添加线程组</strong></p>
-<p>右键测试计划，添加线程里面选择线程组</p>
-<p><img src="/images/image-20210329185400986.png" alt="image-20210329185400986"></p>
-<p>关键参数是线程数、Ramp-up time和循环次数</p>
-<p>Ramp-up time是规定所有线程在时间段内把请求执行完（指一次循环），而且请求的时间间隔是固定的=Ramp-Up time/线程数。所以设置为0可以用压测服务器最大的能力持续发送请求</p>
-<p>循环次数和线程数的参数不难理解</p>
-<p>添加完线程组之后，应该需要对HTTP请求进行管理，下面几步就是管理步骤</p>
-<p><strong>2.添加默认请求头信息</strong></p>
-<p>点击线程组右键添加配置元件，添加HTTP请求默认值</p>
-<p><img src="/images/image-20210329190855888.png" alt="image-20210329190855888"></p>
-<p>这里我填写web站点的基础信息</p>
-<p>下面设置具体的HTTP请求参数</p>
-<p><strong>3.具体HTTP请求参数</strong></p>
-<p>首先声明，我这次压测是模拟所有用户对一个商品的秒杀，这里需要不同的userId作为请求报文的参数，需要对所有请求配置不同的userId参数，而商品id的参数可以固定</p>
-<ul>
-<li><p><strong>设置不同用户Id</strong></p>
-<ul>
-<li>从数据库在将userId导出为CSV文件（txt）也可以，每个ID一行，我保存在桌面data中</li>
-</ul>
-<p><img src="/images/image-20210329191532991.png" alt="image-20210329191532991"></p>
-<ul>
-<li><p>点击线程组，右键添加配置文件，添加<code>CSV数据文件设置</code></p>
-<p><img src="/images/image-20210329191913682.png" alt="image-20210329191913682"></p>
-<p>在文件名中导入文件，并设置变量名为userId，其他默认</p>
-</li>
-</ul>
-</li>
-<li><p><strong>确定具体HTTP请求参数</strong></p>
-<p>点击线程组，右键取件器，添加HTTP请求</p>
-<p>设置请求具体路径，并且点击添加添加两个参数，一个是userId，用<code>$&#123;userId&#125;</code>取值，其会每一个请求从data文件中读一行取值作为userId值</p>
-<p>另一个参数goodsId设置为固定值</p>
-<p><img src="/images/image-20210329192644097.png" alt="image-20210329192644097"></p>
-</li>
-</ul>
-<p><strong>4.添加监听器</strong></p>
-<p>点击线程组，右键选择监听器，可以添加查看结果树、汇总报告等记录测试信息</p>
-<p><strong>5.运行结果</strong></p>
-<p>点击上方绿三角运行，第一次压测结束</p>
-<p><img src="/images/image-20210329193330908.png" alt="image-20210329193330908"></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/29/Jmeter/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
