@@ -22,7 +22,7 @@ categories:
 
 # JDK安装
 
-这里采用rpm安装
+**这里采用rpm安装**
 
 首先可以在自己的机子上安装XFTP和Xshell方便上传文件和远程连接服务器
 
@@ -78,3 +78,103 @@ categories:
   直接用`java -jar jar包`名执行
 
   
+
+# Tomcat安装
+
+这里采用**解压缩方式安装**
+
+这里是针对如果Web项目不是Spring Boot ,比如SSM war包就需要放在Tomcat中运行
+
+- **下载压缩包并上传到Linux上**
+
+  [下载地址](https://tomcat.apache.org/download-10.cgi)
+
+  我下载的是`apache-tomcat-10.0.4.tar.gz`
+
+- **解压**
+
+  在放置目录，tar命令解压
+
+  ```
+  tar-zxvf apache-tomcat-10.0.4.tar.gz
+  ```
+
+- **启动停止**
+
+  在bin目录下`./startup.sh` 启动Tomcat
+
+  ```
+  ./startup.sh 启动
+  ./shutdown.sh 关闭
+  ```
+
+- **对Tomcat8080端口防火墙进行管理**
+
+  主要看下面后三步，看8080端口是否打开，没有则打开重启生效
+
+  ```
+  systemctl status firewalld #防火墙状态
+  firewall-cmd --zone=public --list-ports #查看端口
+  firewall-cmd --zone=public --add-port=8080/tcp --permanent #打开指定端口
+  firewall-cmd --reload 更新修改
+  ```
+
+  做完上诉流程，则可以通过服务器地址8080端口访问Tomcat
+
+# **Redis安装**
+
+这里采用**yum**进行在线安装
+
+```'
+
+yum -y inatall 包名
+```
+
+我们安装redis
+
+即
+
+```
+yum -y install redis 即可
+```
+
+```
+对redis的基本操作：启动、查看状态、停止、重启
+systemctl start redis
+systemctl status redis
+systemctl stop redis 
+systemctl restart redis
+
+ps -ef |grep redis          查看redis进程
+systemctl enable redis      设置开机自启动
+
+```
+
+防火墙设置
+
+Redis需要对6379防火墙进行设置
+
+就是上面的老操作
+
+```
+systemctl status firewalld #防火墙状态
+firewall-cmd --zone=public --list-ports #查看端口
+firewall-cmd --zone=public --add-port=8080/tcp --permanent #打开指定端口
+firewall-cmd --reload 更新修改
+```
+
+
+
+**Redis配置修改**
+
+进入编辑配置文科
+
+`vim /etc/redis.conf`
+
+```
+bind 127.0.0.1 注释掉 #bind 127.0.0.1 否则只能本机访问
+daemonize no 改为 daemonize yes 可以后台运行
+```
+
+
+

@@ -40,7 +40,7 @@ categories:
 
   新建一个`Spring Initializer`项目，导入依赖时导入`Spring web`、`Thymeleaf`、`mysql driver`、`MyBatis`等依赖
 
-- **pom.xml文件中再导入MD5相关的插件**
+- **pom.xml文件中再导入MD5相关的jar包**
 
   登陆功能涉及到两次MD5加密，先导入相关依赖包
 
@@ -137,7 +137,100 @@ MD5是一种数据摘要算法，可以用于数据的加密，文件快传，�
 
 注意前面说的破解是通过算法倒推出原文，但是存在人可以用暴露枚举的方式用一个字典挨个生成MD5加密后的密文，再用输入的密文反查询
 
-所以我们这里采用MD5加密
+首先，当前端明文密码传到服务器时，需要**一次MD5加密**，这里主要是**避免明文密码被抓包获取**。
 
+如果这里就将该密文存储在数据库，这里有一个问题,攻击成本问题，如果被人有了整个数据库的密文，只要代价足够，其可以通过构建彩虹表即前文说的暴露枚举破解密文得到明文密码，因为他建立彩虹表是针对所以用户的
 
+这里解决方案是**加盐**，可以给每一个用户的密文插入随机值的字符串，再次进行MD5加密，每个用户都有不同的盐（字符串），别人的攻击成本就会上升，其再想建立彩虹表，也只是针对一个用户的，破解代价很大
+
+所以最后，当服务器加密码保存到数据库中是时，需要**第二次MD5+随机盐值加密**，这时是为了**增加彩虹表反查的难度**
+
+当然第一次MD5加密也可以加盐值，但是必须是固定的，因为MD5不能破解，那就不能每次传递过来的密码不一致
+
+# 三、代码
+
+- **MD5加密的工具类编写**
+
+  ```java
+  package com.zhu.seckill.utils;
+  
+  import org.apache.commons.codec.digest.DigestUtils;
+  
+  public class MD5Utils {
+  
+      // 固定salt值
+      private static final String salt = "2z5b864m";
+  
+      // 单纯获取MD5值
+      public static String getMD5(String src){
+          return DigestUtils.md5Hex(src);
+      }
+  
+      // 第一次加密的MD5值，实际是在前端做的
+      public static String inputPassToFormPass(String inputPass){
+          String base ="" + salt.charAt(3)+salt.charAt(6)+inputPass+salt.charAt(0)+salt.charAt(5);
+          return DigestUtils.md5Hex(base);
+      }
+  
+      // 第二次加密的MD5值,这里的salt应该是每个用户随机生成的一个，这也是真正验证和写入数据库时调用的主要方法
+      public static String formPassToDBPass(String formPass,String salt){
+          String base = ""+ salt.charAt(3)+salt.charAt(6)+formPass+salt.charAt(0)+salt.charAt(5);
+          return DigestUtils.md5Hex(base);
+      }
+  
+      public static  String inputPassToDBPass(String inputPass,String databasesalt){
+          String formpass = inputPassToFormPass(inputPass);
+          return formPassToDBPass(formpass,databasesalt);
+      }
+  }
+  ```
+
+- **验证逻辑**
+
+  ```java
+      public RespBean doLogin(LoginVO loginVO) {
+          String mobile = loginVO.getMobile();
+          String password = loginVO.getPassword();
+  
+          if(mobile == null || password == null)
+              return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+          if(!VoliationUtils.isMoblie(mobile))
+              return RespBean.error(RespBeanEnum.MOBILE_ERROR);
+          // 查询数据库存储的密文和盐值
+          User user = userMapper.getUserById(Long.valueOf(mobile));
+          if(user == null)
+              return RespBean.error(RespBeanEnum.SIGNIN_ERROR);
+          // 将第一次密文转化成第二次密文后比较
+          if(!Objects.equals(MD5Utils.formPassToDBPass(password,user.getSalt()),user.getPsd()))
+              return RespBean.error(RespBeanEnum.PSSSWARD_ERROR);
+  
+          return RespBean.success(user);
+      }
+  ```
+
+- **查询逻辑**
+
+  验证逻辑中需要查询用户数据，下面是查询的sql语句,主要在UserMapper中实现
+
+  ```java
+  @Repository
+  public interface UserMapper {
+  
+  
+      @Select("select * from seckill.user where id = #{id}")
+      User getUserById(long id);
+      @Insert("insert  into user(id,nickname,psd,salt) values(#{id},#{name},#{psd},#{salt})")
+      void  InsertUser(Long id ,String name,String psd,String salt);
+  }
+  ```
+
+  
+
+# 四、前端的一些东西的连接
+
+[hfbin的github仓库](https://github.com/hfbin/Seckill)
+
+我前端的页面和资源如要参照这个大佬的仓库，再自己对其中一些接口进行了修改
+
+代项目完毕后，也可以看我的仓库
 

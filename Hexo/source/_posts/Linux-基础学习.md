@@ -5,7 +5,7 @@ date: 2021-03-31 09:44:24
 tags:
 - Linux
 categories:
-- [操作系统，Linux]
+- [操作系统,Linux]
 ---
 
 主要认识一些常见的Linux语法
