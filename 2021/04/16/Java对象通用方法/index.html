@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="清除Java通用方法的作用、重写及编程规范">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java对象通用方法">
+<meta property="og:url" content="http://example.com/2021/04/16/Java%E5%AF%B9%E8%B1%A1%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="清除Java通用方法的作用、重写及编程规范">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210416152247341.png">
+<meta property="article:published_time" content="2021-04-16T07:07:59.000Z">
+<meta property="article:modified_time" content="2021-04-16T09:00:50.057Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="Java语法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210416152247341.png">
+
+
+<link rel="canonical" href="http://example.com/2021/04/16/Java%E5%AF%B9%E8%B1%A1%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Java对象通用方法 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81equals%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">一、equals方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%87%8D%E5%86%99equals%E9%9C%80%E8%A6%86%E7%9B%96hashCode%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">二、重写equals需覆盖hashCode方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81toString%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">三、toString方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81clone%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">四、clone方法</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/16/Java%E5%AF%B9%E8%B1%A1%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java对象通用方法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-04-16 15:07:59 / 修改时间：17:00:50" itemprop="dateCreated datePublished" datetime="2021-04-16T15:07:59+08:00">2021-04-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java%E8%AF%AD%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">Java语法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java%E8%AF%AD%E6%B3%95/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>清除Java通用方法的作用、重写及编程规范</p>
+<a id="more"></a>
+
+<p>Java所有的对象都有一个超类Object，其有以下通用方法</p>
+<p><img src="/images/image-20210416152247341.png" alt="image-20210416152247341"></p>
+<p>后面的方法几个方法是final的，也是本地的，不能被重写</p>
+<p>前面所有的非final方法<code>（equals,hashCode,toString,clone）</code>都有一些通用约定，当覆盖这些方法时，需要遵循这些约定。</p>
+<h1 id="一、equals方法"><a href="#一、equals方法" class="headerlink" title="一、equals方法"></a>一、equals方法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> (<span class="keyword">this</span> == obj);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>显然超类中的equals方法是判断<strong>引用是否相当</strong>，如果我们需要编写自己的相等逻辑，比如是值相等，我们就需要重写<code>equals</code>方法</p>
+<p>重写equals方法时需要注意下面几个规范</p>
+<ul>
+<li><p>自反性：<code>x.equals(x) == true</code></p>
+</li>
+<li><p>对称性：<code>x.equals(y) == y.equals(x)</code></p>
+</li>
+<li><p>传递性：<code>x.equals(y) == true; y.equals(z) == true; 则x.equals(z) == true</code></p>
+</li>
+<li><p>一致性：x，y指向对象未修改，则多次比较结果不变</p>
+</li>
+<li><p><code>x.equals(null)</code>必须返回false</p>
+</li>
+</ul>
+<p>一般编码过程中需要注意<strong>对称性和传递性</strong>，这两个规定容易被违反，一般主要出现在子类和父类之间</p>
+<p>在这之前，首先得清楚两个方法</p>
+<ul>
+<li><p><strong>getClass：</strong>getClass得到该类的实际类型，即<strong>运行时类型</strong></p>
+</li>
+<li><p><strong>instanceof：</strong>判断该类是否属于<strong>该类或者该类派生类</strong></p>
+</li>
+</ul>
+<p>我们在重写equals方法中，首先就得判断两个对象是否可以比较，这时可以选择上诉两种方法来判断两个类是否属于同一类型，针对两种方法也有两种重写equals的手段</p>
+<p><strong>1.利用getClass</strong></p>
+<p>显然，使用了<code>b.getClass() == xxx</code>,既是严格判断是否一致，可以保证对称性和传递性</p>
+<p>这里有一个问题，有人认为这样违反了<strong>里氏替换原则（子类对象必须能够替换掉所有父类对象）</strong>，比如HashSet和TreeSet，你可能希望比较两个任意的集合</p>
+<p><strong>2.利用instanceof</strong></p>
+<p>如果利用instanceof就可以规避这个问题，这时由于instanceof关键字的作用决定的，子类、父类、甚至不同子类之间可以比较，体现了LSP原则</p>
+<p>这里又有另外一个问题，如果子类增加了<strong>值组件</strong>，子类想有自己的比较方法，又会带来<strong>传递性或者一致性</strong>的问题</p>
+<p>比如子类重写equals没有考虑父类违反传递性、考虑了父类减少值组件比较又会违反传递性</p>
+<p><strong>决策</strong></p>
+<p>由上诉两个，即<strong>在扩展可实例化的类的同时，不能即增加新的值组件，又同时保留equals约定，除非放弃抽象优势</strong></p>
+<ul>
+<li>如果子类有自己的相对性概念，强制用getClass比较</li>
+<li>如果超类决定相对性概念，可以使用instanceof检测，这样可以在不同子类的对象之间进行相等性比较，这时最好将比较方法定为final</li>
+</ul>
+<p>最后有一个重写equals的高效的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 性能优化，比较昂贵时很有用</span></span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span> == obj)</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        <span class="comment">// 检查正确参数类型，这里也可以用getClass</span></span><br><span class="line">		<span class="keyword">if</span>(!(obj <span class="keyword">instanceof</span> 正确参数类型))</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">		<span class="comment">// 类型转换</span></span><br><span class="line">        正确类型 other = (正确类型) obj;</span><br><span class="line">		<span class="comment">// 比较操作</span></span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">// 返回比较结果，一般最可能不一致的域先比较</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h1 id="二、重写equals需覆盖hashCode方法"><a href="#二、重写equals需覆盖hashCode方法" class="headerlink" title="二、重写equals需覆盖hashCode方法"></a>二、重写equals需覆盖hashCode方法</h1><p>如标题，当你重写了equals方法就需要覆hashCode方法，主要因为在Set或者Map判断元素是否存在首先是利用<code>hashCode</code>方法</p>
+<p>hashCode方法方法也有一些通用约定，这是其在基于散列的集合中正常运行的基础：</p>
+<ul>
+<li>一致性：一个对象equals用到的比较信息没有修改，则多次调用hashCode方法返回值一致</li>
+<li><strong>如果两个对象根据equals方法比较相等，调用hashCode方法必须产生相同的整数结果</strong></li>
+<li>如果两个对象根据equals方法比较不相等，对hashCode结果不要求，但是，<strong>不同对象不同结果有助于提高散列表性能</strong></li>
+</ul>
+<p>如何重写一个合适的hashCode函数</p>
+<p>对于不同关键域的散列码int c：</p>
+<ul>
+<li>基本类型：Type.hashCode(f)，可以减少对象的创建</li>
+<li>对象引用：为这个域递归调用hashCode方法得到c，null返回0</li>
+<li>数组：每个元素就是一个域对只对重要元素处理，或者是Array.hashCode方法对所有元素处理</li>
+</ul>
+<p>确定好每个域c之后，可以得到hashCode标准流程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">result &#x3D; c1;</span><br><span class="line">迭代，对每个域有result &#x3D; 31*result + c;</span><br><span class="line">返回result</span><br></pre></td></tr></table></figure>
+<p>其中关键域应该仅仅是equals中的比较信息</p>
+<h1 id="三、toString方法"><a href="#三、toString方法" class="headerlink" title="三、toString方法"></a>三、toString方法</h1><p>始终要覆盖toString方法，因为好的toString方法可以便于使用和调试。</p>
+<p>好的toString方法一般应该返回对象中包含的所有值得关注的信息</p>
+<p>需要决定返回值是否要指定格式，无论指定与否需要在文档中明确的表明自己的意图</p>
+<p>Java的开发手册也有一条提到<strong>POJO 类必须写 toString 方法</strong>。在方法执行抛出异常时，可以直接调用 POJO 的 toString()方法打印其属性值，便于排查问题。</p>
+<h1 id="四、clone方法"><a href="#四、clone方法" class="headerlink" title="四、clone方法"></a>四、clone方法</h1><p>一般要覆盖超类中的clone方法需要实现Cloneable接口，不然就会出现CloneNotSupportException。但是Cloneable中并没有clone方法，只是一个标记，标记这个对象可以克隆。</p>
+<p>实现Cloneable接口后，重写clone方法时，就可以利用super.clone()实现对对象的浅拷贝，而这个<strong>浅拷贝实际是Object.clone() 实现的</strong>，Object.clone()有特殊的语义，它就是能把当前对象的整个结构完全浅拷贝一份出来：可以把JVM原生实现的 Object.clone() 的语义想像为拿到 this 引用之后通过反射去找到该对象实例的所有字段，然后逐一字段拷贝，这个过程没有调用构造器</p>
+<p>根据上诉原理：<strong>一般需要谨慎的覆盖clone</strong>，主要原因有几点：</p>
+<ul>
+<li>浅拷贝和深拷贝的的问题：当对象内部域含可变域时，clone会比较复杂</li>
+<li>Cloneable接口没有clone方法，只是一个标记，也无法执行多态clone操作</li>
+<li>cloneable框架和可变对象的final域不兼容</li>
+</ul>
+<p>一般只是</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java%E8%AF%AD%E6%B3%95/" rel="tag"># Java语法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/14/Java%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%9D%91/" rel="prev" title="Java基本类型和包装类型的坑">
+                  <i class="fa fa-chevron-left"></i> Java基本类型和包装类型的坑
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
