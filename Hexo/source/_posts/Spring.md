@@ -5,7 +5,7 @@ date: 2021-03-02 15:36:58
 tags:
 - Spring
 categories:
-- [框架]
+- [框架,Spring]
 ---
 
 初步学习Spring,主要了解IoC和AOP，并在IDEA上简单应用
