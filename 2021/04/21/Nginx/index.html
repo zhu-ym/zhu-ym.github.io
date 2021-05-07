@@ -23,15 +23,20 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
+<meta name="description" content="了解Nginx的安装、使用、以及一些常用功能">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx">
 <meta property="og:url" content="http://example.com/2021/04/21/Nginx/index.html">
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="了解Nginx的安装、使用、以及一些常用功能">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210506155920084.png">
 <meta property="article:published_time" content="2021-04-21T06:55:07.000Z">
-<meta property="article:modified_time" content="2021-04-21T06:55:07.626Z">
+<meta property="article:modified_time" content="2021-05-06T09:04:58.802Z">
 <meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="Nginx">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210506155920084.png">
 
 
 <link rel="canonical" href="http://example.com/2021/04/21/Nginx/">
@@ -142,7 +147,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -155,6 +160,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81Nginx%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">一、Nginx安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">二、反向代理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">3.</span> <span class="nav-text">三、负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-1"><span class="nav-number">3.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B-1"><span class="nav-number">3.2.</span> <span class="nav-text">实例</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -167,7 +173,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -180,7 +186,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">51</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -256,6 +262,22 @@
 
       <time title="创建时间：2021-04-21 14:55:07" itemprop="dateCreated datePublished" datetime="2021-04-21T14:55:07+08:00">2021-04-21</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-05-06 17:04:58" itemprop="dateModified" datetime="2021-05-06T17:04:58+08:00">2021-05-06</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">中间件</span></a>
+        </span>
+    </span>
 
   
 </div>
@@ -267,7 +289,47 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        
+        <p>了解Nginx的安装、使用、以及一些常用功能</p>
+<a id="more"></a>
+
+<h1 id="一、Nginx安装"><a href="#一、Nginx安装" class="headerlink" title="一、Nginx安装"></a>一、Nginx安装</h1><p>Nginx (engine x) 是一个高性能的HTTP和反向代理web服务器，同时也提供了IMAP/POP3/SMTP服务。</p>
+<p>其主要功能是<strong>反向代理、负载均衡</strong></p>
+<p>特点是占有内存少，并发能力强，并且配置也比较简单</p>
+<p>下面是其在window环境下的安装：</p>
+<ul>
+<li><p><strong>1.下载安装包</strong></p>
+<p>Nginx安装通过解压zip压缩包到指定目录即可</p>
+<p> <a target="_blank" rel="noopener" href="http://nginx.org/en/download.html">下载地址</a></p>
+</li>
+<li><p><strong>2.启动</strong></p>
+<p>可以点击压缩文件下的exe程序直接打开</p>
+<p>也可以打开cmd命令窗口，切换到nginx解压目录下，输入命令 <code>start nginx</code> ，回车即可</p>
+<p>最后点击<a target="_blank" rel="noopener" href="http://localhost/">http://localhost:80</a>   </p>
+<p>出现如下界面即成功</p>
+<p><img src="/images/image-20210506155920084.png" alt="image-20210506155920084"></p>
+</li>
+<li><p><strong>3.关闭</strong></p>
+<p>最后可以用任务管理器或者在命令行输入<code>nginx -s stop</code>关闭</p>
+</li>
+<li><p><strong>4.修改配置</strong></p>
+<p>Nginx可以在conf文件中修改配置，并且是热部署方式，可以通过以下指令不需要stop Nginx，不需要中断请求，就能让配置文件生效</p>
+<p><code>nginx -s reload </code></p>
+</li>
+</ul>
+<h1 id="二、反向代理"><a href="#二、反向代理" class="headerlink" title="二、反向代理"></a>二、反向代理</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>首先在本机上运行一个web项目</p>
+<p>然后在<code>nginx.conf</code>文件中的<code>server</code>块中修改<code>location</code>中内容如下</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server</span> &#123;</span><br><span class="line">    <span class="string">listen</span>       <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span>  <span class="string">localhost;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#charset koi8-r;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#access_log  logs/host.access.log  main;</span></span><br><span class="line"></span><br><span class="line">    <span class="string">location</span> <span class="string">/</span> &#123;</span><br><span class="line">        <span class="string">proxy_pass</span> <span class="string">http://211.67.16.199:8080/seckill;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="string">error_page</span>   <span class="number">500</span> <span class="number">502</span> <span class="number">503</span> <span class="number">504</span>  <span class="string">/50x.html;</span></span><br><span class="line">    <span class="string">location</span> <span class="string">=</span> <span class="string">/50x.html</span> &#123;</span><br><span class="line">        <span class="string">root</span>   <span class="string">html;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，监听本地服务器的80端口</p>
+<p><strong>location /：</strong> 表示处理所有请求<br><strong>proxy_pass <a target="_blank" rel="noopener" href="http://211.67.16.199:8080/seckill%EF%BC%9A">http://211.67.16.199:8080/seckill：</a></strong> 表示把请求都交给该网站来处理</p>
+<p>修改后<code>nginx -s reload </code>让配置生效</p>
+<p>这时再访问本机的80端口就会反向代理到web项目部署的网站</p>
+<h1 id="三、负载均衡"><a href="#三、负载均衡" class="headerlink" title="三、负载均衡"></a>三、负载均衡</h1><h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><h2 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h2><p>启动两台机子上的web项目</p>
+<p>添加一个增加一个upstream，用来指向不同的服务器</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">upstream</span> <span class="string">mysever</span> &#123;</span><br><span class="line">     <span class="comment">#weigth参数表示权值，权值越高被分配到的几率越大</span></span><br><span class="line">     <span class="string">server</span> <span class="number">211.67</span><span class="number">.16</span><span class="number">.199</span><span class="string">:8080</span> <span class="string">weight=3;</span></span><br><span class="line">     <span class="string">server</span> <span class="number">119.23</span><span class="number">.65</span><span class="number">.18</span><span class="string">:8080</span> <span class="string">weight=1;</span></span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>最后还是修改location好反向代理请求</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">location</span> <span class="string">/</span> &#123;</span><br><span class="line">        <span class="string">root</span>   <span class="string">html;</span></span><br><span class="line">        <span class="string">index</span>  <span class="string">index.html</span> <span class="string">index.htm;</span></span><br><span class="line">        <span class="string">proxy_pass</span> <span class="string">http://myserver/seckill;</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里注意不能直接在upstream中直接添加项目名seckill,否则会报错</p>
+
     </div>
 
     
@@ -293,6 +355,9 @@
   </div>
 </div>
 
+          <div class="post-tags">
+              <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+          </div>
 
         
 
