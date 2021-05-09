@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="在LRU的基础上更近一步实现LFU">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LFU算法">
+<meta property="og:url" content="http://example.com/2021/05/09/LFU%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="在LRU的基础上更近一步实现LFU">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-09T07:01:23.000Z">
+<meta property="article:modified_time" content="2021-05-09T07:31:22.606Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="LFU">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/05/09/LFU%E7%AE%97%E6%B3%95/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>LFU算法 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">思路分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">代码</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">36</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">53</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/09/LFU%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LFU算法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-05-09 15:01:23 / 修改时间：15:31:22" itemprop="dateCreated datePublished" datetime="2021-05-09T15:01:23+08:00">2021-05-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/%E7%BB%8F%E5%85%B8%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">经典算法</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在LRU的基础上更近一步实现LFU</p>
+<a id="more"></a>
+
+<h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/lfu-cache/">力扣链接</a></p>
+<p>请你为 <a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%BC%93%E5%AD%98%E7%AE%97%E6%B3%95">最不经常使用（LFU）</a>缓存算法设计并实现数据结构。</p>
+<p>实现 <code>LFUCache</code> 类：</p>
+<ul>
+<li><code>LFUCache(int capacity)</code> - 用数据结构的容量 <code>capacity</code> 初始化对象</li>
+<li><code>int get(int key)</code> - 如果键存在于缓存中，则获取键的值，否则返回 -1。</li>
+<li><code>void put(int key, int value)</code> - 如果键已存在，则变更其值；如果键不存在，请插入键值对。当缓存达到其容量时，则应该在插入新项之前，使最不经常使用的项无效。在此问题中，当存在平局（即两个或更多个键具有相同使用频率）时，应该去除 <strong>最近最久未使用</strong> 的键。</li>
+</ul>
+<p><strong>注意</strong>「项的使用次数」就是自插入该项以来对其调用 <code>get</code> 和 <code>put</code> 函数的次数之和。使用次数会在对应项被移除后置为 0 。</p>
+<p>为了确定最不常使用的键，可以为缓存中的每个键维护一个 <strong>使用计数器</strong> 。使用计数最小的键是最久未使用的键。</p>
+<p>当一个键首次插入到缓存中时，它的使用计数器被设置为 <code>1</code> (由于 put 操作)。对缓存中的键执行 <code>get</code> 或 <code>put</code> 操作，使用计数器的值将会递增。</p>
+<h1 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h1><p>显然题意在删除元素时会删除<strong>最低频率最近最少未使用</strong>的键</p>
+<p>其中<strong>最近最少未使用</strong>是LRU，之前我们的实现是用一个双向队列+HashMap实现，这里涉及到不同频率，我们可以考虑为不同频率维护不同的双向队列（HashMap），同时维护一个当前最小频率，可以直接找到要删除的双端队列</p>
+<p>关键的get、put方法思路如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">get(int key)&#123;</span><br><span class="line">	缓存中没有返回-1</span><br><span class="line">	有</span><br><span class="line">	首先先更新其出现频率到对于频率的队列</span><br><span class="line">	然后判段当前最短频率是否因此改变</span><br><span class="line">	最后返回对应值</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">put(int key,int value)&#123;</span><br><span class="line">	缓存中没有&#123;</span><br><span class="line">		插入到队列</span><br><span class="line">		最小频率更新为1</span><br><span class="line">		判断是否删除最老值</span><br><span class="line">	&#125;</span><br><span class="line">	缓存中有&#123;</span><br><span class="line">		首先先更新其出现频率到对于频率的队列</span><br><span class="line">	    然后判段当前最短频率是否因此改变	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据上述思路，我们可以抽象出几个函数，提高代码复用</p>
+<ul>
+<li>插入值函数</li>
+<li>更新最小频率函数</li>
+<li>更新值频率函数</li>
+<li>删除最老值函数</li>
+</ul>
+<p>最低一层的抽象涉及到对双向链表的插入和删除，注意插入时我们默认把最新元素插入到队列头，所以可以有以下两个函数</p>
+<ul>
+<li>节点插入到队列头函数</li>
+<li>删除元素操作</li>
+</ul>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>最终Java代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LFUCache</span> </span>&#123;</span><br><span class="line">    <span class="comment">// key-vaue</span></span><br><span class="line">    Map&lt;Integer,Node&gt; cache;</span><br><span class="line">    <span class="comment">// count-list</span></span><br><span class="line">    Map&lt;Integer,Node[]&gt; lists;</span><br><span class="line">    <span class="keyword">int</span> minCount;</span><br><span class="line">    <span class="keyword">int</span> size;</span><br><span class="line">    <span class="keyword">int</span> capacity;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LFUCache</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">        cache = <span class="keyword">new</span> HashMap&lt;&gt;(capacity);</span><br><span class="line">        lists = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        size = <span class="number">0</span>;</span><br><span class="line">        minCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">this</span>.capacity = capacity;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span>(!cache.containsKey(key))</span><br><span class="line">            <span class="keyword">return</span> - <span class="number">1</span>;</span><br><span class="line">        Node cur = cache.get(key);</span><br><span class="line">        <span class="keyword">int</span> oldCount = cur.count;</span><br><span class="line">        updateByCount(cur);</span><br><span class="line">        <span class="keyword">if</span>(oldCount == minCount)</span><br><span class="line">            updateMinCount();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> cur.value;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">int</span> key, <span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(capacity == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        Node cur ;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span>(!cache.containsKey(key))&#123;</span><br><span class="line">            <span class="keyword">if</span>(size == capacity)</span><br><span class="line">                removeOldest();</span><br><span class="line">            minCount = <span class="number">1</span>;</span><br><span class="line">            cur = <span class="keyword">new</span> Node(key,value,<span class="number">1</span>);</span><br><span class="line">            insertByCount(cur);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            cur = cache.get(key);</span><br><span class="line">            cur.value = value;</span><br><span class="line">            <span class="keyword">int</span> oldCount = cur.count;</span><br><span class="line">            updateByCount(cur);</span><br><span class="line">            <span class="keyword">if</span>(oldCount == minCount)</span><br><span class="line">                updateMinCount();</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateMinCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Node[] arr = lists.get(minCount);</span><br><span class="line">        <span class="keyword">if</span>(arr[<span class="number">0</span>].next == arr[<span class="number">1</span>])</span><br><span class="line">            minCount++;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 插入</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">insertByCount</span><span class="params">(Node cur)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> newCount = cur.count;</span><br><span class="line">        Node first;</span><br><span class="line">        Node last;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 双向链表初始化</span></span><br><span class="line">        <span class="keyword">if</span>(!lists.containsKey(newCount))&#123;</span><br><span class="line">            first = <span class="keyword">new</span> Node();</span><br><span class="line">            last = <span class="keyword">new</span> Node();</span><br><span class="line">            first.next = last;</span><br><span class="line">            last.pre = first;</span><br><span class="line">            lists.put(newCount,<span class="keyword">new</span> Node[]&#123;first,last&#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            Node[] arr= lists.get(newCount);</span><br><span class="line">            first = arr[<span class="number">0</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        addFirst(cur,first);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateByCount</span><span class="params">(Node cur)</span></span>&#123;</span><br><span class="line">        remove(cur);</span><br><span class="line">        cur.count++;</span><br><span class="line">        insertByCount(cur);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">private</span> Node <span class="title">removeOldest</span><span class="params">()</span></span>&#123;</span><br><span class="line">        Node[] arr = lists.get(minCount);</span><br><span class="line">        Node cur = arr[<span class="number">1</span>].pre;</span><br><span class="line">        remove(cur);</span><br><span class="line">        <span class="keyword">return</span> cur;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> key;</span><br><span class="line">        <span class="keyword">int</span> value;</span><br><span class="line">        <span class="keyword">int</span> count;</span><br><span class="line">        Node pre;</span><br><span class="line">        Node next;</span><br><span class="line">        Node()&#123;&#125;;</span><br><span class="line">        Node(<span class="keyword">int</span> key, <span class="keyword">int</span> value, <span class="keyword">int</span> count)&#123;</span><br><span class="line">            <span class="keyword">this</span>.key = key;</span><br><span class="line">            <span class="keyword">this</span>.value = value;</span><br><span class="line">            <span class="keyword">this</span>.count = count;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Node <span class="title">remove</span><span class="params">(Node cur)</span></span>&#123;</span><br><span class="line">        cur.next.pre = cur.pre;</span><br><span class="line">        cur.pre.next = cur.next;</span><br><span class="line">        size--;</span><br><span class="line">        cache.remove(cur.key);</span><br><span class="line">        <span class="keyword">return</span> cur;</span><br><span class="line">    &#125;</span><br><span class="line">     </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addFirst</span><span class="params">(Node cur, Node first)</span></span>&#123;</span><br><span class="line">        cur.next = first.next;</span><br><span class="line">        first.next.pre = cur;</span><br><span class="line">        first.next = cur;</span><br><span class="line">        cur.pre = first;</span><br><span class="line">        size++;</span><br><span class="line">        cache.put(cur.key,cur);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中Node[]大小为2包含头尾节点就相当于一个双向队列，这里也可以再做一层封装，成为一个DoubleList类</p>
+<p>其次size这个元素可以不用维护，可以通过cache的size来判断，我这里没有修改</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/LFU/" rel="tag"># LFU</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/08/LRU%E7%AE%97%E6%B3%95/" rel="prev" title="LRU算法">
+                  <i class="fa fa-chevron-left"></i> LRU算法
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
