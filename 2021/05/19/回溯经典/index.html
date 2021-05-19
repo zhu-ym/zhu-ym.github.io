@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="主要涉及，主要涉及到利用回溯的子集、排列、组合等相近但是又有区别的问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="回溯经典">
+<meta property="og:url" content="http://example.com/2021/05/19/%E5%9B%9E%E6%BA%AF%E7%BB%8F%E5%85%B8/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="主要涉及，主要涉及到利用回溯的子集、排列、组合等相近但是又有区别的问题">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-19T01:35:37.000Z">
+<meta property="article:modified_time" content="2021-05-19T08:19:40.658Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="回溯">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/05/19/%E5%9B%9E%E6%BA%AF%E7%BB%8F%E5%85%B8/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>回溯经典 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E9%9B%86%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子集问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE"><span class="nav-number">1.1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">1.2.</span> <span class="nav-text">思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">组合问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE-1"><span class="nav-number">2.1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF-1"><span class="nav-number">2.2.</span> <span class="nav-text">思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%92%E5%88%97%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">排列问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE-2"><span class="nav-number">3.1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF-2"><span class="nav-number">3.2.</span> <span class="nav-text">思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%83%E7%B4%A0%E9%87%8D%E5%A4%8D%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">元素重复问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E4%B8%80%E5%85%83%E7%B4%A0%E9%87%8D%E5%A4%8D"><span class="nav-number">4.1.</span> <span class="nav-text">思路一元素重复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%E4%B8%80%EF%BC%9A%E5%AD%90%E9%9B%86%E9%87%8D%E5%A4%8D"><span class="nav-number">4.1.1.</span> <span class="nav-text">实践一：子集重复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF%E4%BA%8C%E5%85%83%E7%B4%A0%E9%87%8D%E5%A4%8D"><span class="nav-number">4.2.</span> <span class="nav-text">思路二元素重复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%E4%BA%8C%EF%BC%9A%E7%BB%84%E5%90%88%E9%87%8D%E5%A4%8D"><span class="nav-number">4.2.1.</span> <span class="nav-text">实践二：组合重复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%92%E5%88%97%E9%97%AE%E9%A2%98%E5%85%83%E7%B4%A0%E9%87%8D%E5%A4%8D"><span class="nav-number">4.3.</span> <span class="nav-text">排列问题元素重复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5%E4%B8%89%EF%BC%9A%E6%8E%92%E5%88%97%E9%87%8D%E5%A4%8D"><span class="nav-number">4.3.1.</span> <span class="nav-text">实践三：排列重复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">38</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">58</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/19/%E5%9B%9E%E6%BA%AF%E7%BB%8F%E5%85%B8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          回溯经典
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-05-19 09:35:37 / 修改时间：16:19:40" itemprop="dateCreated datePublished" datetime="2021-05-19T09:35:37+08:00">2021-05-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/%E5%9B%9E%E6%BA%AF/" itemprop="url" rel="index"><span itemprop="name">回溯</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>主要涉及，主要涉及到利用回溯的子集、排列、组合等相近但是又有区别的问题</p>
+<a id="more"></a>
+
+<h1 id="子集问题"><a href="#子集问题" class="headerlink" title="子集问题"></a>子集问题</h1><h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p><strong>78. 子集</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/subsets/">力扣链接</a></p>
+<p>给你一个整数数组 <code>nums</code> ，数组中的元素 <strong>互不相同</strong> 。返回该数组所有可能的子集（幂集）。</p>
+<p>解集 <strong>不能</strong> 包含重复的子集。你可以按 <strong>任意顺序</strong> 返回解集。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [1,2,3]</span><br><span class="line">输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [0]</span><br><span class="line">输出：[[],[0]]</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>1 &lt;= nums.length &lt;= 10</code></li>
+<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>
+<li><code>nums</code> 中的所有元素 <strong>互不相同</strong></li>
+</ul>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>如果题目要求个数，很容易知道是2的n次方个。现在要求穷举具体解集，我们就需要理清楚自己的思路</p>
+<p>总的来说每一个元素，我们要选择他加入子集或者不选择他加入子集，这里肯定就涉及到<strong>回溯</strong></p>
+<p>下面具体到思路</p>
+<p><strong>思路1</strong></p>
+<p>对每一个元素，我们决定选或不选，直到所有元素决定完后，再将结果填入子集</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] nums;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; subsets(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">this</span>.nums = nums;</span><br><span class="line">        <span class="keyword">int</span> n = nums.length - <span class="number">1</span>;</span><br><span class="line">        dfs(n,<span class="keyword">new</span> ArrayList&lt;Integer&gt;());</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">      </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> cur,List&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span>(cur &lt; <span class="number">0</span>)&#123;</span><br><span class="line">            ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line">            <span class="keyword">return</span>;&#125;</span><br><span class="line">        	<span class="comment">// 选择该元素</span></span><br><span class="line">            list.add(nums[cur]);</span><br><span class="line">            dfs(cur - <span class="number">1</span>,list);</span><br><span class="line">        	<span class="comment">// 回溯</span></span><br><span class="line">            list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">        	<span class="comment">// 不选择该元素</span></span><br><span class="line">            dfs(cur-<span class="number">1</span>,list);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中cur用来控制选择元素的位置，直到所有元素选择完毕</p>
+<p><strong>思路2</strong></p>
+<p>我们还可以换一种思路，总共n个元素，我们可以按以下方案抉择</p>
+<ul>
+<li><p>一个不选</p>
+</li>
+<li><p>选一个</p>
+<p>……</p>
+</li>
+<li><p>选n个</p>
+</li>
+</ul>
+<p>这里每一层都把结果添加到子集中，代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] nums;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; subsets(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">this</span>.nums = nums;</span><br><span class="line">        <span class="keyword">int</span> n = nums.length - <span class="number">1</span>;</span><br><span class="line">        dfs(n,<span class="keyword">new</span> ArrayList&lt;Integer&gt;());</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">      </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> cur,List&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 每一层添加答案入解集</span></span><br><span class="line">        ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 这里控制cur比上一层的cur小，避免产生重复的子集</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = cur; j &gt;= <span class="number">0</span>; j--)&#123;</span><br><span class="line">            list.add(nums[j]);</span><br><span class="line">            dfs(j - <span class="number">1</span>,list);</span><br><span class="line">            list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>写完这题，基本可以见识到回溯算法的两种写法，主体有for循环和没有for循环的，一般的说，有for循环的参数控制更为讲究</p>
+<h1 id="组合问题"><a href="#组合问题" class="headerlink" title="组合问题"></a>组合问题</h1><h2 id="题目-1"><a href="#题目-1" class="headerlink" title="题目"></a>题目</h2><p><strong>77. 组合</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/combinations/">力扣链接</a></p>
+<p>给定两个整数 <em>n</em> 和 <em>k</em>，返回 1 … <em>n</em> 中所有可能的 <em>k</em> 个数的组合。</p>
+<p><strong>示例:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">输入: n &#x3D; 4, k &#x3D; 2</span><br><span class="line">输出:</span><br><span class="line">[</span><br><span class="line">  [2,4],</span><br><span class="line">  [3,4],</span><br><span class="line">  [2,3],</span><br><span class="line">  [1,2],</span><br><span class="line">  [1,3],</span><br><span class="line">  [1,4],</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h2><p>很显然，组合问题是子集问题的一个子集，特别是到子集问题的思路二中，其只是子集问题递归第k层选k个的结果</p>
+<p>延续前面子集问题的两种思路，我们这里依旧对照两种思路，不够现在回溯应该得再加一个参数k来判断选取组合是否到达k个</p>
+<p><strong>思路1</strong></p>
+<p>选或不选，当选到k个时就返回</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; combine(<span class="keyword">int</span> n, <span class="keyword">int</span> k) &#123;</span><br><span class="line">        dfs(n,k,<span class="keyword">new</span> ArrayList&lt;&gt;());</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> cur,<span class="keyword">int</span> k,List&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">         <span class="comment">// 选到k个返回</span></span><br><span class="line">         <span class="keyword">if</span>(k == <span class="number">0</span>)&#123;</span><br><span class="line">            ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="comment">// 剪枝，当选完了或者剩下的选不了k个了</span></span><br><span class="line">        <span class="keyword">if</span>(cur == <span class="number">0</span> || cur &lt; k)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        list.add(cur);</span><br><span class="line">        dfs(cur - <span class="number">1</span>,k - <span class="number">1</span>,list);</span><br><span class="line">        list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">        dfs(cur - <span class="number">1</span>,k,list);</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>思路2</strong></p>
+<p>就按照一层一层的选，选到满足条件结束</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; combine(<span class="keyword">int</span> n, <span class="keyword">int</span> k) &#123;</span><br><span class="line">        dfs(n,k,<span class="keyword">new</span> ArrayList&lt;&gt;());</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> cur,<span class="keyword">int</span> k,List&lt;Integer&gt; list)</span> </span>&#123;</span><br><span class="line">         <span class="keyword">if</span>(k == <span class="number">0</span>)&#123;</span><br><span class="line">            ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">         &#125;</span><br><span class="line">       	</span><br><span class="line">         <span class="comment">// 这里的j &gt;= k 是剪枝，即剩下的选不了k个了</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = cur; j &gt;= k; j--)&#123;</span><br><span class="line">            list.add(j);</span><br><span class="line">            dfs(j - <span class="number">1</span>,k - <span class="number">1</span>,list);</span><br><span class="line">            list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="排列问题"><a href="#排列问题" class="headerlink" title="排列问题"></a>排列问题</h1><h2 id="题目-2"><a href="#题目-2" class="headerlink" title="题目"></a>题目</h2><p><strong>46. 全排列</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/permutations/">力扣链接</a></p>
+<p>给定一个不含重复数字的数组 <code>nums</code> ，返回其 <strong>所有可能的全排列</strong> 。你可以 <strong>按任意顺序</strong> 返回答案。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [1,2,3]</span><br><span class="line">输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [0,1]</span><br><span class="line">输出：[[0,1],[1,0]]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 3：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [1]</span><br><span class="line">输出：[[1]]</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>1 &lt;= nums.length &lt;= 6</code></li>
+<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>
+<li><code>nums</code> 中的所有整数 <strong>互不相同</strong></li>
+</ul>
+<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路"></a>思路</h2><p>排列问题和子集、组合问题主要区别就在于排列问题顺序不一样就是一个排列，一个解</p>
+<p>这个时候也用回溯，但是就不能用cur来控制顺序防止重复选取了</p>
+<p>此时思路一的选或不选也不再生效</p>
+<p>但是排列问题也有重复问题，注意<strong>重复问题的区别</strong>：前面的重复问题是指[2,1]和[1,2]的重复，而这里的重复问题再不以cur来控制顺序后，可能出现选取已选取元素的重复如[1,1]</p>
+<p>这时我们就需要用一个visited数组来记录选取元素的情况</p>
+<p>最后代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">int</span>[] nums;</span><br><span class="line">    <span class="comment">// 用来标记是否选取</span></span><br><span class="line">    <span class="keyword">boolean</span>[] visited;</span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; permute(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> n = nums.length;</span><br><span class="line">        visited = <span class="keyword">new</span> <span class="keyword">boolean</span>[n];</span><br><span class="line">        <span class="keyword">this</span>.nums = nums;</span><br><span class="line">        dfs(n,<span class="keyword">new</span> ArrayList&lt;Integer&gt;());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> k,List&lt;Integer&gt; list)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(k == <span class="number">0</span>)&#123;</span><br><span class="line">            ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line">            <span class="keyword">return</span>;      </span><br><span class="line">        &#125;</span><br><span class="line">		</span><br><span class="line">        <span class="comment">// 无差别排列，和子集、组合的最大不同</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length ; i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(!visited[i])&#123;</span><br><span class="line">            list.add(nums[i]);</span><br><span class="line">            visited[i] = <span class="keyword">true</span>;</span><br><span class="line">            dfs(k - <span class="number">1</span>,list);</span><br><span class="line">            visited[i] = <span class="keyword">false</span>;</span><br><span class="line">            list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="元素重复问题"><a href="#元素重复问题" class="headerlink" title="元素重复问题"></a>元素重复问题</h1><p>实际上，上诉问题都在题目中表明了数组中的<strong>元素重复唯一</strong></p>
+<p>但是当数组元素不唯一时，会由于元素的重复带来解集的重复</p>
+<p>这时就加大了题目难度</p>
+<p>最简单的解决思路可能是用<strong>一个set集合来放解集来实现去重</strong>，但是否会有更巧妙的解法，直接剪枝判断去重呢</p>
+<h2 id="思路一元素重复"><a href="#思路一元素重复" class="headerlink" title="思路一元素重复"></a>思路一元素重复</h2><p>在这情况下，首先面对思路一</p>
+<p>如果<code>nums = [1,1,2]</code></p>
+<p>如果我们选取了第一个1，那么第二个1有选或不选两种情况即[1,1]、[1]</p>
+<p>如果我们不选取第一个1，那么第二个1如果选取了就会前面的两种情况之一重复即[1]</p>
+<p>由此我们发现<strong>如果前一个重复元素没有选取情况下，后一个的重复元素也不用选取</strong>，就不会造成选取元素的重复了</p>
+<p>但是有两个问题：</p>
+<ul>
+<li>如何判断前一个元素是否选取：同排列一样，采用<strong>visited数组</strong></li>
+<li>如何判断保证重复元素紧挨着：先对<strong>数组进行排序预处理</strong></li>
+</ul>
+<p>下面两道题分别对应不同的处理方式</p>
+<h3 id="实践一：子集重复"><a href="#实践一：子集重复" class="headerlink" title="实践一：子集重复"></a>实践一：子集重复</h3><p><strong>90. 子集 II</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/subsets-ii/">力扣链接</a></p>
+<p>给你一个整数数组 <code>nums</code> ，其中可能包含重复元素，请你返回该数组所有可能的子集（幂集）。</p>
+<p>解集 <strong>不能</strong> 包含重复的子集。返回的解集中，子集可以按 <strong>任意顺序</strong> 排列。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [1,2,2]</span><br><span class="line">输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [0]</span><br><span class="line">输出：[[],[0]]</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>1 &lt;= nums.length &lt;= 10</code></li>
+<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>
+</ul>
+<p><strong>代码</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span>[] nums;</span><br><span class="line">    <span class="keyword">boolean</span>[] visited;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; subsetsWithDup(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">this</span>.nums = nums;</span><br><span class="line">        <span class="comment">// 排序预处理</span></span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line">        visited = <span class="keyword">new</span> <span class="keyword">boolean</span>[nums.length];</span><br><span class="line">        dfs(<span class="number">0</span>,<span class="keyword">new</span> ArrayList&lt;&gt;());</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> cur,List&lt;Integer&gt; list)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(cur == nums.length)&#123;</span><br><span class="line">            ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">		</span><br><span class="line">        <span class="comment">// 如果前一个重复元素没有选取，就</span></span><br><span class="line">        <span class="keyword">if</span>(cur &gt; <span class="number">0</span> &amp;&amp; nums[cur] == nums[cur - <span class="number">1</span>] &amp;&amp; !visited[cur - <span class="number">1</span>])&#123;</span><br><span class="line">            ;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            list.add(nums[cur]);</span><br><span class="line">            visited[cur] = <span class="keyword">true</span>;</span><br><span class="line">            dfs(cur + <span class="number">1</span>,list);</span><br><span class="line">            visited[cur] = <span class="keyword">false</span>;</span><br><span class="line">            list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        dfs(cur + <span class="number">1</span>,list);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="思路二元素重复"><a href="#思路二元素重复" class="headerlink" title="思路二元素重复"></a>思路二元素重复</h2><p>对于思路二的去重还可以再省掉一个visited数组</p>
+<p>对于思路二，我们知道有一个cur记录了这一层的起始位置，其主体遍历结构如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> j = cur; j &lt; n; j++)&#123;</span><br><span class="line">           回溯</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>显然在一层的意思就是选择第t个数字，当位置处于j时，代表[cur,j-1]之前的数字已经选取过</p>
+<p>那意味者当<strong>数组排好序过，相同元素相邻</strong>，如果<code>j &gt; cur </code>并且<code> nums[j] == nums[j - 1]</code>就说明这一层<code>nums[j]</code>已经选择作为第t个数字过了，就没有必要再选了</p>
+<h3 id="实践二：组合重复"><a href="#实践二：组合重复" class="headerlink" title="实践二：组合重复"></a>实践二：组合重复</h3><ol start="40">
+<li><strong>组合总和 II</strong></li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/combination-sum-ii/">力扣链接</a></p>
+<p>给定一个数组 <code>candidates</code> 和一个目标数 <code>target</code> ，找出 <code>candidates</code> 中所有可以使数字和为 <code>target</code> 的组合。</p>
+<p><code>candidates</code> 中的每个数字在每个组合中只能使用一次。</p>
+<p><strong>说明：</strong></p>
+<ul>
+<li>所有数字（包括目标数）都是正整数。</li>
+<li>解集不能包含重复的组合。 </li>
+</ul>
+<p><strong>示例 1:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">输入: candidates &#x3D; [10,1,2,7,6,1,5], target &#x3D; 8,</span><br><span class="line">所求解集为:</span><br><span class="line">[</span><br><span class="line">  [1, 7],</span><br><span class="line">  [1, 2, 5],</span><br><span class="line">  [2, 6],</span><br><span class="line">  [1, 1, 6]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">输入: candidates &#x3D; [2,5,2,1,2], target &#x3D; 5,</span><br><span class="line">所求解集为:</span><br><span class="line">[</span><br><span class="line">  [1,2,2],</span><br><span class="line">  [5]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p><strong>代码</strong></p>
+<p>这道题也是组合问题，只不过k变成了目标和，我们套用之前的思路</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] nums;</span><br><span class="line">        List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; combinationSum2(<span class="keyword">int</span>[] candidates, <span class="keyword">int</span> target) &#123;</span><br><span class="line">        nums = candidates;</span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line">        dfs(<span class="number">0</span>,target,<span class="keyword">new</span> ArrayList&lt;Integer&gt;());</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> cur,<span class="keyword">int</span> k,List&lt;Integer&gt; list)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(k == <span class="number">0</span>)&#123;</span><br><span class="line">            ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//  nums[i] &lt;= k去重</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = cur; i &lt; nums.length &amp;&amp; nums[i] &lt;= k; i++)&#123;</span><br><span class="line">            <span class="comment">// 去重思路，这一层选取的nums[i]已经被选取过</span></span><br><span class="line">            <span class="keyword">if</span>(i &gt; cur &amp;&amp; nums[i] == nums[i - <span class="number">1</span>])</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            list.add(nums[i]);</span><br><span class="line">            dfs(i + <span class="number">1</span>, k - nums[i],list);</span><br><span class="line">            list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="排列问题元素重复"><a href="#排列问题元素重复" class="headerlink" title="排列问题元素重复"></a>排列问题元素重复</h2><p>对于排列问题的元素重复和思路二很相似，只是排列中没有i &gt; cur 的判断手段，但是可以利用visited数组辅助判断</p>
+<h3 id="实践三：排列重复"><a href="#实践三：排列重复" class="headerlink" title="实践三：排列重复"></a>实践三：排列重复</h3><p><strong>47. 全排列 II</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/permutations-ii/">力扣链接</a></p>
+<p>给定一个可包含重复数字的序列 <code>nums</code> ，<strong>按任意顺序</strong> 返回所有不重复的全排列。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [1,1,2]</span><br><span class="line">输出：</span><br><span class="line">[[1,1,2],</span><br><span class="line"> [1,2,1],</span><br><span class="line"> [2,1,1]]</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums &#x3D; [1,2,3]</span><br><span class="line">输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>1 &lt;= nums.length &lt;= 8</code></li>
+<li><code>-10 &lt;= nums[i] &lt;= 10</code></li>
+</ul>
+<p><strong>代码</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">int</span>[] nums;</span><br><span class="line">    <span class="keyword">boolean</span>[] visited;</span><br><span class="line">    <span class="keyword">public</span> List&lt;List&lt;Integer&gt;&gt; permuteUnique(<span class="keyword">int</span>[] nums) &#123;</span><br><span class="line">        <span class="keyword">int</span> n = nums.length;</span><br><span class="line">        visited = <span class="keyword">new</span> <span class="keyword">boolean</span>[n];</span><br><span class="line">        <span class="keyword">this</span>.nums = nums;</span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line">        dfs(n,<span class="keyword">new</span> ArrayList&lt;Integer&gt;());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">(<span class="keyword">int</span> k,List&lt;Integer&gt; list)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(k == <span class="number">0</span>)&#123;</span><br><span class="line">            ans.add(<span class="keyword">new</span> ArrayList&lt;&gt;(list));</span><br><span class="line">            <span class="keyword">return</span>;      </span><br><span class="line">        &#125;</span><br><span class="line">		</span><br><span class="line">        <span class="comment">// 无差别排列，从0开始，和子集、组合的最大不同</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length ; i++)&#123;</span><br><span class="line">            <span class="comment">// 利用visited辅助去重判断</span></span><br><span class="line">            <span class="keyword">if</span>(i &gt; <span class="number">0</span> &amp;&amp; nums[i] == nums[i - <span class="number">1</span>] &amp;&amp; !visited[i - <span class="number">1</span>])</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">if</span>(!visited[i])&#123;</span><br><span class="line">            list.add(nums[i]);</span><br><span class="line">            visited[i] = <span class="keyword">true</span>;</span><br><span class="line">            dfs(k - <span class="number">1</span>,list);</span><br><span class="line">            visited[i] = <span class="keyword">false</span>;</span><br><span class="line">            list.remove(list.size() - <span class="number">1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>根据上诉情况，我们可以总结出一套该问题的回溯模板</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dfs</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(符合条件)&#123;</span><br><span class="line">           具体操作</span><br><span class="line">           <span class="keyword">return</span>;      </span><br><span class="line">       &#125;</span><br><span class="line">	</span><br><span class="line">       <span class="comment">// cur === 0,全排列模板</span></span><br><span class="line">    	<span class="comment">// cur 记录位置，集合组合模板</span></span><br><span class="line">    	<span class="comment">// 此处可以加条件剪枝</span></span><br><span class="line">       <span class="keyword">for</span>(<span class="keyword">int</span> i = cur; i &lt; nums.length ; i++)&#123;</span><br><span class="line">          	</span><br><span class="line">           <span class="comment">// 去重模板都可以使用visited数组，对于前两者可以利用cur的位置辅助而不用数组 if(i &gt; 0 &amp;&amp; nums[i] == nums[i - 1] &amp;&amp; !visited[i - 1])continue;</span></span><br><span class="line">               </span><br><span class="line">           <span class="keyword">if</span>(!visited[i])&#123;</span><br><span class="line">           回溯部分</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>更多Java后端学习记录，可以观看我的博客：<a target="_blank" rel="noopener" href="https://zhu-ym.github.io/">博客链接</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%9B%9E%E6%BA%AF/" rel="tag"># 回溯</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/16/%E5%8D%95%E8%B0%83%E6%A0%88/" rel="prev" title="单调栈">
+                  <i class="fa fa-chevron-left"></i> 单调栈
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
