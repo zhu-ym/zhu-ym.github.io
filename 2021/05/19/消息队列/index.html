@@ -23,21 +23,21 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
-<meta name="description" content="了解Java注解相关基础知识">
+<meta name="description" content="主要是对消息队列的使用、可能出现的问题和常见的消息队列做一些概述">
 <meta property="og:type" content="article">
-<meta property="og:title" content="注解">
-<meta property="og:url" content="http://example.com/2021/04/28/%E6%B3%A8%E8%A7%A3/index.html">
+<meta property="og:title" content="消息队列">
+<meta property="og:url" content="http://example.com/2021/05/19/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/index.html">
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
-<meta property="og:description" content="了解Java注解相关基础知识">
+<meta property="og:description" content="主要是对消息队列的使用、可能出现的问题和常见的消息队列做一些概述">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-04-28T06:45:45.000Z">
-<meta property="article:modified_time" content="2021-04-28T07:44:51.091Z">
+<meta property="article:published_time" content="2021-05-19T08:23:06.000Z">
+<meta property="article:modified_time" content="2021-05-19T09:07:30.380Z">
 <meta property="article:author" content="Zhu-ym">
-<meta property="article:tag" content="泛型">
+<meta property="article:tag" content="消息队列">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://example.com/2021/04/28/%E6%B3%A8%E8%A7%A3/">
+<link rel="canonical" href="http://example.com/2021/05/19/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">
 
 
 <script class="page-configurations">
@@ -49,7 +49,7 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>注解 | Zhu-ym's blog</title>
+<title>消息队列 | Zhu-ym's blog</title>
   
 
 
@@ -158,7 +158,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">注解</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">消息模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%B9%E5%AF%B9%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">点对点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85"><span class="nav-number">1.2.</span> <span class="nav-text">发布订阅</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E6%8F%90%E9%AB%98%E5%93%8D%E5%BA%94"><span class="nav-number">2.1.</span> <span class="nav-text">异步提高响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E8%80%A6"><span class="nav-number">2.2.</span> <span class="nav-text">解耦</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E5%89%8A%E5%B3%B0%E9%99%90%E6%B5%81"><span class="nav-number">2.3.</span> <span class="nav-text">高并发削峰限流</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9"><span class="nav-number">3.1.</span> <span class="nav-text">重复消费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E4%B8%A2%E5%A4%B1"><span class="nav-number">3.2.</span> <span class="nav-text">消息丢失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E9%A1%BA%E5%BA%8F"><span class="nav-number">3.3.</span> <span class="nav-text">消息消费顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">3.4.</span> <span class="nav-text">一致性问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-number">4.</span> <span class="nav-text">常见消息队列</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -234,7 +234,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/28/%E6%B3%A8%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/19/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -247,7 +247,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          注解
+          消息队列
         </h1>
 
         <div class="post-meta-container">
@@ -259,7 +259,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2021-04-28 14:45:45 / 修改时间：15:44:51" itemprop="dateCreated datePublished" datetime="2021-04-28T14:45:45+08:00">2021-04-28</time>
+      <time title="创建时间：2021-05-19 16:23:06 / 修改时间：17:07:30" itemprop="dateCreated datePublished" datetime="2021-05-19T16:23:06+08:00">2021-05-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -267,11 +267,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java%E8%AF%AD%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">Java语法</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java%E8%AF%AD%E6%B3%95/%E8%BF%9B%E9%98%B6/" itemprop="url" rel="index"><span itemprop="name">进阶</span></a>
+          <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">中间件</span></a>
         </span>
     </span>
 
@@ -285,21 +281,24 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>了解Java注解相关基础知识</p>
+        <p>主要是对消息队列的使用、可能出现的问题和常见的消息队列做一些概述</p>
 <a id="more"></a>
 
-<h1 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h1><p>注解是 Java 引入的一项非常受欢迎的补充，它提供了一种结构化，并且具有类型检查能力的新途径，从而使得你能够为代码中加入元数据，而且不会导致代码杂乱并难以阅读。</p>
-<p>注解为我们在代码中添加信息提供了一种形式化的方式，使我们可以在稍后的某个时刻更容易的使用这些数据。</p>
-<p>注解在一定程度上是把元数据和源代码文件结合在一起的趋势所激发的，而不是保存在外部文档。</p>
-<p>比如我们在学习Java Spring的时候，最开始是使用XML文件为Bean配置一下信息，我们还需要学习一下XML的操作，采用注解后就可以将相关数据放在注解处、源代码处。</p>
-<p>又比如在搭建项目时使用一些注解可以用于代码的自动生成</p>
-<p>总的来说，注解可能主要可能有以下用法：</p>
-<ul>
-<li><strong>附属文件的自动生成</strong></li>
-<li><strong>测试、日志、事务语义等代码的自动生成</strong></li>
-</ul>
-<p>Java</p>
-
+<h1 id="消息模型"><a href="#消息模型" class="headerlink" title="消息模型"></a>消息模型</h1><p>消息模型主要有两种模式，一种是点对点，一种是发布订阅</p>
+<h2 id="点对点"><a href="#点对点" class="headerlink" title="点对点"></a>点对点</h2><p>消息生产者向消息队列中发送了一个消息之后，只能被一个消费者消费一次。</p>
+<h2 id="发布订阅"><a href="#发布订阅" class="headerlink" title="发布订阅"></a>发布订阅</h2><p>消息生产者向频道发送一个消息之后，多个消费者可以从该频道订阅到这条消息并消费。</p>
+<h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><p>消息队列主要有三种应用：<strong>异步提高响应</strong>、<strong>高并发削峰限流</strong>、<strong>解耦</strong></p>
+<h2 id="异步提高响应"><a href="#异步提高响应" class="headerlink" title="异步提高响应"></a>异步提高响应</h2><p>发送者将消息发送给消息队列之后，不需要同步等待消息接收者处理完毕，而是立即返回进行其它操作。消息接收者从消息队列中订阅消息之后异步处理。</p>
+<p>比如淘宝提交订单后，后序可能会有短信通知，或者消费积分活动，这个过程可能用到了消息队列，首先保证了订单提交，然后将信息放入消息队列：短信通知，或者消费积分活动等其他流程业务异步进行</p>
+<p>这样一个订单流程中可以缩减一些其他功能，提高响应速度</p>
+<h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><p>如果模块之间不直接进行调用，模块之间耦合度就会很低，那么修改一个模块或者新增一个模块对其它模块的影响会很小，从而实现可扩展性。</p>
+<p>通过使用消息队列，一个模块只需要向消息队列中发送消息，其它模块可以选择性地从消息队列中订阅消息从而完成调用。</p>
+<p>显然上诉的异步案例也是解耦案例，消息队列让订单和短信通知，或者消费积分活动等别的模块功能之间实现了解耦</p>
+<h2 id="高并发削峰限流"><a href="#高并发削峰限流" class="headerlink" title="高并发削峰限流"></a><strong>高并发削峰限流</strong></h2><p>在高并发的场景下，如果短时间有大量的请求到达会压垮服务器。</p>
+<p>可以将请求发送到消息队列中，服务器按照其处理能力从消息队列中订阅消息进行处理。</p>
+<p>一般在秒杀系统中可能涉及到对数据数据的操作，如果并发量过大，可能会造成数据库崩溃，可以将把请求放到队列里面，然后至于每秒消费多少请求，就看自己的服务器处理能力</p>
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>如果引入消息队列后，可能也会造成一些问题</p>
+<h2 id="重复消费"><a href="#重复消费" class="headerlink" title="重复消费"></a>重复消费</h2><h2 id="消息丢失"><a href="#消息丢失" class="headerlink" title="消息丢失"></a>消息丢失</h2><h2 id="消息消费顺序"><a href="#消息消费顺序" class="headerlink" title="消息消费顺序"></a>消息消费顺序</h2><h2 id="一致性问题"><a href="#一致性问题" class="headerlink" title="一致性问题"></a>一致性问题</h2><h1 id="常见消息队列"><a href="#常见消息队列" class="headerlink" title="常见消息队列"></a>常见消息队列</h1>
     </div>
 
     
@@ -326,21 +325,18 @@
 </div>
 
           <div class="post-tags">
-              <a href="/tags/%E6%B3%9B%E5%9E%8B/" rel="tag"># 泛型</a>
+              <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag"># 消息队列</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/04/27/Spring%E8%AF%A6%E8%A7%A3/" rel="prev" title="Spring详解">
-                  <i class="fa fa-chevron-left"></i> Spring详解
+                <a href="/2021/05/19/%E5%9B%9E%E6%BA%AF%E7%BB%8F%E5%85%B8/" rel="prev" title="回溯经典">
+                  <i class="fa fa-chevron-left"></i> 回溯经典
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/05/07/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="next" title="网络编程">
-                  网络编程 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
