@@ -23,14 +23,17 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
+<meta name="description" content="前缀和数组是对一个数组进行累加求和，然后可以通过O(1)的时间复杂度得到数组的任意子数组和">
 <meta property="og:type" content="article">
 <meta property="og:title" content="前缀和数组">
 <meta property="og:url" content="http://example.com/2021/05/23/%E5%89%8D%E7%BC%80%E5%92%8C%E6%95%B0%E7%BB%84/index.html">
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="前缀和数组是对一个数组进行累加求和，然后可以通过O(1)的时间复杂度得到数组的任意子数组和">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-05-23T02:43:59.000Z">
-<meta property="article:modified_time" content="2021-05-23T02:43:59.279Z">
+<meta property="article:modified_time" content="2021-05-23T03:14:14.076Z">
 <meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="前缀和">
 <meta name="twitter:card" content="summary">
 
 
@@ -142,7 +145,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -155,6 +158,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE"><span class="nav-number">1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%9D%E8%80%83"><span class="nav-number">2.</span> <span class="nav-text">思考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">代码</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -180,7 +184,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">61</span>
+        <span class="site-state-item-count">62</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -253,8 +257,22 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-05-23 10:43:59" itemprop="dateCreated datePublished" datetime="2021-05-23T10:43:59+08:00">2021-05-23</time>
+      <time title="创建时间：2021-05-23 10:43:59 / 修改时间：11:14:14" itemprop="dateCreated datePublished" datetime="2021-05-23T10:43:59+08:00">2021-05-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/%E7%BB%8F%E5%85%B8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">经典数据结构</span></a>
+        </span>
     </span>
 
   
@@ -267,7 +285,33 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        
+        <p>前缀和数组是对一个数组进行累加求和，然后可以通过O(1)的时间复杂度得到数组的任意子数组和</p>
+<a id="more"></a>
+
+<p>下面通过一题看其具体应用</p>
+<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p><strong>560. 和为K的子数组</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/subarray-sum-equals-k/">力扣链接</a></p>
+<p>给定一个整数数组和一个整数 <strong>k，</strong>你需要找到该数组中和为 <strong>k</strong> 的连续的子数组的个数。</p>
+<p><strong>示例 1 :</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入:nums &#x3D; [1,1,1], k &#x3D; 2</span><br><span class="line">输出: 2 , [1,1] 与 [1,1] 为两种不同的情况。</span><br></pre></td></tr></table></figure>
+<p><strong>说明 :</strong></p>
+<ol>
+<li>数组的长度为 [1, 20,000]。</li>
+<li>数组中元素的范围是 [-1000, 1000] ，且整数 <strong>k</strong> 的范围是 [-1e7, 1e7]。</li>
+</ol>
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>显然该题涉及到连续子数组求和，我们如果枚举子数组后再求和可能导致时间复杂度很高</p>
+<p>这时类似于数学中的前n项和</p>
+<p>我们如果有p[i] 表示 nums数组的前i项和</p>
+<p>那么任意num[i…j]和就等于<code>p[j + 1] - p[i]</code></p>
+<p>而求取p[i]也比较简单，只需要遍历一遍数组即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">preSum[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">    preSum[i + <span class="number">1</span>] = preSum[i] + nums[i];</span><br></pre></td></tr></table></figure>
+<p>当然对于该题</p>
+<p>我们预处理得到<code>preSum</code>后我们就要寻找<code>preSum[j] - preSum[i] == k</code>即的个数即答案</p>
+<p><code>preSum[j] - preSum[i] == k</code>即**<code>preSum[j] + (-preSum[i]) == k</code><strong>,这个题目明显转化成了经典的</strong>两数之和问题**（狗头）</p>
+<p>我们如果利用一个map记录下前面的<code>preSum[i] + k</code>,到后面的<code>j</code>时只有判断<code>preSum[j]</code>是否存在即可</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>最后代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">subarraySum</span><span class="params">(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> k)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n  = nums.length;</span><br><span class="line">        <span class="comment">// preSum[i] 表示nums前i项和</span></span><br><span class="line">        <span class="keyword">int</span>[] preSum = <span class="keyword">new</span> <span class="keyword">int</span>[n + <span class="number">1</span>];</span><br><span class="line">        preSum[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">            preSum[i + <span class="number">1</span>] = preSum[i] + nums[i];</span><br><span class="line">        <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 下面是经典两数之和问题变种</span></span><br><span class="line">        Map&lt;Integer,Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        map.put(k,<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(map.containsKey(preSum[i]))</span><br><span class="line">                sum += map.get(preSum[i]);</span><br><span class="line"></span><br><span class="line">            map.put(preSum[i] + k,map.getOrDefault(preSum[i] + k,<span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
     </div>
 
     
@@ -293,6 +337,9 @@
   </div>
 </div>
 
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" rel="tag"># 前缀和</a>
+          </div>
 
         
 
