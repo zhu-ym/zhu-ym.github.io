@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="了解RocketMQ的一些设计原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ原理">
+<meta property="og:url" content="http://example.com/2021/05/25/RocketMQ%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="了解RocketMQ的一些设计原理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210525145954822.png">
+<meta property="og:image" content="http://example.com/images/image-20210525152218692.png">
+<meta property="og:image" content="http://example.com/images/image-20210525190217950.png">
+<meta property="og:image" content="http://example.com/images/image-20210525194051219.png">
+<meta property="article:published_time" content="2021-05-25T06:43:15.000Z">
+<meta property="article:modified_time" content="2021-05-25T11:50:39.905Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="消息队列">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210525145954822.png">
+
+
+<link rel="canonical" href="http://example.com/2021/05/25/RocketMQ%E5%8E%9F%E7%90%86/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>RocketMQ原理 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">一、概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%B6%88%E6%81%AF%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">二、消息模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%9E%B6%E6%9E%84%E7%BB%84%E6%88%90"><span class="nav-number">3.</span> <span class="nav-text">三、架构组成</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#NameServer"><span class="nav-number">3.1.</span> <span class="nav-text">NameServer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Broker"><span class="nav-number">3.2.</span> <span class="nav-text">Broker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Producer"><span class="nav-number">3.3.</span> <span class="nav-text">Producer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Consumer"><span class="nav-number">3.4.</span> <span class="nav-text">Consumer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">四、持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6"><span class="nav-number">4.1.</span> <span class="nav-text">刷盘机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E3%80%81%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text">同步、异步复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">4.3.</span> <span class="nav-text">存储机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%A3%E5%86%B3"><span class="nav-number">5.</span> <span class="nav-text">五、一些问题的解决</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E6%B6%88%E8%B4%B9"><span class="nav-number">5.1.</span> <span class="nav-text">顺序消费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9"><span class="nav-number">5.2.</span> <span class="nav-text">重复消费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-number">5.3.</span> <span class="nav-text">分布式事务</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/25/RocketMQ%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RocketMQ原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-05-25 14:43:15 / 修改时间：19:50:39" itemprop="dateCreated datePublished" datetime="2021-05-25T14:43:15+08:00">2021-05-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">中间件</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>了解RocketMQ的一些设计原理</p>
+<a id="more"></a>
+
+<h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p><code>RocketMQ</code> 是一个 <strong>队列模型</strong> 的消息中间件，具有<strong>高性能、高可靠、高实时、分布式</strong> 的特点。</p>
+<h1 id="二、消息模型"><a href="#二、消息模型" class="headerlink" title="二、消息模型"></a>二、消息模型</h1><p>RocketMQ采用的消息模型是<strong>发布订阅模型</strong>，也叫<strong>主题模型</strong>，其中：</p>
+<p>消息的生产者称为 <strong>发布者(Publisher)</strong> ，消息的消费者称为 <strong>订阅者(Subscriber)</strong> ，存放消息的容器称为 <strong>主题(Topic)</strong> 。</p>
+<p>发布者将消息发送到指定主题中，订阅者需要 <strong>提前订阅主题</strong> 才能接受特定主题的消息。</p>
+<p>对于RocketMQ，其主题模型的实现，如下图所示：</p>
+<p><img src="/images/image-20210525145954822.png" alt="image-20210525145954822"></p>
+<ul>
+<li>首先其一个<strong>Topic配置了多个队列，并且每个队列队列维护了每个消费者组的消费位置</strong>。前者提高了并发能力，后者就是让多个消费群组记录自己的消费位置，不会重复消费</li>
+<li>然后一个<strong>生产者组生产相同的消息，生产者组有可以有多个生产者</strong></li>
+<li>最后一个<strong>消费者组可以有多个消费者，共同消费一个 <code>topic</code> 的多个队列，一个队列只会被一个消费者消费</strong></li>
+</ul>
+<p>总的来说该RocketMQ如此实现的主题模型明显<strong>适合于分布式横向扩展部署架构</strong>，不仅生产者组消费者组可以集群部署、一个Topic也适合集群部署</p>
+<h1 id="三、架构组成"><a href="#三、架构组成" class="headerlink" title="三、架构组成"></a>三、架构组成</h1><p><code>RocketMQ</code> 技术架构中有四大角色 <code>NameServer</code> 、<code>Broker</code> 、<code>Producer</code> 、<code>Consumer</code> 。</p>
+<p><img src="/images/image-20210525152218692.png" alt="image-20210525152218692"></p>
+<h2 id="NameServer"><a href="#NameServer" class="headerlink" title="NameServer"></a>NameServer</h2><p><strong><code>主要负责对于源数据的管理，包括了对于Topic和Broker路由信息的管理。</code></strong></p>
+<p>具体来说，如上图所示</p>
+<p>每个 <code>Broker </code>在启动的时候会到 <code>NameServer </code>注册，<code>Producer</code> 在发送消息前会根据 <code>Topic </code>到 <code>NameServer</code> 获取到 <code>Broker </code>的路由信息，<code>Consumer</code> 也会定时获取 <code>Topic</code> 的路由信息，然后再和对应的<code>Broker</code>进行通信。</p>
+<p><code>NameServer</code>压力不会太大，平时主要开销是在维持心跳和提供Topic-Broker的关系数据，其降低了<code>Broker</code>修改时对生产者和消费者的影响</p>
+<p> 最后<code>NameServer</code> 可以做集群部署，其是去<strong>中心化</strong>的，意味着在 <code>RocketMQ</code> 中 <strong>单个Broker和所有NameServer保持长连接</strong></p>
+<h2 id="Broker"><a href="#Broker" class="headerlink" title="Broker"></a>Broker</h2><p><strong><code>消息中转角色，负责存储消息，转发消息。</code></strong></p>
+<p><code>Broker</code>是具体提供业务的服务器，单个<code>Broker</code>节点与所有的<code>NameServer</code>节点保持长连接及心跳，并会定时将<code>Topic</code>信息注册到<code>NameServer</code>,当生产者、消费者从<code>NameServer</code>得到<code>Broker </code>的路由信息后，生产者生产消息到 <code>Broker</code> ，消费者从 <code>Broker</code> 拉取消息并消费</p>
+<p>前面说到<code>RocketMQ</code>的主题模型明显<strong>适合于分布式横向扩展部署架构</strong>，主要在于<strong>一个 <code>Topic</code> 的多个队列可以分布在多个 <code>Broker</code>上，一个 <code>Broker</code> 可以配置多个 <code>Topic</code> ，它们是多对多的关系</strong>。</p>
+<h2 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h2><p><strong><code>消息生产者，负责产生消息，一般由业务系统负责产生消息</code></strong></p>
+<p><code>Producer</code>由用户进行分布式部署，消息由<code>Producer</code>通过多种<strong>负载均衡模式</strong>发送到<code>Broker</code>集群，发送低延时，支持快速失败。</p>
+<p>其中主要有三种方式发送消息：同步、异步和单向</p>
+<ul>
+<li><strong>同步发送</strong>：同步发送指消息发送方发出数据后会在收到接收方发回响应之后才发下一个数据包。一般用于重要通知消息，例如重要通知邮件、营销短信。</li>
+<li><strong>异步发送</strong>：异步发送指发送方发出数据后，不等接收方发回响应，接着发送下个数据包，一般用于可能链路耗时较长而对响应时间敏感的业务场景，例如用户视频上传后通知启动转码服务。</li>
+<li><strong>单向发送</strong>：单向发送是指只负责发送消息而不等待服务器回应且没有回调函数触发，适用于某些耗时非常短但对可靠性要求并不高的场景，例如日志收集。</li>
+</ul>
+<h2 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h2><p><strong><code>消息消费者，负责消费消息，一般是后台系统负责异步消费。</code></strong></p>
+<p><code>Consumer</code>支持以<code>push</code>推，<code>pull</code>拉两种模式对消息进行消费</p>
+<ul>
+<li><strong>Pull</strong>：消费者主动从<code>Broker</code>拉取信息，拉模式更适合进行消息的批量发送，<code>Broker</code>可以参考消费者请求的信息来决定缓存多少消息之后批量发送。但是存在消息延迟、消息忙请求等问题</li>
+<li><strong>Push</strong>：消息从 Broker 推向 Consumer，消息实时性高,但难以根据消费者的状态控制推送速率。 Push 首先要注册消费监听器，当监听器处触发后才开始消费消息。</li>
+</ul>
+<p>此外消息着的消费模式也有两种：集群消费）和广播消费：</p>
+<ul>
+<li><p><strong>集群消费：</strong>默认情况下就是集群消费，该模式下一个消费者集群共同消费一个主题的多个队列，一个队列只会被一个消费者消费，如果某个消费者挂掉，分组内其它消费者会接替挂掉的消费者继续消费。</p>
+</li>
+<li><p><strong>广播消费：</strong>广播消费消息会发给消费者组中的每一个消费者进行消费。</p>
+</li>
+</ul>
+<h1 id="四、持久化"><a href="#四、持久化" class="headerlink" title="四、持久化"></a>四、持久化</h1><h2 id="刷盘机制"><a href="#刷盘机制" class="headerlink" title="刷盘机制"></a>刷盘机制</h2><p>刷盘机制涉及到单个<code>Broker</code>的持久化</p>
+<p><code>RocketMQ</code>可以通过设置 <code>Broker</code> 的参数 <code>FlushDiskType</code> 来调整刷盘策略<strong>异步刷盘</strong>（ASYNC_FLUSH ）或者<strong>同步刷盘</strong>（SYNC_FLUSH)。</p>
+<p><code>RocketMQ</code>的存储读写是基于<code>JDK NIO</code>的内存映射机制的，消息存储时首先将消息追加到<strong>内存</strong>中。在根据不同的刷盘策略在不同的时间进行刷盘</p>
+<ul>
+<li>**同步刷盘:**消息追加到内存后，将同步调用<code>MappedByteBuffer</code>的<code>force()</code>方法，同步等待刷盘结果，进行刷盘结果返回</li>
+<li>**异步刷盘:**在消息追加到内存后立刻，不等待刷盘结果立刻返回存储成功结果给消息发送端。<code>RocketMQ</code>使用一个单独的线程按照一个设定的频率执行刷盘操作</li>
+</ul>
+<p>显然，前者需要等待刷盘结果，<strong>消息可靠性高</strong>，但是<strong>性能上会有较大影响</strong> ，一般地适用于金融等特定业务场景。</p>
+<p>后者往往是开启一个线程去按照一定频率异步地执行刷盘操作， <strong>降低了读写延迟</strong> ，提高了 <code>MQ</code> 的性能和吞吐量，但是在 <code>Broker</code> 意外宕机的时候会丢失部分数据，所以一般适用于如发验证码等对于消息保证要求不太高的业务场景。</p>
+<h2 id="同步、异步复制"><a href="#同步、异步复制" class="headerlink" title="同步、异步复制"></a>同步、异步复制</h2><p>同步复制和异步复制主要是指的 <code>Borker</code> 主从模式下，主节点返回消息给客户端的时候是否需要同步从节点。</p>
+<ul>
+<li><strong>同步复制</strong>： 也叫 “同步双写”，也就是说，<strong>只有消息同步双写到主从结点上时才返回写入成功</strong> 。</li>
+<li><strong>异步复制</strong>： <strong>消息写入主节点之后就直接返回写入成功</strong> 。</li>
+</ul>
+<p>但是注意<strong>是 <code>RocketMQ</code> 是不支持自动主从切换的，当主节点挂掉之后，生产者就不能再给这个主节点生产消息了</strong>。<strong>消费者可以自动切换到从节点进行消费</strong>，这时如果采用来异步复制，可能会出现主从消息不一致的现象，会降低可用性。</p>
+<h2 id="存储机制"><a href="#存储机制" class="headerlink" title="存储机制"></a>存储机制</h2><p><code>RocketMQ</code>的存储机制主要和<code>CommitLog</code>、<code>ConsumeQueue</code>和<code>IndexFile</code>有关，其中<code>IndexFile</code>提供了一种可以通过key或时间区间来查询消息的方法，这里不做深入了解。</p>
+<ul>
+<li><p><strong><code>CommitLog:</code>**消息主体以及元数据的存储主体，采用</strong>混合型存储<strong>方式，即</strong>所有的Topic下的消息队列共用同一个<code>CommitLog</code>的日志数据文件<strong>，</strong>提高了数据的写入效率<strong>。单个文件大小默认为1G,消息主要是</strong>顺序写入日志文件**，当第一个文件写满了、默认到下一个。</p>
+</li>
+<li><p><strong><code>ConsumeQueue:</code>**消息消费队列，前面<code>CommitLog</code>采用了混合型存储方式，数据直接遍历寻找指定Topic队列下的消息花费大，<code>ConsumeQueue</code>相当于一层索引、</strong>提升读取消息的效率<strong>，其更像是我们上诉消息模型中的队列。其大小固定，维护了 <code>ConsumeOffset</code> 即每个消费者组的消费位置，消费者根据消费者拉取消息进行消费的时候只需要根据 <code>ConsumeOffset</code> 获取在<code>Consumeoffset</code>下一个未被消费的</strong>消息索引<strong>，消息索引包含了在 <code>CommitLog</code> 中的</strong>起始物理偏移量** <code>commitLogOffset</code>、<strong>消息大小</strong> <code>msgSize</code> 和<strong>消息 Tag的哈希值</strong><code>tagsCode</code> 的，再定位到<code>CommitLog</code>中就可以读取到指定消息</p>
+</li>
+</ul>
+<p>详情可以参考下图</p>
+<p><img src="/images/image-20210525190217950.png" alt="image-20210525190217950"></p>
+<p>在图中最左边说明了 红色方块 代表被写入的消息，虚线方块代表等待被写入的。左边的生产者发送消息会指定 <code>Topic</code> 、<code>QueueId</code> 和具体消息内容，而在 <code>Broker</code> 中将消息全部顺序存储到了 CommitLog 。而根据生产者指定的 <code>Topic</code> 和 <code>QueueId</code> 将这条消息本身在 <code>CommitLog</code> 的偏移(offset)，消息本身大小，和tag的hash值存入对应的 <code>ConsumeQueue</code> 索引文件中。而在每个队列中都保存了 <code>ConsumeOffset</code> 即每个消费者组的消费位置，而消费者拉取消息进行消费的时候只需要根据 <code>ConsumeOffset</code> 获取下一个未被消费的消息。</p>
+<h1 id="五、一些问题的解决"><a href="#五、一些问题的解决" class="headerlink" title="五、一些问题的解决"></a>五、一些问题的解决</h1><h2 id="顺序消费"><a href="#顺序消费" class="headerlink" title="顺序消费"></a>顺序消费</h2><p>我们知道一个队列里消息是有顺序的，不同消息队列收到的消息则可能是无顺序的</p>
+<p>由于负载均衡策略，在秒杀系统时，一个订单的创建、发货、收货可能因为轮询放在了一个Topic下的不同队列中，从而导致无法使用 <code>RocketMQ</code> 带来的队列有序特性来保证消息有序性</p>
+<p>我们可以利用 <code>RocketMQ</code> 队列选择机制的<strong>Hash取模法</strong>将一个订单的创建、发货、收货消息发送到一个队列中避免这个问题</p>
+<h2 id="重复消费"><a href="#重复消费" class="headerlink" title="重复消费"></a>重复消费</h2><p>重复消费的问题可用通过<strong>幂等</strong>解决，根据应用场景，一般有强校验和弱校验</p>
+<p><strong>强校验</strong></p>
+<p>事务+查流水表</p>
+<p><strong>弱校验</strong></p>
+<p>Redis key</p>
+<h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2><p>RocketMQ主要通过<strong>半消息</strong>、<strong>消息回查</strong>和<strong>二次确认</strong>等操作实现分布式事务</p>
+<p>半消息是指事务在提交前，对消费者不可见的消息，内部可以通过改变主题实现：</p>
+<p>如果消息是half消息，将备份原消息的主题与消息消费队列，然后 <strong>改变主题</strong> 为<code>RMQ_SYS_TRANS_HALF_TOPIC</code>。由于消费组未订阅该主题，故消费端无法消费half类型的消息，然后RocketMQ会开启一个定时任务，从<code>Topic</code>为<code>RMQ_SYS_TRANS_HALF_TOPIC</code>中拉取消息进行消费，根据生产者组获取一个服务提供者发送<strong>回查事务</strong>状态请求，根据事务状态的<strong>二次确认</strong>来决定是提交或回滚消息。</p>
+<p>当然，如果在指定时间内发送方已经将事务执行并将执行情况成功告知，就没有事务回查这一步，<strong>直接二次确认</strong></p>
+<p>可以见下图</p>
+<p><img src="/images/image-20210525194051219.png" alt="image-20210525194051219"></p>
+<p>注意：在 <code>MQ Server</code> 指向系统B的操作已经和系统A不相关了，也就是说在消息队列中的分布式事务是——<strong>本地事务和存储消息到消息队列才是同一个事务</strong>。这样也就产生了事务的<strong>最终一致性</strong>，因为整个过程是异步的，<strong>每个系统只要保证它自己那一部分的事务就行了</strong>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag"># 消息队列</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/24/RocketMQ%E5%AE%9E%E6%88%98/" rel="prev" title="RocketMQ实战">
+                  <i class="fa fa-chevron-left"></i> RocketMQ实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

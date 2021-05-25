@@ -30,11 +30,13 @@
 <meta property="og:site_name" content="Zhu-ym&#39;s blog">
 <meta property="og:description" content="主要是对消息队列的使用、可能出现的问题和常见的消息队列做一些概述">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210524161213694.png">
 <meta property="article:published_time" content="2021-05-19T08:23:06.000Z">
-<meta property="article:modified_time" content="2021-05-19T09:07:30.380Z">
+<meta property="article:modified_time" content="2021-05-24T08:20:48.832Z">
 <meta property="article:author" content="Zhu-ym">
 <meta property="article:tag" content="消息队列">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210524161213694.png">
 
 
 <link rel="canonical" href="http://example.com/2021/05/19/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">
@@ -158,7 +160,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">消息模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%B9%E5%AF%B9%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">点对点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85"><span class="nav-number">1.2.</span> <span class="nav-text">发布订阅</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E6%8F%90%E9%AB%98%E5%93%8D%E5%BA%94"><span class="nav-number">2.1.</span> <span class="nav-text">异步提高响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E8%80%A6"><span class="nav-number">2.2.</span> <span class="nav-text">解耦</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E5%89%8A%E5%B3%B0%E9%99%90%E6%B5%81"><span class="nav-number">2.3.</span> <span class="nav-text">高并发削峰限流</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9"><span class="nav-number">3.1.</span> <span class="nav-text">重复消费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E4%B8%A2%E5%A4%B1"><span class="nav-number">3.2.</span> <span class="nav-text">消息丢失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E9%A1%BA%E5%BA%8F"><span class="nav-number">3.3.</span> <span class="nav-text">消息消费顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">3.4.</span> <span class="nav-text">一致性问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-number">4.</span> <span class="nav-text">常见消息队列</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">消息模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%82%B9%E5%AF%B9%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">点对点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85"><span class="nav-number">1.2.</span> <span class="nav-text">发布订阅</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E6%8F%90%E9%AB%98%E5%93%8D%E5%BA%94"><span class="nav-number">2.1.</span> <span class="nav-text">异步提高响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E8%80%A6"><span class="nav-number">2.2.</span> <span class="nav-text">解耦</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91%E5%89%8A%E5%B3%B0%E9%99%90%E6%B5%81"><span class="nav-number">2.3.</span> <span class="nav-text">高并发削峰限流</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9"><span class="nav-number">3.1.</span> <span class="nav-text">重复消费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E4%B8%A2%E5%A4%B1"><span class="nav-number">3.2.</span> <span class="nav-text">消息丢失</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E9%A1%BA%E5%BA%8F"><span class="nav-number">3.3.</span> <span class="nav-text">消息消费顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">3.4.</span> <span class="nav-text">一致性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%AF%E7%94%A8%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">3.5.</span> <span class="nav-text">系统可用性问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-number">4.</span> <span class="nav-text">常见消息队列</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -171,7 +173,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -257,10 +259,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-05-19 16:23:06 / 修改时间：17:07:30" itemprop="dateCreated datePublished" datetime="2021-05-19T16:23:06+08:00">2021-05-19</time>
+      <time title="创建时间：2021-05-19 16:23:06" itemprop="dateCreated datePublished" datetime="2021-05-19T16:23:06+08:00">2021-05-19</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-05-24 16:20:48" itemprop="dateModified" datetime="2021-05-24T16:20:48+08:00">2021-05-24</time>
+      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -298,7 +306,23 @@
 <p>可以将请求发送到消息队列中，服务器按照其处理能力从消息队列中订阅消息进行处理。</p>
 <p>一般在秒杀系统中可能涉及到对数据数据的操作，如果并发量过大，可能会造成数据库崩溃，可以将把请求放到队列里面，然后至于每秒消费多少请求，就看自己的服务器处理能力</p>
 <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>如果引入消息队列后，可能也会造成一些问题</p>
-<h2 id="重复消费"><a href="#重复消费" class="headerlink" title="重复消费"></a>重复消费</h2><h2 id="消息丢失"><a href="#消息丢失" class="headerlink" title="消息丢失"></a>消息丢失</h2><h2 id="消息消费顺序"><a href="#消息消费顺序" class="headerlink" title="消息消费顺序"></a>消息消费顺序</h2><h2 id="一致性问题"><a href="#一致性问题" class="headerlink" title="一致性问题"></a>一致性问题</h2><h1 id="常见消息队列"><a href="#常见消息队列" class="headerlink" title="常见消息队列"></a>常见消息队列</h1>
+<h2 id="重复消费"><a href="#重复消费" class="headerlink" title="重复消费"></a>重复消费</h2><p>比如其他业务抛出异常后，利用<strong>重试机制</strong>要求消息重发而可能导致的重复消费问题</p>
+<p>这样一般通过业务接口具有<strong>幂等性</strong>来解决，保证同样的参数调用接口，调用多少次结果都是一个</p>
+<p>比如在下单系统中，做一个业务的流水表，每次消息过来都要拿着<strong>订单号+业务场景这样的唯一标识</strong>判断是否要走接下来的流程</p>
+<h2 id="消息丢失"><a href="#消息丢失" class="headerlink" title="消息丢失"></a>消息丢失</h2><p>如上，一般采用重试机制</p>
+<p>具体的消息队列可能有不同的处理方法</p>
+<h2 id="消息消费顺序"><a href="#消息消费顺序" class="headerlink" title="消息消费顺序"></a>消息消费顺序</h2><p>主要是是<strong>同个业务场景下不同几个操作的消息同时过去</strong>，本身顺序是对的，但消费的时候却混乱</p>
+<p>具体的消息队列可能有不同的处理方法</p>
+<h2 id="一致性问题"><a href="#一致性问题" class="headerlink" title="一致性问题"></a>一致性问题</h2><p>主要是指真正的消费者们，没有正确消费消息，造成的数据不一致。</p>
+<p>一般可以用<strong>分布式事务</strong>解决</p>
+<h2 id="系统可用性问题"><a href="#系统可用性问题" class="headerlink" title="系统可用性问题"></a>系统可用性问题</h2><p>考虑到消息中间件可能挂掉的情况</p>
+<h1 id="常见消息队列"><a href="#常见消息队列" class="headerlink" title="常见消息队列"></a>常见消息队列</h1><p>下图是常见消息队列的对比</p>
+<p><img src="/images/image-20210524161213694.png" alt="image-20210524161213694"></p>
+<p>其中</p>
+<p><strong>ActiveMQ：</strong>没经过大规模吞吐量场景的验证，社区也不是很活跃，所以不推荐 <strong>RabbitMQ：</strong>活跃度高，<strong>开源</strong>，比较稳定的支持，推荐中小型公司使用，数据量较小</p>
+<p><strong>RocketMQ：</strong>阿里出品，Java语言编写，经过了阿里多年双十一大促的考验，性能和稳定性得到了充分的严重。目前在业界被广泛应用在订单，交易，充值，流计算，消息推送，日志流式处理，binlog分发等场景</p>
+<p> <strong>kafka：</strong>大数据领域的实时计算、日志采集等场景，适合产生大量数据的互联网服务的数据收集业务</p>
+
     </div>
 
     
