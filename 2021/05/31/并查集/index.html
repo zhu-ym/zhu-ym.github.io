@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="学会并查集的写法，并用其来解决问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并查集">
+<meta property="og:url" content="http://example.com/2021/05/31/%E5%B9%B6%E6%9F%A5%E9%9B%86/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="学会并查集的写法，并用其来解决问题">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/graph1.jpg">
+<meta property="og:image" content="http://example.com/images/graph2.jpg">
+<meta property="article:published_time" content="2021-05-31T00:29:30.000Z">
+<meta property="article:modified_time" content="2021-05-31T02:39:46.762Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="并查集">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/graph1.jpg">
+
+
+<link rel="canonical" href="http://example.com/2021/05/31/%E5%B9%B6%E6%9F%A5%E9%9B%86/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>并查集 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.</span> <span class="nav-text">并查集实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%9B%E5%88%80%E5%B0%8F%E8%AF%951"><span class="nav-number">2.</span> <span class="nav-text">牛刀小试1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE"><span class="nav-number">2.1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%80%83"><span class="nav-number">2.2.</span> <span class="nav-text">思考</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%9B%E5%88%80%E5%B0%8F%E8%AF%952"><span class="nav-number">3.</span> <span class="nav-text">牛刀小试2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE-1"><span class="nav-number">3.1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%80%83-1"><span class="nav-number">3.2.</span> <span class="nav-text">思考</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">63</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/31/%E5%B9%B6%E6%9F%A5%E9%9B%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          并查集
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-05-31 08:29:30 / 修改时间：10:39:46" itemprop="dateCreated datePublished" datetime="2021-05-31T08:29:30+08:00">2021-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/%E7%BB%8F%E5%85%B8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">经典数据结构</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>学会并查集的写法，并用其来解决问题</p>
+<a id="more"></a>
+
+<h1 id="并查集实现"><a href="#并查集实现" class="headerlink" title="并查集实现"></a>并查集实现</h1><p>并查集的主要功能和作用都体现的其命名中</p>
+<p>首先你可以把其理解成<strong>一个集合，其包含许多节点</strong>，这些节点之间可能存在<strong>父子、祖先后辈、或者连通的关系</strong>，我们可以通过<strong>查两个节点的祖先是否相同判断两个节点之间是否有关系</strong>，通过<strong>合并来将有关系的节点分类在一起</strong></p>
+<p>更为巧妙的是，并查集一般用<strong>数组</strong>实现了这个集，其关键的查函数也能通过优化，在O(1)的实现查找，从而优化并的过程</p>
+<p>下面是其实现原理：</p>
+<p>我们用一个数组叫father数组或者前驱数组保存节点的前驱或者是父节点信息，那么查找一个节点的时候，我们可以不断的找其父节点，直到某个父节点的节点是其本身</p>
+<p>而合并两个节点时，查找两个节点的祖先是否一致判断是否需要合并，一致说明已经合并，不一致说明未合并，最简单的合并方法就是将一个节点的祖先前驱指向另一个节点的祖先即可</p>
+<p>下面是具体实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UFS</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] father;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] size;</span><br><span class="line"></span><br><span class="line">    UFS(<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="keyword">this</span>.count = n;</span><br><span class="line">        father = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">        size = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n ; i++)&#123;</span><br><span class="line">            father[i] = i;</span><br><span class="line">            size[i] = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 递归写法</span></span><br><span class="line">        <span class="keyword">if</span>(x != father[x])</span><br><span class="line">            father[x] = find(father[x]);</span><br><span class="line">        <span class="keyword">return</span>  father[x];</span><br><span class="line">        <span class="comment">/* 非递归1</span></span><br><span class="line"><span class="comment">        while(x != father[x])&#123;</span></span><br><span class="line"><span class="comment">            father[x] = father[father[x]];</span></span><br><span class="line"><span class="comment">            x = father[x];</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        return  x;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="comment">/* 非递归2</span></span><br><span class="line"><span class="comment">        int temp = x;</span></span><br><span class="line"><span class="comment">        while(temp != father[temp])</span></span><br><span class="line"><span class="comment">            temp = father[temp];</span></span><br><span class="line"><span class="comment">        while(x != temp)&#123;</span></span><br><span class="line"><span class="comment">            int l = father[x];</span></span><br><span class="line"><span class="comment">            father[x] = temp;</span></span><br><span class="line"><span class="comment">            x = l;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">union</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> f1 = find(a);</span><br><span class="line">        <span class="keyword">int</span> f2 = find(b);</span><br><span class="line">        <span class="keyword">if</span>(f1 == f2)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        count--;</span><br><span class="line">        <span class="keyword">if</span>(size[f1] &gt;= size[f2])&#123;</span><br><span class="line">            father[f2] = f1;</span><br><span class="line">            size[f1] += size[f2];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            father[f1] = f2;</span><br><span class="line">            size[f2] += size[f1];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span>  count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上诉做了两个优化，</p>
+<ul>
+<li>在find的时候将每个节点都指向其祖先，使查找更为高效</li>
+<li>在union的时候将节点少的一类并入节点多的一类，减少后面再查找的指向操作</li>
+</ul>
+<p>其中，find的实现有三种</p>
+<ul>
+<li>第一种是递归实现，在不爆栈的情况下很简洁</li>
+<li>第二种是比较简洁的迭代实现，所有树高不会超过三，参考<code>labuladong</code>的算法书</li>
+<li>第三种也是迭代实现，效果和第一种一致,修改指向时比2耗时多，但是修改后查找时快</li>
+</ul>
+<h1 id="牛刀小试1"><a href="#牛刀小试1" class="headerlink" title="牛刀小试1"></a>牛刀小试1</h1><h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p><strong>990. 等式方程的可满足性</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/satisfiability-of-equality-equations/">力扣链接</a></p>
+<p>给定一个由表示变量之间关系的字符串方程组成的数组，每个字符串方程 <code>equations[i]</code> 的长度为 <code>4</code>，并采用两种不同的形式之一：<code>&quot;a==b&quot;</code> 或 <code>&quot;a!=b&quot;</code>。在这里，a 和 b 是小写字母（不一定不同），表示单字母变量名。</p>
+<p>只有当可以将整数分配给变量名，以便满足所有给定的方程时才返回 <code>true</code>，否则返回 <code>false</code>。 </p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：[&quot;a&#x3D;&#x3D;b&quot;,&quot;b!&#x3D;a&quot;]</span><br><span class="line">输出：false</span><br><span class="line">解释：如果我们指定，a &#x3D; 1 且 b &#x3D; 1，那么可以满足第一个方程，但无法满足第二个方程。没有办法分配变量同时满足这两个方程。</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输入：[&quot;b&#x3D;&#x3D;a&quot;,&quot;a&#x3D;&#x3D;b&quot;]</span><br><span class="line">输出：true</span><br><span class="line">解释：我们可以指定 a &#x3D; 1 且 b &#x3D; 1 以满足满足这两个方程。</span><br></pre></td></tr></table></figure>
+<p><strong>示例 3：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：[&quot;a&#x3D;&#x3D;b&quot;,&quot;b&#x3D;&#x3D;c&quot;,&quot;a&#x3D;&#x3D;c&quot;]</span><br><span class="line">输出：true</span><br></pre></td></tr></table></figure>
+<p><strong>提示：</strong></p>
+<ol>
+<li><code>1 &lt;= equations.length &lt;= 500</code></li>
+<li><code>equations[i].length == 4</code></li>
+<li><code>equations[i][0]</code> 和 <code>equations[i][3]</code> 是小写字母</li>
+<li><code>equations[i][1]</code> 要么是 <code>&#39;=&#39;</code>，要么是 <code>&#39;!&#39;</code></li>
+<li><code>equations[i][2]</code> 是 <code>&#39;=&#39;</code></li>
+</ol>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>上题显然要判断方程是否合法，显然两个元素即相等，又不等方程就不合法</p>
+<p>我们思路是先构建相等集：把相等视为两个元素有关系，用并查集将其并在一起</p>
+<p>最后再查不相等的元素是否相等判断方程是否合法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equationsPossible</span><span class="params">(String[] equations)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        UFS ufs = <span class="keyword">new</span> UFS(<span class="number">26</span>);</span><br><span class="line">        <span class="comment">// 构建相等关系</span></span><br><span class="line">        <span class="keyword">for</span>(String str: equations)&#123;</span><br><span class="line">            <span class="keyword">if</span>(str.charAt(<span class="number">1</span>) == <span class="string">&#x27;=&#x27;</span>)</span><br><span class="line">                ufs.union(str.charAt(<span class="number">0</span>) - <span class="string">&#x27;a&#x27;</span>,str.charAt(<span class="number">3</span>) - <span class="string">&#x27;a&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 排查不等关系</span></span><br><span class="line">        <span class="keyword">for</span>(String str : equations)&#123;</span><br><span class="line">            <span class="keyword">if</span>(str.charAt(<span class="number">1</span>) == <span class="string">&#x27;!&#x27;</span>)&#123;</span><br><span class="line">                <span class="keyword">if</span>(find(str.charAt(<span class="number">0</span>) - <span class="string">&#x27;a&#x27;</span>) == find(str.charAt(<span class="number">3</span>) - <span class="string">&#x27;a&#x27;</span>))</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UFS</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] father;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] size;</span><br><span class="line"></span><br><span class="line">    UFS(<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="keyword">this</span>.count = n;</span><br><span class="line">        father = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">        size = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n ; i++)&#123;</span><br><span class="line">            father[i] = i;</span><br><span class="line">            size[i] = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 递归写法</span></span><br><span class="line">        <span class="keyword">if</span>(x != father[x])</span><br><span class="line">            father[x] = find(father[x]);</span><br><span class="line">        <span class="keyword">return</span>  father[x];</span><br><span class="line">        <span class="comment">/* 非递归1</span></span><br><span class="line"><span class="comment">        while(x != father[x])&#123;</span></span><br><span class="line"><span class="comment">            father[x] = father[father[x]];</span></span><br><span class="line"><span class="comment">            x = father[x];</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        return  x;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="comment">/* 非递归2</span></span><br><span class="line"><span class="comment">        int temp = x;</span></span><br><span class="line"><span class="comment">        while(temp != father[temp])</span></span><br><span class="line"><span class="comment">            temp = father[temp];</span></span><br><span class="line"><span class="comment">        while(x != temp)&#123;</span></span><br><span class="line"><span class="comment">            int l = father[x];</span></span><br><span class="line"><span class="comment">            father[x] = temp;</span></span><br><span class="line"><span class="comment">            x = l;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">union</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> f1 = find(a);</span><br><span class="line">        <span class="keyword">int</span> f2 = find(b);</span><br><span class="line">        <span class="keyword">if</span>(f1 == f2)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        count--;</span><br><span class="line">        <span class="keyword">if</span>(size[f1] &gt;= size[f2])&#123;</span><br><span class="line">            father[f2] = f1;</span><br><span class="line">            size[f1] += size[f2];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            father[f1] = f2;</span><br><span class="line">            size[f2] += size[f1];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span>  count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="牛刀小试2"><a href="#牛刀小试2" class="headerlink" title="牛刀小试2"></a>牛刀小试2</h1><h2 id="题目-1"><a href="#题目-1" class="headerlink" title="题目"></a>题目</h2><p><strong>547. 省份数量</strong></p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/number-of-provinces/">力扣链接</a></p>
+<p>有 <code>n</code> 个城市，其中一些彼此相连，另一些没有相连。如果城市 <code>a</code> 与城市 <code>b</code> 直接相连，且城市 <code>b</code> 与城市 <code>c</code> 直接相连，那么城市 <code>a</code> 与城市 <code>c</code> 间接相连。</p>
+<p><strong>省份</strong> 是一组直接或间接相连的城市，组内不含其他没有相连的城市。</p>
+<p>给你一个 <code>n x n</code> 的矩阵 <code>isConnected</code> ，其中 <code>isConnected[i][j] = 1</code> 表示第 <code>i</code> 个城市和第 <code>j</code> 个城市直接相连，而 <code>isConnected[i][j] = 0</code> 表示二者不直接相连。</p>
+<p>返回矩阵中 <strong>省份</strong> 的数量。</p>
+<p><strong>示例 1：</strong></p>
+<p><img src="/images/graph1.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：isConnected &#x3D; [[1,1,0],[1,1,0],[0,0,1]]</span><br><span class="line">输出：2</span><br></pre></td></tr></table></figure>
+<p><strong>示例 2：</strong></p>
+<p><img src="/images/graph2.jpg" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：isConnected &#x3D; [[1,0,0],[0,1,0],[0,0,1]]</span><br><span class="line">输出：3</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>提示：</strong></p>
+<ul>
+<li><code>1 &lt;= n &lt;= 200</code></li>
+<li><code>n == isConnected.length</code></li>
+<li><code>n == isConnected[i].length</code></li>
+<li><code>isConnected[i][j]</code> 为 <code>1</code> 或 <code>0</code></li>
+<li><code>isConnected[i][i] == 1</code></li>
+<li><code>isConnected[i][j] == isConnected[j][i]</code></li>
+</ul>
+<h2 id="思考-1"><a href="#思考-1" class="headerlink" title="思考"></a>思考</h2><p>该题主要是将有相连的城市合并，视为一个省，最后考察有多少个最终祖先，在图中既是看有多少个连通分量</p>
+<p>该题主要是利用好前面给的并查集实现的count，count最开始和节点数相同，之后没合并一次节点count-1，则count就是连通分量个数，即答案</p>
+<p>下面是代码实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">findCircleNum</span><span class="params">(<span class="keyword">int</span>[][] isConnected)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> n = isConnected.length;</span><br><span class="line">        UFS ufs = <span class="keyword">new</span> UFS(n);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n ; i++)&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; n; j++)&#123;</span><br><span class="line">                <span class="keyword">if</span>(isConnected[i][j] == <span class="number">1</span>)</span><br><span class="line">                    ufs.union(i,j);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ufs.getCount();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UFS</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> count;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] father;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span>[] size;</span><br><span class="line"></span><br><span class="line">    UFS(<span class="keyword">int</span> n)&#123;</span><br><span class="line">        <span class="keyword">this</span>.count = n;</span><br><span class="line">        father = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">        size = <span class="keyword">new</span> <span class="keyword">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n ; i++)&#123;</span><br><span class="line">            father[i] = i;</span><br><span class="line">            size[i] = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 递归写法</span></span><br><span class="line">        <span class="keyword">if</span>(x != father[x])</span><br><span class="line">            father[x] = find(father[x]);</span><br><span class="line">        <span class="keyword">return</span>  father[x];</span><br><span class="line">        <span class="comment">/* 非递归1</span></span><br><span class="line"><span class="comment">        while(x != father[x])&#123;</span></span><br><span class="line"><span class="comment">            father[x] = father[father[x]];</span></span><br><span class="line"><span class="comment">            x = father[x];</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        return  x;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="comment">/* 非递归2</span></span><br><span class="line"><span class="comment">        int temp = x;</span></span><br><span class="line"><span class="comment">        while(temp != father[temp])</span></span><br><span class="line"><span class="comment">            temp = father[temp];</span></span><br><span class="line"><span class="comment">        while(x != temp)&#123;</span></span><br><span class="line"><span class="comment">            int l = father[x];</span></span><br><span class="line"><span class="comment">            father[x] = temp;</span></span><br><span class="line"><span class="comment">            x = l;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">union</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">int</span> f1 = find(a);</span><br><span class="line">        <span class="keyword">int</span> f2 = find(b);</span><br><span class="line">        <span class="keyword">if</span>(f1 == f2)</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        count--;</span><br><span class="line">        <span class="keyword">if</span>(size[f1] &gt;= size[f2])&#123;</span><br><span class="line">            father[f2] = f1;</span><br><span class="line">            size[f1] += size[f2];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            father[f1] = f2;</span><br><span class="line">            size[f2] += size[f1];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span>  count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%B9%B6%E6%9F%A5%E9%9B%86/" rel="tag"># 并查集</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/25/RocketMQ%E5%8E%9F%E7%90%86/" rel="prev" title="RocketMQ原理">
+                  <i class="fa fa-chevron-left"></i> RocketMQ原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
