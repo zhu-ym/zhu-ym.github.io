@@ -3891,6 +3891,7 @@
       <categories>
         <category>数据库</category>
         <category>中间件</category>
+        <category>数据库</category>
       </categories>
       <tags>
         <tag>MyBatis</tag>
@@ -5805,6 +5806,7 @@
 ]]></content>
       <categories>
         <category>中间件</category>
+        <category>消息队列</category>
       </categories>
       <tags>
         <tag>消息队列</tag>
@@ -6034,6 +6036,7 @@
 ]]></content>
       <categories>
         <category>中间件</category>
+        <category>消息队列</category>
       </categories>
       <tags>
         <tag>消息队列</tag>
@@ -6086,6 +6089,7 @@
 <h1 id="RocketMQ实战"><a href="#RocketMQ实战" class="headerlink" title="RocketMQ实战"></a>RocketMQ实战</h1>]]></content>
       <categories>
         <category>中间件</category>
+        <category>消息队列</category>
       </categories>
       <tags>
         <tag>消息队列</tag>
@@ -6224,6 +6228,21 @@
       </categories>
       <tags>
         <tag>计算机信息表示</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kafka基础</title>
+    <url>/2021/07/01/Kafka%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<p>了解优秀消息中间件Kafka的基本原理和特点</p>
+<a id="more"></a>
+
+<h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1>]]></content>
+      <categories>
+        <category>中间件</category>
+        <category>消息队列</category>
+      </categories>
+      <tags>
+        <tag>消息队列</tag>
       </tags>
   </entry>
 </search>
