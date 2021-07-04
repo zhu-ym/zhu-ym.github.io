@@ -6236,7 +6236,76 @@
     <content><![CDATA[<p>了解优秀消息中间件Kafka的基本原理和特点</p>
 <a id="more"></a>
 
-<h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1>]]></content>
+<h1 id="一、架构"><a href="#一、架构" class="headerlink" title="一、架构"></a>一、架构</h1><p>Kafka是最初由Linkedin公司开发，是一个分布式、支持分区的（partition）、多副本的（replica），基于Zookeeper协调的分布式消息系统</p>
+<p>Kafka的架构主要同下图所示：</p>
+<p><img src="/images/image-20210704104213427.png" alt="image-20210704104213427"></p>
+<p>不同于RocketMQ的NameServer，其利用了Zookeeper来进行消息注册，但是思想有很多相似之处</p>
+<p>两者都有Topic的概念，Kafka的一个<strong>Topic</strong>下可以有多个<strong>分区</strong>，在RocketMQ中对应多个消息队列，每个分区一般也只能由一个消费者消费，多个分区布置到不同的Broker即机器上</p>
+<p>为保证<strong>高可用、高可靠</strong>，RocketMQ的Broker有<strong>主从同步模式</strong>，而Kafka我更愿意称为<strong>主从切换</strong>，则也分区内容同步到多个Broker上，其一台Broker上的某分区作为<strong>Leader</strong>，其他机器上的该分区作为<strong>Follower</strong>，其中进行了<strong>读写分离</strong>，Leader可读可写，而Follower只能进行读，值得注意一点：<strong>Kafka的Leader挂了会选出新的Leader，而RocketMQ的主从模式不能切换，即主节点挂了就无法再进行写</strong>。</p>
+<p>总的来说，两者在架构上的相近之处很多，但是具体的消息存储结构还是有所差异，下面就讲解存储差异</p>
+<h1 id="二、存储"><a href="#二、存储" class="headerlink" title="二、存储"></a>二、存储</h1><h2 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h2><p>Kafka的存储是按Partition来分的，一个Partition就是一个<strong>文件夹</strong>，每个Partition文件有多个<strong>Segment,**每个Segment包含</strong>.index文件、.log文件、.timeindex文件**三种文件，文件夹命名规则为规则是<topic_name>_<partition_id>，其中：</p>
+<ul>
+<li>日志文件记录存储消息</li>
+<li>索引文件记录部分消息的索引</li>
+<li>时间索引文件记录了与时间戳对应的索引，这里将不再细谈</li>
+</ul>
+<p>而每一条存储的消息，会包含多个字段，其中最重要的有以下几个信息：</p>
+<ul>
+<li><p><strong>offset</strong>:记录号 </p>
+</li>
+<li><p><strong>position</strong>：偏移量，在日志文件在定位消息位置的依据</p>
+</li>
+<li><p>keysize 和 valuesize ： key 和 value 的大小</p>
+</li>
+<li><p>其他信息</p>
+</li>
+</ul>
+<p>上诉内容我们可以理解为头部信息，最后由payload部分:存储消息的具体内容</p>
+<p>partition 全局的第一个 segment从 0 开始，每个Segment有一定大小，后续每个 segment 文件名为上一个 segment文件最后一条消息的 offset 值进行递增，Segment内部的文件，也采用这条的offset命名法</p>
+<p><strong>而消息则是按顺序放入最后Segment文件中</strong></p>
+<p>了解这些基础后，我们就可以更深一步认识消息的生产和消费过程。</p>
+<h2 id="消息生产"><a href="#消息生产" class="headerlink" title="消息生产"></a>消息生产</h2><p>Kafka的消息生产主要有几个关键点</p>
+<ul>
+<li><p><strong>顺序写入</strong>：收到消息后Kafka会把数据插入到Segment文件末尾，提高读写硬盘的速度</p>
+</li>
+<li><p><strong>零拷贝：</strong>利用Java的<strong>FileChannel</strong>，进行数据传输，实现零拷贝，减少了上下文切换此次数和消息复制</p>
+<p>传统数据传输方式：</p>
+<p><img src="/images/image-20210704170414049.png" alt="image-20210704170414049"></p>
+<p>基础的零拷贝后数据传输方式：</p>
+<p><img src="/images/image-20210704170617192.png" alt="image-20210704170617192"></p>
+<p>利用DMA的零拷贝：</p>
+<p><img src="/images/image-20210704171206538.png" alt="image-20210704171206538"></p>
+<p>Kafka正是利用Java的<strong>FileChannel</strong>，和DMA，只用将磁盘文件的数据复制到页面缓存中，然后将数据从页面缓存直接发送到网络中，减少了两次上下文切换和数据拷贝</p>
+</li>
+<li><p><strong>批量发送：</strong>kafka采用异步发送的机制，当发送一条消息时，消息并没有发送到broker而是缓存起来，然后直接向业务返回成功，当缓存的消息达到一定数量时再批量发送。此时减少了网络io，从而提高了消息发送的性能，但是如果消息发送者宕机，会导致消息丢失，业务出错，所以理论上kafka利用此机制提高了io性能却降低了可靠性</p>
+</li>
+</ul>
+<h2 id="消息消费"><a href="#消息消费" class="headerlink" title="消息消费"></a>消息消费</h2><p>Kafka消费者进行消息消费时采用的也是<strong>FileChannel</strong>方式，并且采用<strong>Pull模式</strong>，而RocketMQ默认采用<strong>Push+长轮询模式</strong></p>
+<p>等到具体读取某条消息时，消费者保留者某个分区的offset，当读取消息时，向Broker的发送带有offset参数，按以下步骤查询：</p>
+<ul>
+<li>根据offset，二分查找到对应Segment</li>
+<li>找到索引文件后，根据 offset 进行定位，找到索引文件中的匹配范围的偏移量position，注意索引文件采用的是<strong>稀疏索引</strong></li>
+<li>由于索引文件值保存了部分索引信息，最后需要到对应的 log 文件中，从 position处开始查找 offset 对应的消息，将每条消息的 offset 与目标 offset 进行比较，直到找到消息</li>
+</ul>
+<p><img src="/images/image-20210704113852478.png" alt="image-20210704113852478"></p>
+<h2 id="与RocketMQ细节对比"><a href="#与RocketMQ细节对比" class="headerlink" title="与RocketMQ细节对比"></a>与RocketMQ细节对比</h2><ul>
+<li><p>RocketMQ存储机制是在<strong>CommitLog</strong>下<strong>混合型存储</strong>,以提高写入效率，自然而然，也就导致了索引文件<strong>ConsumeQueue</strong>和Kafka不一致，不能做稀疏索引。当topic、partition越来越多的情况下，Kafka的写性能会明显下降，而RocketMQ性能稳定。</p>
+</li>
+<li><p>此外，Kafka Broker是无状态的：这意味着<strong>消费者必须维护已消费的状态信息</strong>。而RocketMQ则是在ConsumeQueue上维护了 <code>ConsumeOffset</code> 即每个消费者组的消费位置，这里有个好处就是方便由消费者回到之前的offset，比较简单的实现<strong>消息失败重试</strong></p>
+</li>
+<li><p>当生产者生产消息时，Kafka客户端采用了一个双端队列，引入了<strong>批处理思想</strong>，可以控制批次大小和等待时间完成批处理发送消息，提高IO速度，但是和RocketMq相比，可用性降低</p>
+</li>
+<li><p>当消费者消费消息时，Kafka采用Pull模式，而RocketMQ即可以采用Pull也可以采用Push模式，默认是Push+长轮询模式</p>
+</li>
+</ul>
+<h1 id="三、功能特性差异"><a href="#三、功能特性差异" class="headerlink" title="三、功能特性差异"></a>三、功能特性差异</h1><p>首先不可否认，Kafka的吞吐量十分优秀，但是消息选型过程中，我们不仅仅要参考其性能，还有从功能性做出考虑</p>
+<p>下面是两者一些差异性功能</p>
+<h2 id="消息搜索"><a href="#消息搜索" class="headerlink" title="消息搜索"></a>消息搜索</h2><p>RocketMQ 基于indexFile，在producer发消息时指定消息的key，之后可以根据key来搜索这条消息。原理其实就是个基于磁盘实现的hashMap。</p>
+<p>Kafka不支持消息搜索。</p>
+<h2 id="消息过滤"><a href="#消息过滤" class="headerlink" title="消息过滤"></a>消息过滤</h2><p>RocketMQ支持消息的tags，消费者组订阅可以指定tags订阅，tag过滤的话在broker端和consumer端都有过滤，broker端只能根据hashCode过滤，hashCode有可能冲突，所以还需要在consumer端根据tag的值进行过滤。<br> Kafka不支持消息按tag过滤。</p>
+<h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2><p>RocketMQ主要通过<strong>半消息</strong>、<strong>消息回查</strong>和<strong>二次确认</strong>等操作实现分布式事务</p>
+<p>Kafka不支持消息按分布式事务。</p>
+]]></content>
       <categories>
         <category>中间件</category>
         <category>消息队列</category>
