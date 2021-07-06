@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="本文将主要通过介绍Mysql中锁、事务隔离级别和事务之间的联系来加深对Mysql这三个部分知识点的了解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql的隔离级别、锁与事务">
+<meta property="og:url" content="http://example.com/2021/03/16/Mysql%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E3%80%81%E9%94%81%E4%B8%8E%E4%BA%8B%E5%8A%A1/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="本文将主要通过介绍Mysql中锁、事务隔离级别和事务之间的联系来加深对Mysql这三个部分知识点的了解">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-16T02:10:34.000Z">
+<meta property="article:modified_time" content="2021-07-06T15:28:43.177Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/03/16/Mysql%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E3%80%81%E9%94%81%E4%B8%8E%E4%BA%8B%E5%8A%A1/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Mysql的隔离级别、锁与事务 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E5%8F%8A%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">事务及特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">1.2.</span> <span class="nav-text">事务隔离级别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E5%8C%96%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">串行化隔离级别实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RR%E4%B8%8ERC%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">RR与RC隔离级别实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E7%85%A7%E8%AF%BB"><span class="nav-number">3.1.</span> <span class="nav-text">快照读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E5%89%8D%E8%AF%BB"><span class="nav-number">3.2.</span> <span class="nav-text">当前读</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mysql%E4%BA%8B%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">Mysql事务</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">43</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">64</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/16/Mysql%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E3%80%81%E9%94%81%E4%B8%8E%E4%BA%8B%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mysql的隔离级别、锁与事务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-16 10:10:34" itemprop="dateCreated datePublished" datetime="2021-03-16T10:10:34+08:00">2021-03-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-06 23:28:43" itemprop="dateModified" datetime="2021-07-06T23:28:43+08:00">2021-07-06</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文将主要通过介绍Mysql中锁、事务隔离级别和事务之间的联系来加深对Mysql这三个部分知识点的了解</p>
+<a id="more"></a>
+
+<h1 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h1><h2 id="事务及特性"><a href="#事务及特性" class="headerlink" title="事务及特性"></a>事务及特性</h2><p>首先中Mysql下谈论事务，是指的是InnoDB引擎，而不是MyISAM</p>
+<p>实际上由于MyISAM不支持事务、锁的粒度最低表锁，所以仅仅在不需要事务、绝大多数查询是读查询时有可用之机，因此Mysql已将默认引擎设为InnoDB，下文的学习也是基于此</p>
+<p>事务是指访问并可能更新系统中各种数据项的的由一组操作构成的可靠、独立的程序执行单元(unit)，通过这个程序执行单元可以使得我们对数据的操作能够保证数据在<strong>语义上的一致性</strong></p>
+<p>我们常说的事务有四大特性：</p>
+<ul>
+<li>原子性：事务的操作要么都完成，要么都不执行</li>
+<li>隔离性：隔离性也就是并发控制，一个事务的执行不能被其他事务干扰。即一个事务内部的操作及使用的数据对并发的其他事务是隔离的，并发执行的各个事务之间不能互相干扰</li>
+<li>持久性：事务一旦提交，对数据项对改变是永久的</li>
+<li>一致性：事务必须是使数据库从一个一致性状态变到另一个一致性状态，通过事务的原子性、隔离性、持久性</li>
+</ul>
+<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><p>我认为隔离级别是针对隔离性提出的细化要求，不同的隔离级别的隔离性强度不同，有下面四个隔离级别</p>
+<ul>
+<li>未提交读：事务未提交的修改对其他事务也可见。</li>
+<li>提交读（RC）：事务中只能看到已提交的修改。</li>
+<li>可重复读（RR）：在自己的事务中，多次读取数据的结果是一致的，不管其他事务是否有提交</li>
+<li>串行化：要求事务序列化执行</li>
+</ul>
+<p>在并发事务下，可能会出现以下问题：</p>
+<ul>
+<li>脏读：读到事务未提交读数据</li>
+<li>不可重复读：事务内部多次读取到数据不一致，主要指数据本身内容改变</li>
+<li>幻读：事务内部多次读取到数据不一致，主要指数据项数目可能发生了增减</li>
+</ul>
+<p>上面四个隔离级别中，一般来说，未提交读显然会导致上诉三个问题，很少使用</p>
+<p>提交读解决了脏读问题，但是可能由于某行数据被别的事务修提交后，前后读取不一致，还是有后面两个问题</p>
+<p>可重复读保证多次读取读数据项一致，实际上可用通过加行锁实现，但是如果别的事务向该表添加了数据行，可能会导致幻读</p>
+<p>最后一个隔离级别可用解决这三个问题，但是事务串行化执行，事务并发性就会很低，所以一般数据库会在隔离级别和并发性之间做个取舍，一般默认隔离级别为RC或者RR，Mysql事务的隔离级别默认为RR，并且其RR级别的隔离级别，就解决了幻读</p>
+<p>下面将了解Mysql中各个隔离级别的实现</p>
+<h1 id="串行化隔离级别实现"><a href="#串行化隔离级别实现" class="headerlink" title="串行化隔离级别实现"></a>串行化隔离级别实现</h1><p>串行化隔离级别实际上是<strong>基于锁的并发控制（Lock-Based Concurrent Control）</strong>，LBCC就利用到了我们常说的共享锁和排他锁</p>
+<ul>
+<li>共享锁又称为读锁，简称S锁，顾名思义，共享锁就是多个事务对于同一数据可以共享一把锁，都能访问到数据，但是只能读不能修改。</li>
+<li>排他锁又称为写锁，简称X锁，顾名思义，排他锁就是不能与其他所并存，如一个事务获取了一个数据行的排他锁，其他事务就不能再获取该行的其他锁，包括共享锁和排他锁，但是获取排他锁的事务是可以对数据就行读取和修改。</li>
+</ul>
+<p>串行化隔离级别要求读的时候不能写，但允许多个事务同时读，写的时候不能读写，只允许一个事务对该数据进行修改。</p>
+<p>这样的加锁访问，其实并不算是真正的并发，或者说它只能实现并发的读，因为它最终实现的是读写串行化，这样就大大降低了数据库的读写性能。</p>
+<p>数据库中常见的加锁语句有以下语句</p>
+<ul>
+<li>select * from table where ? lock in share mode; （加S锁）</li>
+<li>select * from table where ? for update; （加X锁，下同）</li>
+<li>insert, update, delete操作</li>
+</ul>
+<h1 id="RR与RC隔离级别实现"><a href="#RR与RC隔离级别实现" class="headerlink" title="RR与RC隔离级别实现"></a>RR与RC隔离级别实现</h1><p>当我们对隔离级别降低到RR或者RC级别，就可以不再靠LBCC的方式，多数数据库提供了另一套模式——多版本并发控制MVCC</p>
+<p>多版本并发控制可以做到读不加锁、读写不冲突。</p>
+<p>在MVCC中读操作可以分成两种：</p>
+<ul>
+<li><p>快照读：读事务历史可见的记录，不对记录加锁；MVCC说的读不加锁，读写不冲突是指该读</p>
+</li>
+<li><p>当前读：读最新的数据记录，需要对记录加锁，防止其他事务修改，如：select lock in share mode(共享锁), select for update ; update, insert ,delete</p>
+</li>
+</ul>
+<p>下面讲解Mysql中MVCC的实现</p>
+<h2 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h2><p>MVCC实现快照读，关键在于两点，多版本和并发控制</p>
+<p><strong>多版本</strong>：</p>
+<p>InnoDB中通过<strong>undo log</strong>实现了数据的多版本，当进行数据修改时会记录undo log，undo log用于数据的撤回操作，它记录了修改的反向操作，比如，插入对应删除，修改对应修改为原来的数据，通过undo log可以实现事务回滚，并且可以根据undo log回溯到某个特定的版本的数据，实现MVCC。</p>
+<p>Mysql每一行会添加一个隐藏列<strong>DB_ROLL_PTR：</strong>其会指向上一个版本数据在undo log 里的位置指针</p>
+<p><strong>并发控制：</strong></p>
+<p>并发控制涉及到Mysql的另一个隐藏列<strong>DB_TRX_ID:</strong> 其会记录操作该数据事务的事务ID；</p>
+<p>当事务SQL语句执行的时候会得到一个Read view，其包含了当前未提交事务集合ID，记set；记录set中事务ID最小值 low；记录当前系统中事务ID最大值high，还有自己的版本号i</p>
+<p>当事务读取数据时，我们可以得到数据行的DB_TRX_ID我们记cur</p>
+<p>显然</p>
+<ul>
+<li><p>如果cur &lt; k ,说明该修改改数据的事务肯定在Read view 之前就提交过，那可读</p>
+</li>
+<li><p>如果cur &gt; high 说明是该数据是在Read view 之后创建的事务修改的，那不可读，需要通过DB_ROLL_PTR转到undo log更新事务号为更小的直到可读或者为空</p>
+</li>
+<li><p>cur在之间就看在不在set中，在且不等于i说明是Read view 创建前未提交的事务修改的，不能读，处理同上；不在说明也是在Read view 之前就提交过，那可读</p>
+</li>
+</ul>
+<p>我们发现通过这个Read view 我们可以读到正确的数据而不需要加锁</p>
+<p>当我们在<strong>RR隔离级别下</strong>：我们一个事务只保持第一次查询时得到的Read view，保证事务内多次读都是一个版本，即快照读，<strong>解决了幻读和不可重复读问题</strong>!</p>
+<p>当我们在<strong>RC隔离级别下</strong>：事务每次每一次查询都会获得一个新的Read view副本。这样就可能造成同一个事务里前后读取<strong>数据可能不一致</strong>的问题!</p>
+<p>这里还有最后一个问题，我们清楚RR隔离级别下，利用快照读可以解决幻读问题，那如果这时的查询语句不是普通的select语句，而是当前读语句，需要对记录加锁怎么办？这时加的是什么锁？</p>
+<h2 id="当前读"><a href="#当前读" class="headerlink" title="当前读"></a>当前读</h2><p>如果需要当前读，并且防止其他事务修改，InnoDB这个时候会启动一些锁算法：</p>
+<ul>
+<li><p>记录锁</p>
+<p>记录锁是锁住记录的，这里要说明的是这里锁住的是索引记录，而不是我们真正的数据记录。</p>
+<ul>
+<li>如果锁的是非主键索引，会在自己的索引上面加锁之后然后再去主键上面加锁锁住.</li>
+<li>如果没有表上没有索引(包括没有主键)，则会使用隐藏的主键索引进行加锁。</li>
+<li>如果要锁的列没有索引，则会进行全表记录加锁</li>
+</ul>
+</li>
+<li><p>间隙锁</p>
+<p>间隙锁顾名思义锁间隙，不锁记录。锁间隙的意思就是锁定某一个范围，间隙锁又叫gap锁，其不会阻塞其他的gap锁，但是会阻塞插入间隙锁</p>
+</li>
+<li><p>next-key锁</p>
+<p>本质是记录锁加上gap锁。RR隔离级别下，Innodb对于行的扫描锁定都是使用此算法，但是如果查询扫描中有唯一索引会退化成只使用记录锁。</p>
+</li>
+<li><p>插入意向锁</p>
+<p>可以看出插入意向锁是在插入的时候产生的,在多个事务同时写入不同数据至同一索引间隙的时候，并不需要等待其他事务完成，不会发生锁等待。假设有一个记录索引包含键值4和7，不同的事务分别插入5和6，每个事务都会产生一个加在4-7之间的插入意向锁，获取在插入行上的排它锁，但是不会被互相锁住，因为数据行并不冲突。<strong>但是如果这个索引间隙有间隙锁了，插入意向锁会被阻塞。</strong></p>
+</li>
+</ul>
+<p>可以看见，在<strong>RR模式下默认采用next-key锁，达到锁住数据防止不可重复读、又锁范围防止幻读的效果</strong></p>
+<p>也正是RR隔离级别下快照读和当前读都能防止幻读，我们才说，Mysql的RR解决了幻读，这也是Mysql的隔离级别</p>
+<p>而在RC隔离级别下，没有间隙锁，自然也就没有next-key锁，其没有解决不可重复读问题，自然也就没有必要处理幻读问题，进一步提高并发性能</p>
+<p>最后注意一点，记录锁要锁的列没有索引，则会进行全表记录加锁，这会很影响性能，所以上锁需谨慎</p>
+<h1 id="Mysql事务"><a href="#Mysql事务" class="headerlink" title="Mysql事务"></a>Mysql事务</h1><p>最后了如果我们要操作事务，在InnoDB引擎下，和事务指令以及AUTOCOMMIT有关</p>
+<p><strong>事务指令</strong></p>
+<ul>
+<li><strong>BEGIN</strong> 开始一个事务</li>
+<li><strong>ROLLBACK</strong> 事务回滚</li>
+<li><strong>COMMIT</strong> 事务确认</li>
+</ul>
+<p>从用户执行start transaction命令到用户执行commit命令之间的一系列操作为一个完整的事务周期。若不执行commit命令，系统则默认事务回滚。</p>
+<p> <strong>AUTOCOMMIT</strong></p>
+<ul>
+<li><strong>SET AUTOCOMMIT=0</strong> 禁止自动提交，必须要等到commit才能提交</li>
+<li><strong>SET AUTOCOMMIT=1</strong> 开启自动提交默认</li>
+</ul>
+<p>在其值为1的条件下，除了事务指令标识的区域，每一条SQL语句都相当于一个独立的事务，用户每进行一次操作都会即时提交或者即时回滚</p>
+<p>前面我们知道每个事务都会有回滚日志即undo log，在长事务情况下，就有很多的回滚日志，占用资源。所以回滚日志会在不需要的时候才删除。也就是说，系统会判断，当没有事务再需要用到这些回滚日志时，回滚日志会被删除，<strong>即当系统里没有比这个回滚日志更早的 Read view 的时候。</strong>  所以最好不要用长事务，长事务意味着系统里面会存在很老的Read view，它可能用到的回滚记录都必须保留，浪费资源</p>
+<p>有些客户端连接框架会默认连接成功后先执行一个 set autocommit=0 的命令。这就导致接下来的查询都在事务中，如果是长连接，就导致了意外的长事务。所以一般建议使用 set autocommit=1, 通过事务指令的方式来显式启动事务。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/16/Spring-MVC/" rel="prev" title="Spring MVC">
+                  <i class="fa fa-chevron-left"></i> Spring MVC
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/16/Mysql/" rel="next" title="Mysql">
+                  Mysql <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
