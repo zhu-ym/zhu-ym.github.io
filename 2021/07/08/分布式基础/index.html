@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="主要讲解学习一些分布式框架之前的一些基础术语、算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式基础">
+<meta property="og:url" content="http://example.com/2021/07/08/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="主要讲解学习一些分布式框架之前的一些基础术语、算法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/image-20210708221115137.png">
+<meta property="article:published_time" content="2021-07-08T14:08:46.000Z">
+<meta property="article:modified_time" content="2021-07-08T14:11:49.775Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20210708221115137.png">
+
+
+<link rel="canonical" href="http://example.com/2021/07/08/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>分布式基础 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CAP%E7%90%86%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">CAP理论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BASE%E7%90%86%E8%AE%BA"><span class="nav-number">2.</span> <span class="nav-text">BASE理论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">分布式一致性算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Paxos%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">Paxos算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Raft%E7%AE%97%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">Raft算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">分布式事务算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2pc%E7%AE%97%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">2pc算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3pc%E7%AE%97%E6%B3%95"><span class="nav-number">4.2.</span> <span class="nav-text">3pc算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TTC%E5%8F%82%E4%B8%8E%E8%80%85%E7%AE%97%E6%B3%95"><span class="nav-number">4.3.</span> <span class="nav-text">TTC参与者算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E4%BA%8B%E5%8A%A1"><span class="nav-number">4.4.</span> <span class="nav-text">消息事务</span></a></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/08/%E5%88%86%E5%B8%83%E5%BC%8F%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式基础
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-07-08 22:08:46 / 修改时间：22:11:49" itemprop="dateCreated datePublished" datetime="2021-07-08T22:08:46+08:00">2021-07-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>主要讲解学习一些分布式框架之前的一些基础术语、算法</p>
+<a id="more"></a>
+
+<h1 id="CAP理论"><a href="#CAP理论" class="headerlink" title="CAP理论"></a>CAP理论</h1><p>CAP即，Consistency<strong>一致性</strong>、Availability<strong>可用性</strong>、Partion Tolerance<strong>分区容忍性</strong></p>
+<p>一般设计分布式系统需要考虑这三大特性，但是遗憾的是，这三大特性不能同时满足，至多只能满足两项</p>
+<p><img src="/images/image-20210708221115137.png" alt="image-20210708221115137"></p>
+<p><strong>一致性</strong></p>
+<p>一致性指得是分布式情况下多个副本的数据是否能保持一致的特性，在一致性的条件下，系统在执行数据更新操作之后能够从一致性状态转移到另一个一致性状</p>
+<p>关于一致性我们经常听到以下定义</p>
+<ul>
+<li><p><strong>强一致性</strong> ：系统写入了什么，读出来的就是什么。</p>
+</li>
+<li><p><strong>弱一致性</strong> ：不一定可以读取到最新写入的值，也不保证多少时间之后读取到的数据是最新的，只是会尽量保证某个时刻达到数据一致的状态。</p>
+</li>
+<li><p><strong>最终一致性</strong> ：弱一致性的升级版。，系统会保证在一定时间内达到数据一致的状态</p>
+</li>
+</ul>
+<p><strong>可用性</strong></p>
+<p>可用性指分布式系统在面对各种异常时可以提供正常服务的能力，可以用系统可用时间占总时间的比值来衡量</p>
+<p>在可用性的条件下，要求非故障的节点在合理的时间内返回合理的响应</p>
+<p><strong>分区容忍性</strong></p>
+<p>一个分布式系统里面，节点组成的网络本来应该是连通的。然而可能因为一些故障，使得有些节点之间不连通了，整个网络就分成了几块区域。数据就散布在了这些不连通的区域中。这就叫分区。</p>
+<p>提高分区容忍性的办法就是一个数据项复制到多个节点上，那么出现分区之后，这一数据项就可能分布到各个区里。容忍性就提高了。</p>
+<p><strong>AP和CP</strong></p>
+<p>首先得明白分布式系统当机器部署过多了，网络故障出现的概率会上升，所以分布式系统必须得考虑分区容忍性。</p>
+<p>而当分区需要复制数据时，要保证一致性CP，每次写操作就得要求等到所有节点同步写完毕，这加大了响应时间，降低了可用性。</p>
+<p>为了保证可用性（AP），每次写操作后的同步可能是异步写，允许读取所有节点的数据，但是数据可能就不一致。</p>
+<p>不同的分布式系统可能根据自己的情况选择不同的侧重点</p>
+<p>而通过权衡又有人提出了BASE理论</p>
+<h1 id="BASE理论"><a href="#BASE理论" class="headerlink" title="BASE理论"></a>BASE理论</h1><p>BASE理论指的是：BA<strong>基本可用</strong>、S<strong>软状态</strong>、E<strong>最终一致性</strong>的缩写</p>
+<p>BASE 理论是对 CAP 中一致性 C 和可用性 A 权衡的结果，其来源于对大规模互联网系统分布式实践的总结，是基于 CAP 定理逐步演化而来的，它大大降低了我们对系统的要求。</p>
+<p><strong>基本可用</strong></p>
+<p>基本可用是指分布式系统在出现不可预知故障的时候，允许损失部分可用性。但是，这绝不等价于系统不可用。</p>
+<p>损失部分可用性是指：</p>
+<ul>
+<li><strong>响应时间上的损失</strong>: 正常情况下，处理用户请求需要 0.5s 返回结果，但是由于系统出现故障，处理用户请求的时间变为 3 s。</li>
+<li><strong>系统功能上的损失</strong>：正常情况下，用户可以使用系统的全部功能，但是由于系统访问量突然剧增，系统的部分非核心功能无法使用。</li>
+</ul>
+<p><strong>软状态</strong></p>
+<p>软状态指允许系统中的数据存在中间状态，即可能出现数据不一致，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。</p>
+<p><strong>最终一致性</strong></p>
+<p>最终一致性强调的是系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性。</p>
+<p>综上，BASE 理论是对 CAP 中一致性和可用性权衡的结果，它的核心思想是：<strong>即使无法做到强一致性，但每个应用都可以根据自身业务特点，采用适当的方式来使系统达到最终一致性。</strong></p>
+<h1 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h1><p>这了解分布式一致性算法之前，我们首先得明白，分布式一致性指的是：<strong>集群所有节点数据完全相同并能够对某个提案（Proposal）达成一致。</strong></p>
+<h2 id="Paxos算法"><a href="#Paxos算法" class="headerlink" title="Paxos算法"></a>Paxos算法</h2><p>用于达成共识性问题，即对多个节点产生的值，该算法能保证只选出唯一一个值。</p>
+<p>这这个算法里面有三种角色：</p>
+<ul>
+<li>Proposer 提议者：提议一个值</li>
+<li>Acceptor 接受者：对提议的值进行投票</li>
+<li>Listener 告知者： 告知投票结果</li>
+</ul>
+<p>算法思路主要有三个阶段：</p>
+<p>首先我们要求每个阶段Proposer发送的请求相当于一个二元组[唯一序号n，提议值v]，阶段不同可以分为prepare请求和Accept请求</p>
+<p>每个阶段Accptor收到Proposer二元组后，记录最大n，承诺只会对&gt;=n的二元组做出反应</p>
+<ol>
+<li><p><strong>准备阶段</strong>：Proposer发送prepare请求，Acceptor判断n后，判断是否进行prepare响应</p>
+<p>当有Proposer 收到半数及以上prepare响应后，进入接受阶段</p>
+</li>
+<li><p><strong>接受阶段：</strong>Proposer发送Accept请求，Acceptor判断n后，判断是否向Listener发送Listen提议，进入Liseten阶段</p>
+</li>
+<li><p><strong>告知阶段</strong>：当 Learner 发现有大多数的 Acceptor 接收了某个提议，那么该提议的提议值就被 Paxos 选择出来。</p>
+</li>
+</ol>
+<p>最后还有 Acceptor 不会接受两个不同的提议，即只会发送一个Listener提议，因此 Learner总能得出有大多数的 Acceptor 接收了的某个提议选出一个唯一值</p>
+<p>它能够让分布式网络中的节点在出现错误时（前提是没有恶意节点）仍然能保持一致。由于实现和证明难以理解，所以后面出现了Raft共识算法</p>
+<h2 id="Raft算法"><a href="#Raft算法" class="headerlink" title="Raft算法"></a>Raft算法</h2><p>RAFT是对PAXOS算法对简化，其常用于竞选主节点，其也有三种角色</p>
+<ul>
+<li>Leader：周期性的发送心跳包给 Follower</li>
+<li>Follower：Follower 都设置了一个随机的竞选超时时间，一般为 150ms~300ms</li>
+<li>Candidate：Follower时间内没有收到 Leader 的心跳包，就会变成 Candidate，进入竞选阶段</li>
+</ul>
+<p>当进入竞选时：</p>
+<ul>
+<li><p>Candidate会向所有Follower发送心跳包，如果有超过一半节点回复，即为Learder</p>
+</li>
+<li><p>如果有多个 Follower 成为 Candidate，并且所获得票数相同，那么就需要重新开始投票，由于每个节点设置的随机竞选超时时间不同，最终总能选出Leader</p>
+</li>
+<li><p>最后选取 的Leader 会周期性地发送心跳包给 Follower，Follower 接收到心跳包，会重新开始计时</p>
+</li>
+</ul>
+<h1 id="分布式事务算法"><a href="#分布式事务算法" class="headerlink" title="分布式事务算法"></a>分布式事务算法</h1><p>在分布式系统中就得考虑中此情况下的事务问题，一般对于分布式事务有以下算法</p>
+<h2 id="2pc算法"><a href="#2pc算法" class="headerlink" title="2pc算法"></a>2pc算法</h2><p>2pc是一个非常经典的<strong>强一致、中心化的原子提交协议</strong>。这里所说的中心化是指协议中有两类节点：一个是中心化<strong>协调者节点（coordinator）</strong>和<strong>N个参与者节点（partcipant）</strong></p>
+<p>其算法流程分为两个阶段：</p>
+<ul>
+<li>事务请求：<strong>协调者组织各参与者对自己要执行的本地事务操作进行投票表态</strong>，表明是否能完成本地事务，此时本地事务未提交，因此这一阶段也被称为投票阶段</li>
+<li>事务提交：在第二阶段中，<strong>协调者会根据参与者的反馈情况来决定最终是否可以进行事务提交，再通知参与者</strong>，正常情况下会有两种通知<ul>
+<li>事务提交：参与者提交本地事务</li>
+<li>事务回滚：参与者回滚本地事务</li>
+</ul>
+</li>
+</ul>
+<p>其中，协调者设有超时机制，如果协调者在超过指定的时间还没有收到参与者的反馈,事务就失败,向所有节点发送终止事务请求。</p>
+<p>该算法简单清晰，可以保证强一致性，但是很明显有一些问题：</p>
+<ul>
+<li>性能问题：参与者一直占有事务资源，等待所有参与者本地事务完成反馈，才决定是否提交</li>
+<li>协调者节点故障：事务协调者是整个协议的核心，一旦事务协调者节点挂掉，会导致参与者收不到提交或回滚的通知，从而导致参与者节点始终处于事务无法完成的中间状态。</li>
+<li>丢失消息导致的数据不一致问题：在第二个阶段，如果发生局部网络问题，一部分事务参与者收到了提交消息，另一部分事务参与者没收到提交消息，那么就会导致节点间数据的不一致问题。</li>
+</ul>
+<p>总结来说2PC 是一种<strong>尽量保证强一致性</strong>的分布式事务，因此它是<strong>同步阻塞</strong>的，而同步阻塞就导致长久的资源锁定问题，<strong>总体而言效率低</strong>，并且存在<strong>单点故障</strong>问题，在极端条件下存在<strong>数据不一致</strong>的风险。</p>
+<h2 id="3pc算法"><a href="#3pc算法" class="headerlink" title="3pc算法"></a>3pc算法</h2><p>3PC算法在2PC基础上增加了预备阶段，并且给事务参与者也引入了超时机制</p>
+<ul>
+<li>预备阶段：该阶段主要三参与者是 <strong>尝试获取数据库锁</strong> 如果可以，就返回Yes。</li>
+<li>超时机制：参与者在超时时间内没有等到协调者消息，自动进行本地提交从而释放资源</li>
+</ul>
+<p>显然，该算法解决了一定的性能问题和协调者节点故障问题，但是还是有数据一致性问题</p>
+<h2 id="TTC参与者算法"><a href="#TTC参与者算法" class="headerlink" title="TTC参与者算法"></a>TTC参与者算法</h2><p>TCC 指的参与者要将原来的接口拆分为三个接口，是即try - Confirm - Cancel。</p>
+<ul>
+<li><p>Try 指的是预留，进行即资源的预留和锁定，<strong>注意是预留</strong>。</p>
+</li>
+<li><p>Confirm 指的是确认操作，这一步其实就是真正的执行了。</p>
+</li>
+<li><p>Cancel 指的是撤销操作，可以理解为把预留阶段的动作撤销了，又或许说，这一步是一种补偿机制</p>
+</li>
+</ul>
+<p>最后撤销和确认操作的执行可能需要重试，TTC通过此来保证数据的一致性，因此还需要保证<strong>操作的幂等</strong>。</p>
+<p>该方案的难点就是业务方怎样对TCC三个方法对编写</p>
+<h2 id="消息事务"><a href="#消息事务" class="headerlink" title="消息事务"></a>消息事务</h2><p>利用消息队列来实现分布式事务，前文说到的RocketMQ就有此功能</p>
+<p>RocketMQ主要通过<strong>半消息</strong>、<strong>消息回查</strong>和<strong>二次确认</strong>等操作实现分布式事务，详情可见我的RocketMQ文章</p>
+<p>这个方法实现的事务有一定局限性，要求指向系统B的操作已经和系统A不相关了，也就是说在消息队列中的分布式事务是——<strong>本地事务和存储消息到消息队列才是同一个事务</strong>。这样也就产生了事务的<strong>最终一致性</strong>，因为整个过程是异步的，<strong>每个系统只要保证它自己那一部分的事务就行了</strong>。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/07/Mysql%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="prev" title="Mysql查询性能优化">
+                  <i class="fa fa-chevron-left"></i> Mysql查询性能优化
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
