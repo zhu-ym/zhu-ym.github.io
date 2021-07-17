@@ -6745,11 +6745,6 @@
   </entry>
   <entry>
     <title>最小生成树</title>
-    <url>/2021/07/17/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91-1/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>最小生成树</title>
     <url>/2021/06/08/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/</url>
     <content><![CDATA[<p>熟悉最小生成树的两种写法</p>
 <a id="more"></a>
@@ -6793,7 +6788,7 @@
       <categories>
         <category>算法</category>
         <category>经典算法</category>
-        <category>算法，图算法</category>
+        <category>图算法</category>
       </categories>
       <tags>
         <tag>最小生成树</tag>
@@ -6889,6 +6884,207 @@
       </categories>
       <tags>
         <tag>排序算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HTTP一些问题</title>
+    <url>/2021/07/12/HTTP%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>发现对HTTP的整体架构了解较少，总结了一些问题</p>
+<a id="more"></a>
+
+<h1 id="HTTP报文信息"><a href="#HTTP报文信息" class="headerlink" title="HTTP报文信息"></a>HTTP报文信息</h1><h2 id="HTTP请求报文"><a href="#HTTP请求报文" class="headerlink" title="HTTP请求报文"></a>HTTP请求报文</h2><p>HTTP请求报文主要由<strong>请求行+请求头部+请求数据</strong>组成</p>
+<p><img src="/images/image-20210313101500745.png" alt="image-20210313101500745"></p>
+<p>请求行主要是包含了请求方法、URL、和HTTP协议版本的信息</p>
+<p>这里就延伸出了关于请求方法的一个问题：</p>
+<h3 id="Q1-请求行常见方法？get和post方法对比"><a href="#Q1-请求行常见方法？get和post方法对比" class="headerlink" title="Q1:请求行常见方法？get和post方法对比"></a>Q1:请求行常见方法？get和post方法对比</h3><p>HTTP的请求方法有get获取资源、post传输数据、head获取报文首部、options查看服务器支持方法、put上传、delete删除等方法</p>
+<p>其中最常用的就是get和post</p>
+<p>get常用来请求资源，其参数连接在URL之后，经指定的资源经服务器端解析后返回响应内容</p>
+<p>而post但更重要的目的是为了传输一些主体参数，比如我们一般提交表单信息时，常用的是post方法</p>
+<p>两者主要区别：</p>
+<ul>
+<li><p>首先是语义上的区别，一个是请求资源，类似从服务器上拉资源过来，一个是传递数据，提交表单，主要在于将数据推到服务器那边</p>
+</li>
+<li><p>语义上的差别也带来了幂等性的问题，get方法一般对服务器读请求，无副作用，多次get操作一般上幂等的，而post方法很多时候在服务器上是写请求，重复提交表单可能会在数据库插入多条数据，这一般要求服务器的接口进行验证实现幂等性</p>
+</li>
+<li><p>get方法主要是读取、再加上其幂等性导致可以对响应的数据做缓存，post不幂等也就意味着不能随意多次执行。因此一般也就不会主动响应数据。</p>
+</li>
+<li><p>最后的话因为get方法参数会拼接做url上，太长的url会影响具体服务器对其进行解析，所以url长度一般有限制，从而get参数也有限制</p>
+</li>
+</ul>
+<p>了解请求行后，我们就到了请求头部，请求头部包含一些字段和对应值，描述了一些报文的信息。比如<strong>Content-length表明了实体的大小</strong>，<strong>Connection 控制着长短连接</strong> ，user agent包含了HTTP 客户端程序的信息，以及缓存控制、编码控制等一系列的信息</p>
+<p>请求行结束之后，最后就是实体内容，从上我们可以发现，请求头部到请求数据之间空了一行，这个地方又引出一个问题：</p>
+<h3 id="Q2-TCP是面向字节流的协议，那http报文经过TCP传输后，怎么防止粘包"><a href="#Q2-TCP是面向字节流的协议，那http报文经过TCP传输后，怎么防止粘包" class="headerlink" title="Q2:TCP是面向字节流的协议，那http报文经过TCP传输后，怎么防止粘包"></a>Q2:TCP是面向字节流的协议，那http报文经过TCP传输后，怎么防止粘包</h3><p>我们知道TCP的<strong>Nagle算法</strong>，会让TCP的组包时，避免发送小的报文段，会将收集到的小数据整合再发送，这可能会导致两个HTTP紧紧连接在一起，那解析这样的TCP报文时，如何区分两个HTTP</p>
+<p>我认为两个关键点，一个是Content-type，指明了实体的大小，另外一点是特殊标记符号，换行符。</p>
+<p>换行符可以让我们清楚哪里是实体开始的地方，实体大小让我们清楚实体什么时候结束，实体结束后面就是另一个HTTP报文的开始，通过这些数据，我们知道HTTP报文开始结束，能正确解析出来，也就不会粘包了</p>
+<h2 id="HTTP响应报文"><a href="#HTTP响应报文" class="headerlink" title="HTTP响应报文"></a>HTTP响应报文</h2><p>与HTTP请求报文对应，HTTP也有响应报文，响应报文一般包含：<strong>响应行+响应首部+响应数据</strong></p>
+<p>响应行包含了：包含了状态码以及原因短语，用来告知客户端请求的结果。</p>
+<p>这里需要需要我们了解常见状态码</p>
+<h3 id="Q3-常见状态码"><a href="#Q3-常见状态码" class="headerlink" title="Q3:常见状态码"></a>Q3:常见状态码</h3><p>下面是一些常用状态码</p>
+<p><strong>2XX:成功</strong></p>
+<p>200 OK 正常处理</p>
+<p>204 No Content 请求处理成功，但是没有资源可返回</p>
+<p>206 Partial Content 客户端范围请求，请求成功</p>
+<p><strong>3XX：重定向</strong></p>
+<p>301 永久重定向 资源分配了新的URI，以后使用该URI</p>
+<p>302 临时重定向 希望用户本次访问使用该URI</p>
+<p>303 See Other 功能和302类似，但制定客户端用GET方法访问</p>
+<p>304 Not Modified 如果请求报文首部包含一些条件，例如：If-Match，If-Modified-Since等如果不满足条件，则服务器会返回 304 状态码。</p>
+<p>307 临时重定向，与 302 的含义类似，但是 307 要求浏览器不会把重定向请求的 POST 方法改成 GET 方法。</p>
+<p><strong>4XX：客户端错误</strong></p>
+<p>400 请求报文语法错误</p>
+<p>401 HTTP认证</p>
+<p>403 服务器拒绝访问</p>
+<p>404 没有请求资源</p>
+<p><strong>5XX：服务器错误</strong></p>
+<p>500 服务器内部执行请求发生错误</p>
+<p>502 网关错误</p>
+<p>503 服务器超负载或者停机</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>对于HTTP响应报文的其他信息，和请求报文差不多</p>
+<p>至此我们对HTTP报文有了了解，那么关于HTTP本身，它到底是怎么，有哪些内容呢</p>
+<h1 id="HTTP特性"><a href="#HTTP特性" class="headerlink" title="HTTP特性"></a>HTTP特性</h1><p>HTTP协议用于客户端和服务端之间，通过请求和响应报文的交换达成通信，是一种无状态的协议。</p>
+<p>针对这个无状态，也有一个问题：</p>
+<h3 id="Q4-如果想要HTTP保存状态该怎么办"><a href="#Q4-如果想要HTTP保存状态该怎么办" class="headerlink" title="Q4:如果想要HTTP保存状态该怎么办"></a>Q4:如果想要HTTP保存状态该怎么办</h3><p>HTTP1.1引入Cookie来保存状态信息</p>
+<p>Cookie 是服务器发送到用户浏览器并保存在本地的一小块数据，它会在浏览器之后向同一服务器再次发起请求时被携带上，用于告知服务端两个请求是否来自同一浏览器。</p>
+<p>服务器发送的响应报文包含 <strong>Set-Cookie</strong> 首部字段，客户端得到响应报文后把 Cookie 内容保存到浏览器中。</p>
+<p>客户端之后对同一个服务器发送请求时，会从浏览器中取出 Cookie 信息并通过 <strong>Cookie</strong> 请求首部字段发送给服务器。</p>
+<p>一般注意cookie会存在持久性，作用域上的问题</p>
+<p>当Cookie被浏览器禁用时，可以就需要将信息存储到服务端，我们称为Session，再而是使用 URL 重写技术，将 Session ID 作为 浏览器URL 的参数进行传递，到服务器上根据SessionID 查找具体到状态信息</p>
+<p>回到HTTP的其他特性，HTTP的特性其实和HTTP版本息息相关，这里可以延伸出多个问题：</p>
+<h3 id="Q5-HTTP-1-0和1-1版本的区别"><a href="#Q5-HTTP-1-0和1-1版本的区别" class="headerlink" title="Q5:HTTP  1.0和1.1版本的区别"></a>Q5:HTTP  1.0和1.1版本的区别</h3><p>主要有几点：</p>
+<ul>
+<li>1.0使用短连接，每次发送数据都有TCP的连接和挥手，效率比较低，1.1后默认使用长连接，只需一次建立就可以传输多次数据，传输完成后，只需要一次切断连接即可。长连接的连接时长可以通过请求头中的 <code>keep-alive</code> 来设置</li>
+<li>1.0认为每个机器只能绑定一个ip，所以那时的url没有传递主机名，1.1后使用了虚拟网络，一台物理机上可以存在多个虚拟主机，他们共享一个ip地址</li>
+<li>1.0仅提供了最基本的认证，很容易收到窥探，1.1后使用了摘要算法来进行身份验证</li>
+<li>1.0 不支持断点续传，1.1 后支持断点续传，通过使用请求头中的 <code>Range</code> 来实现。</li>
+<li>1.1引入cookie来保存状态</li>
+</ul>
+<h3 id="Q6-HTTP1-1和2-0的区别"><a href="#Q6-HTTP1-1和2-0的区别" class="headerlink" title="Q6:HTTP1.1和2.0的区别"></a>Q6:HTTP1.1和2.0的区别</h3><p>前面已经了解1.1，这里主要介绍2.0的新改变：</p>
+<ul>
+<li>强化安全：http2.0一般跑在https上</li>
+<li>二进制格式：HTTP2.0使用了更接近TCP/IP的二进制格式抛弃了ASCII码，提高了解析效率</li>
+<li>多路复用：即每一个请求都是是用作连接共享。一个请求对应一个id，这样一个连接上可以有多个请求。</li>
+<li>头部压缩：由于 HTTP 1.1 经常会出现 <strong>User-Agent、Cookie、Accept、Server、Range</strong> 等字段可能会占用几百甚至几千字节，导致头部偏重，HTTP 2.0 使用 <code>HPACK</code> 算法进行压缩</li>
+</ul>
+<p>总的来说，http应用广泛，易于拓展，但是除了2.0外，在安全性方面还是存在很多问题：</p>
+<ul>
+<li>数据明文传输，可能会被窃听</li>
+<li>通信身份可能会被伪造</li>
+<li>无法证明报文完整性，报文完整性可能被篡改</li>
+</ul>
+<p>而这些，可以通过HTTPS协议来解决</p>
+<h1 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h1><p>前面提到2.o为了强化安全，一般跑在https上，那么https的原理是什么，为什么能保证安全？</p>
+<p>HTTPS实际上是HTTP + SSL(secure socket layer)</p>
+<p>之前是HTTP直接和TCP通信，在HTTPS里面，HTTP先和SSL通信，再由SSL和TCP通信，通过使用 SSL，HTTPS 具有了加密（防窃听）、认证（防伪装）和完整性保护（防篡改）的功能，安全性大大提高。</p>
+<p>这里针对这几个方案的解决原理，也有几个问题：</p>
+<h3 id="Q7-HTTPS加密手段"><a href="#Q7-HTTPS加密手段" class="headerlink" title="Q7:HTTPS加密手段"></a>Q7:HTTPS加密手段</h3><p>我们常见的加密手段有：</p>
+<ul>
+<li>对称加密：通信双方共用一个密钥对传输的数据进行加密，解锁。但是在传输这个密钥的时候，显然还是可能被窃取到</li>
+<li>非对称加密：服务器有两个密钥，一个是公钥，一个是私钥，公钥和私钥可以互解对方加密的数据。采用这个加密时，服务器将自己的公钥明文发送给客户端，客户端用公钥发送的消息只有服务端的私钥才能解密，所以这一面通信是安全的，但是第一步别人可以窃取公钥，服务端到客户端的信息就不是安全的</li>
+</ul>
+<p>这里需要注意一点，对称加密算法简单，非对称加密算法比较耗时</p>
+<p>到这，两种算法好像都不可行，但是我们发现了一点，非对称加密能解决单向的通信安全</p>
+<p>很容易得出我们可以搞两个方向的非对称加密实现双向安全通信，可以但是没有必要，HTTPS采用了对称加密和非对称加密的混合加密方式，运算速度比前者方更快</p>
+<p><strong>混合加密方式：</strong></p>
+<p>首先采用非对称加密的方式，保证客户端到服务端的安全通信，然后客户端通信事，将自己生成的密钥传递给服务端，最后两者都用这个密钥对称加密通信。</p>
+<p>前面貌似混合加密方式已经很完美，但是这个方案和双非对称方案都还存在一个问题：<strong>中间人攻击</strong></p>
+<ul>
+<li><p>某网站有用于非对称加密的公钥A、私钥A’。</p>
+</li>
+<li><p>浏览器向网站服务器请求，服务器把公钥A明文给传输浏览器。</p>
+</li>
+<li><p><strong>中间人劫持到公钥A，保存下来，把数据包中的公钥A替换成自己伪造的公钥B（它当然也拥有公钥B对应的私钥B’）</strong>。</p>
+</li>
+<li><p>浏览器生成一个用于对称加密的密钥X，用<strong>公钥B</strong>（浏览器无法得知公钥被替换了）加密后传给服务器。</p>
+</li>
+<li><p><strong>中间人劫持后用私钥B’解密得到密钥X，再用公钥A加密后传给服务器</strong>。</p>
+</li>
+<li><p>服务器拿到后用私钥A’解密得到密钥X。</p>
+</li>
+</ul>
+<p>之后两者再通信，却有一个中间人拿到他们的密钥X，通信业不太安全</p>
+<p>这个问题的本质在于，中间人自制的公钥B浏览器判断不出来，<strong>浏览器无法确认收到的公钥是不是网站自己的</strong></p>
+<p>这个问题的解决设计到HTTPS的另一个特性：认证</p>
+<h3 id="Q8：认证"><a href="#Q8：认证" class="headerlink" title="Q8：认证"></a>Q8：认证</h3><p>通过使用 <strong>证书</strong> 来对通信方进行认证。认证可以保证浏览器判断公钥是不是网站自己的！</p>
+<p>数字证书认证机构（CA，Certificate Authority）是客户端与服务器双方都可信赖的第三方机构。</p>
+<p>服务器的运营人员向 CA 提出公开密钥的申请，CA 在判明提出申请者的身份之后，会对已申请的公开密钥做数字签名，然后分配这个已签名的公开密钥，并将该公开密钥放入公开密钥证书后绑定在一起。</p>
+<p>进行 HTTPS 通信时，服务器会把证书发送给客户端。客户端取得其中的公开密钥之后，先使用数字签名进行验证，如果验证通过，就可以开始通信了。</p>
+<p>至此，加密的安全性也才能完全保证</p>
+<p>最后SSL 提供报文摘要功能来进行完整性保护。</p>
+<p>HTTP 也提供了 MD5 报文摘要功能，但不是安全的。例如报文内容被篡改之后，同时重新计算 MD5 的值，通信接收方是无法意识到发生了篡改。</p>
+<p>HTTPS 的报文摘要功能之所以安全，是因为它结合了加密和认证这两个操作。试想一下，加密之后的报文，遭到篡改之后，也很难重新计算报文摘要，因为无法轻易获取明文。</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从synchronized开始</title>
+    <url>/2021/06/24/%E4%BB%8Esynchronized%E5%BC%80%E5%A7%8B/</url>
+    <content><![CDATA[<p>了解synchronized的原理</p>
+<a id="more"></a>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Synchronized是Java JVM层面的一种悲观锁，其可以保证可见性、原子性和防止指令重排，常常用来同步方法或者是代码块，保证线程安全</p>
+<p>究其原理，Java中每个对象会有一个monitor（监视器锁），其有一个进入数。对同步代码块，反编译后会发现，minitorenter和monitorexit指令，前者在进入时该线程会尝试获取monitor所有权，如果monitor可进入数为0，该线程可以获取到该锁，否则就会阻塞在这，直到minitor可进入数为0后再次唤醒该线程。而monitorexit代表着该线程放弃该monitor的所有权，可进入数减一。对同步方法会生成ACC_Synchronized标记，表明该方法是同步的，在调用该方法是会先检查该标记，如果是同步方法在执行时要先获取monitor</p>
+<p>从其原理我们可以看出一个不好的点，获得锁的线程其会阻塞其他线程，再次唤起被阻塞的线程时会造成较大的开销，因此JMM会对齐进行一定优化。我们选择使用的时候也需要思考，是不是要非他不可，或许可以选择使用原子类，volatile等更好的选择。</p>
+<h1 id="深入"><a href="#深入" class="headerlink" title="深入"></a>深入</h1><p>如果继续深入到话，我们可以探索两个问题</p>
+<p>Monitor原理是什么？</p>
+<p>JMM会进行怎样的Synchronized优化？</p>
+<h2 id="Monitor"><a href="#Monitor" class="headerlink" title="Monitor"></a>Monitor</h2><p>在操作系统中，有说道信号量、互斥量、和管程来实现同步</p>
+<p>Monitor管程则可以用信号量或者互斥量设计出来，其主要有两个功能：</p>
+<ul>
+<li>互斥，保证一个时间只能有一个线程持有管程</li>
+<li>允许线程临时释放monitor，等待某个条件谓语为真后被通知，重新尝试获取monitor</li>
+</ul>
+<p>Java的Synchronized就具备了管程的特征，其实现是通过C++的ObjectMonitor类实现</p>
+<p>ObjectMonitor的字段如下</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">ObjectMonitor() &#123;</span><br><span class="line">  _header       = <span class="literal">NULL</span>;</span><br><span class="line">  _count        = <span class="number">0</span>;</span><br><span class="line">  _waiters      = <span class="number">0</span>,</span><br><span class="line">  <span class="comment">// 记录锁的重入次数</span></span><br><span class="line">  _recursions   = <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line">  _object       = <span class="literal">NULL</span>;</span><br><span class="line">  <span class="comment">// 保存持有ObjectMonitor的线程</span></span><br><span class="line">  _owner        = <span class="literal">NULL</span>;</span><br><span class="line">  <span class="comment">// 存放进入wait状态的线程</span></span><br><span class="line">  _WaitSet      = <span class="literal">NULL</span>;</span><br><span class="line">  _WaitSetLock  = <span class="number">0</span> ;</span><br><span class="line">  _Responsible  = <span class="literal">NULL</span> ;</span><br><span class="line">  _succ         = <span class="literal">NULL</span> ;</span><br><span class="line">  _cxq          = <span class="literal">NULL</span> ;</span><br><span class="line">  FreeNext      = <span class="literal">NULL</span> ;</span><br><span class="line">  <span class="comment">// 存放请求Monitor的线程</span></span><br><span class="line">  _EntryList    = <span class="literal">NULL</span> ;</span><br><span class="line">  _SpinFreq     = <span class="number">0</span> ;</span><br><span class="line">  _SpinClock    = <span class="number">0</span> ;</span><br><span class="line">  OwnerIsThread = <span class="number">0</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由上诉结构，相较于普通二元信号量或者是互斥锁，我们发现ObjectMonitor多了一个<code>_WaitSet </code>,记录由wait方法进入的线程，可见关于该monitor就只有一个<code>_WaitSet </code>,当某线程在等待某个条件时，可以调用wait()方法进入该集合等待被唤醒，但由于其只有一个该集合，所以Synchronizd不支持绑定多个条件，只能绑定单个条件。</p>
+<p>获取锁的逻辑一般是依靠CAS操作，即乐观锁的思想</p>
+<h2 id="Synchronized优化"><a href="#Synchronized优化" class="headerlink" title="Synchronized优化"></a>Synchronized优化</h2><p>首先我们得了解在JVM中 一个Java对象由对象头、实例数据、对齐填充组成，其中对象头存储了许多标记字段用于增强对象功能</p>
+<p>我们得了解对象头</p>
+<h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>一个对象头一般包含两个部分Mark Word + 对象类型指针，对于数据对象还会记录数组长度</p>
+<p>而和Synchronized相关的优化主要存在于Mark Word中</p>
+<p>Mark Word一般32位，VM将字的最低两个位设置为标记位，不同标记位下的Mark Word示意如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|                  Mark Word (32 bits)                  |       State        |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">| identity_hashcode:25 | age:4 | biased_lock:1 | lock:2 |       Normal       |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|  thread:23 | epoch:2 | age:4 | biased_lock:1 | lock:2 |       Biased       |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|               ptr_to_lock_record:30          | lock:2 | Lightweight Locked |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|               ptr_to_heavyweight_monitor:30  | lock:2 | Heavyweight Locked |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|                                              | lock:2 |    Marked for GC   |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br></pre></td></tr></table></figure>
+<p>可见之前我们所讨论的Synchronized在重量级锁情况下，其维护了一个对象维护了一个与之关联的monitor</p>
+<p>可以从多个状态可以猜测，JVM 对Synchronized的优化，就是一开始不要让Mark Word 处于重量级锁情况下</p>
+<h3 id="Synchronized优化过程"><a href="#Synchronized优化过程" class="headerlink" title="Synchronized优化过程"></a>Synchronized优化过程</h3><p>在Normal态，我们发现根本就没有锁，只是有一个偏向锁的标记，默认为1，表示可以使用偏向锁</p>
+<p><strong>偏向锁</strong></p>
+<p>当有线程要使用该对象时，就会进入偏向锁状态，具体过程如下：</p>
+<ul>
+<li><p>当锁对象第一次被线程获取的时候，虚拟机将会把对象头中的标志位设为 “01 ”，即偏向模式。同时使用 CAS  操作把获取到这个锁的线程的 ID记录在对象的 Mark Word 之中，如果 CAS 操作成功，持有偏向锁的钱程以后每次进入这个锁相关的同步块时，判断ID相等即可，虚拟机都可以不再进行任何同步操作</p>
+</li>
+<li><p>当还有别的线程也尝试进入该同步块时，很明显有两者线程ID不相等，又判断已经在偏向锁态了，这时候偏向锁明显无法保持同步了</p>
+</li>
+</ul>
+<p>偏向锁的设计原理就是：该对象没有竞争，只会有一个线程会使用该对象</p>
+<p>但是当有多个线程进入同步块时，我们会进入轻量级模式</p>
+<p><strong>轻量级锁</strong></p>
+<p>偏向锁失败，锁会升级为轻量级锁模式，Mark Word 也变成轻量级锁模式</p>
+<p>这时，如果线程进入同步块：</p>
+<ul>
+<li>虚拟机首先会在当前线程队帧创建对象Mark Word的副本，记为lock record</li>
+<li>之后尝试CAS操作将Mark Word 指向该lock record<ul>
+<li>CAS成功，这个线程就拥有了该对象的锁，设置为00</li>
+<li>CAS失败，检查该对象的Mark word是否指向该队帧，指向则说明已拥有锁，否则说明已经被其他线程抢占了，升级为重量级锁</li>
+</ul>
+</li>
+<li>解锁时，如果对象的 Mark Word 仍然指向着线程的锁记录，也尝试CAS操作，换回来，至此同步完成</li>
+</ul>
+<p>轻量级锁的的思想在于：一个时刻，一般只有一个线程使用该对象。</p>
+<p>所以当一个时刻有多个线程进入同步块时，我们会进入重量级锁模式</p>
+<p><strong>重量级锁模式</strong></p>
+<p>就是我们熟悉需要获取monitor的模式了，当然在这个阶段JVM也做出了一些优化，比如自旋锁、自适应自旋锁来避免线程阻塞</p>
+<h3 id="其他优化"><a href="#其他优化" class="headerlink" title="其他优化"></a>其他优化</h3><p>锁粗化、锁消除</p>
+]]></content>
+      <categories>
+        <category>Java并发</category>
+      </categories>
+      <tags>
+        <tag>synchronized</tag>
       </tags>
   </entry>
 </search>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","version":"8.1.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="了解synchronized的原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从synchronized开始">
+<meta property="og:url" content="http://example.com/2021/06/24/%E4%BB%8Esynchronized%E5%BC%80%E5%A7%8B/index.html">
+<meta property="og:site_name" content="Zhu-ym&#39;s blog">
+<meta property="og:description" content="了解synchronized的原理">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-24T13:55:11.000Z">
+<meta property="article:modified_time" content="2021-07-17T13:59:19.853Z">
+<meta property="article:author" content="Zhu-ym">
+<meta property="article:tag" content="synchronized">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/06/24/%E4%BB%8Esynchronized%E5%BC%80%E5%A7%8B/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>从synchronized开始 | Zhu-ym's blog</title>
+  
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Zhu-ym's blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">深入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Monitor"><span class="nav-number">2.1.</span> <span class="nav-text">Monitor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Synchronized%E4%BC%98%E5%8C%96"><span class="nav-number">2.2.</span> <span class="nav-text">Synchronized优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%A4%B4"><span class="nav-number">2.2.1.</span> <span class="nav-text">对象头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Synchronized%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="nav-number">2.2.2.</span> <span class="nav-text">Synchronized优化过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E4%BC%98%E5%8C%96"><span class="nav-number">2.2.3.</span> <span class="nav-text">其他优化</span></a></li></ol></li></ol></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhu-ym</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhu-ym" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhu-ym" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1844556565@qq.com" title="E-Mail → mailto:1844556565@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_36684096" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_36684096" rel="noopener" target="_blank">CSDN</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/24/%E4%BB%8Esynchronized%E5%BC%80%E5%A7%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Zhu-ym">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhu-ym's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从synchronized开始
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-24 21:55:11" itemprop="dateCreated datePublished" datetime="2021-06-24T21:55:11+08:00">2021-06-24</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-17 21:59:19" itemprop="dateModified" datetime="2021-07-17T21:59:19+08:00">2021-07-17</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java%E5%B9%B6%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">Java并发</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>了解synchronized的原理</p>
+<a id="more"></a>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Synchronized是Java JVM层面的一种悲观锁，其可以保证可见性、原子性和防止指令重排，常常用来同步方法或者是代码块，保证线程安全</p>
+<p>究其原理，Java中每个对象会有一个monitor（监视器锁），其有一个进入数。对同步代码块，反编译后会发现，minitorenter和monitorexit指令，前者在进入时该线程会尝试获取monitor所有权，如果monitor可进入数为0，该线程可以获取到该锁，否则就会阻塞在这，直到minitor可进入数为0后再次唤醒该线程。而monitorexit代表着该线程放弃该monitor的所有权，可进入数减一。对同步方法会生成ACC_Synchronized标记，表明该方法是同步的，在调用该方法是会先检查该标记，如果是同步方法在执行时要先获取monitor</p>
+<p>从其原理我们可以看出一个不好的点，获得锁的线程其会阻塞其他线程，再次唤起被阻塞的线程时会造成较大的开销，因此JMM会对齐进行一定优化。我们选择使用的时候也需要思考，是不是要非他不可，或许可以选择使用原子类，volatile等更好的选择。</p>
+<h1 id="深入"><a href="#深入" class="headerlink" title="深入"></a>深入</h1><p>如果继续深入到话，我们可以探索两个问题</p>
+<p>Monitor原理是什么？</p>
+<p>JMM会进行怎样的Synchronized优化？</p>
+<h2 id="Monitor"><a href="#Monitor" class="headerlink" title="Monitor"></a>Monitor</h2><p>在操作系统中，有说道信号量、互斥量、和管程来实现同步</p>
+<p>Monitor管程则可以用信号量或者互斥量设计出来，其主要有两个功能：</p>
+<ul>
+<li>互斥，保证一个时间只能有一个线程持有管程</li>
+<li>允许线程临时释放monitor，等待某个条件谓语为真后被通知，重新尝试获取monitor</li>
+</ul>
+<p>Java的Synchronized就具备了管程的特征，其实现是通过C++的ObjectMonitor类实现</p>
+<p>ObjectMonitor的字段如下</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">ObjectMonitor() &#123;</span><br><span class="line">  _header       = <span class="literal">NULL</span>;</span><br><span class="line">  _count        = <span class="number">0</span>;</span><br><span class="line">  _waiters      = <span class="number">0</span>,</span><br><span class="line">  <span class="comment">// 记录锁的重入次数</span></span><br><span class="line">  _recursions   = <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line">  _object       = <span class="literal">NULL</span>;</span><br><span class="line">  <span class="comment">// 保存持有ObjectMonitor的线程</span></span><br><span class="line">  _owner        = <span class="literal">NULL</span>;</span><br><span class="line">  <span class="comment">// 存放进入wait状态的线程</span></span><br><span class="line">  _WaitSet      = <span class="literal">NULL</span>;</span><br><span class="line">  _WaitSetLock  = <span class="number">0</span> ;</span><br><span class="line">  _Responsible  = <span class="literal">NULL</span> ;</span><br><span class="line">  _succ         = <span class="literal">NULL</span> ;</span><br><span class="line">  _cxq          = <span class="literal">NULL</span> ;</span><br><span class="line">  FreeNext      = <span class="literal">NULL</span> ;</span><br><span class="line">  <span class="comment">// 存放请求Monitor的线程</span></span><br><span class="line">  _EntryList    = <span class="literal">NULL</span> ;</span><br><span class="line">  _SpinFreq     = <span class="number">0</span> ;</span><br><span class="line">  _SpinClock    = <span class="number">0</span> ;</span><br><span class="line">  OwnerIsThread = <span class="number">0</span> ;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由上诉结构，相较于普通二元信号量或者是互斥锁，我们发现ObjectMonitor多了一个<code>_WaitSet </code>,记录由wait方法进入的线程，可见关于该monitor就只有一个<code>_WaitSet </code>,当某线程在等待某个条件时，可以调用wait()方法进入该集合等待被唤醒，但由于其只有一个该集合，所以Synchronizd不支持绑定多个条件，只能绑定单个条件。</p>
+<p>获取锁的逻辑一般是依靠CAS操作，即乐观锁的思想</p>
+<h2 id="Synchronized优化"><a href="#Synchronized优化" class="headerlink" title="Synchronized优化"></a>Synchronized优化</h2><p>首先我们得了解在JVM中 一个Java对象由对象头、实例数据、对齐填充组成，其中对象头存储了许多标记字段用于增强对象功能</p>
+<p>我们得了解对象头</p>
+<h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>一个对象头一般包含两个部分Mark Word + 对象类型指针，对于数据对象还会记录数组长度</p>
+<p>而和Synchronized相关的优化主要存在于Mark Word中</p>
+<p>Mark Word一般32位，VM将字的最低两个位设置为标记位，不同标记位下的Mark Word示意如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|                  Mark Word (32 bits)                  |       State        |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">| identity_hashcode:25 | age:4 | biased_lock:1 | lock:2 |       Normal       |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|  thread:23 | epoch:2 | age:4 | biased_lock:1 | lock:2 |       Biased       |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|               ptr_to_lock_record:30          | lock:2 | Lightweight Locked |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|               ptr_to_heavyweight_monitor:30  | lock:2 | Heavyweight Locked |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br><span class="line">|                                              | lock:2 |    Marked for GC   |</span><br><span class="line">|-------------------------------------------------------|--------------------|</span><br></pre></td></tr></table></figure>
+<p>可见之前我们所讨论的Synchronized在重量级锁情况下，其维护了一个对象维护了一个与之关联的monitor</p>
+<p>可以从多个状态可以猜测，JVM 对Synchronized的优化，就是一开始不要让Mark Word 处于重量级锁情况下</p>
+<h3 id="Synchronized优化过程"><a href="#Synchronized优化过程" class="headerlink" title="Synchronized优化过程"></a>Synchronized优化过程</h3><p>在Normal态，我们发现根本就没有锁，只是有一个偏向锁的标记，默认为1，表示可以使用偏向锁</p>
+<p><strong>偏向锁</strong></p>
+<p>当有线程要使用该对象时，就会进入偏向锁状态，具体过程如下：</p>
+<ul>
+<li><p>当锁对象第一次被线程获取的时候，虚拟机将会把对象头中的标志位设为 “01 ”，即偏向模式。同时使用 CAS  操作把获取到这个锁的线程的 ID记录在对象的 Mark Word 之中，如果 CAS 操作成功，持有偏向锁的钱程以后每次进入这个锁相关的同步块时，判断ID相等即可，虚拟机都可以不再进行任何同步操作</p>
+</li>
+<li><p>当还有别的线程也尝试进入该同步块时，很明显有两者线程ID不相等，又判断已经在偏向锁态了，这时候偏向锁明显无法保持同步了</p>
+</li>
+</ul>
+<p>偏向锁的设计原理就是：该对象没有竞争，只会有一个线程会使用该对象</p>
+<p>但是当有多个线程进入同步块时，我们会进入轻量级模式</p>
+<p><strong>轻量级锁</strong></p>
+<p>偏向锁失败，锁会升级为轻量级锁模式，Mark Word 也变成轻量级锁模式</p>
+<p>这时，如果线程进入同步块：</p>
+<ul>
+<li>虚拟机首先会在当前线程队帧创建对象Mark Word的副本，记为lock record</li>
+<li>之后尝试CAS操作将Mark Word 指向该lock record<ul>
+<li>CAS成功，这个线程就拥有了该对象的锁，设置为00</li>
+<li>CAS失败，检查该对象的Mark word是否指向该队帧，指向则说明已拥有锁，否则说明已经被其他线程抢占了，升级为重量级锁</li>
+</ul>
+</li>
+<li>解锁时，如果对象的 Mark Word 仍然指向着线程的锁记录，也尝试CAS操作，换回来，至此同步完成</li>
+</ul>
+<p>轻量级锁的的思想在于：一个时刻，一般只有一个线程使用该对象。</p>
+<p>所以当一个时刻有多个线程进入同步块时，我们会进入重量级锁模式</p>
+<p><strong>重量级锁模式</strong></p>
+<p>就是我们熟悉需要获取monitor的模式了，当然在这个阶段JVM也做出了一些优化，比如自旋锁、自适应自旋锁来避免线程阻塞</p>
+<h3 id="其他优化"><a href="#其他优化" class="headerlink" title="其他优化"></a>其他优化</h3><p>锁粗化、锁消除</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Zhu-ym 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Zhu-ym 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/synchronized/" rel="tag"># synchronized</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/17/%E7%BB%8F%E5%85%B8%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="prev" title="经典排序算法">
+                  <i class="fa fa-chevron-left"></i> 经典排序算法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/01/Kafka%E5%9F%BA%E7%A1%80/" rel="next" title="Kafka基础">
+                  Kafka基础 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhu-ym</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
